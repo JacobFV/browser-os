@@ -7,7 +7,7 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { MenuBar } from './MenuBar';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
-import { Editor } from './Editor';
+import { Editor, EditorHandle } from './Editor';
 import './DocumentWindow.css';
 
 interface DocumentWindowProps {
@@ -24,7 +24,7 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
   const [showOpenDialog, setShowOpenDialog] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const document = useDocument(documentId, initialFileUri);
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<EditorHandle>(null);
 
   useEffect(() => {
     if (initialFileUri && !document.fileUri) {
@@ -64,13 +64,9 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
 
   const handleFormat = useCallback((command: string, value?: string) => {
     if (editorRef.current) {
-      editorRef.current.focus();
-      const success = document.execCommand(command, false, value);
-      if (success && editorRef.current) {
-        document.setContent(editorRef.current.innerHTML);
-      }
+      editorRef.current.execCommand(command, value);
     }
-  }, [document]);
+  }, []);
 
   useKeyboardShortcuts(handleSave, handleOpen, () => {
     const docId = createId();
