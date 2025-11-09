@@ -7,9 +7,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./styles": "./dist/styles.css"
   },
@@ -20,7 +20,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --ext ts,tsx",
-    "clean": "rm -rf dist"
+    "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\""
   },
   "keywords": [
     "react",

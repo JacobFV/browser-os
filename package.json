@@ -8,11 +8,11 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "dev": "npm run dev --workspaces",
-    "test": "npm run test --workspaces",
-    "lint": "npm run lint --workspaces",
-    "clean": "npm run clean --workspaces && rm -rf node_modules"
+    "build": "pnpm --recursive build",
+    "dev": "pnpm --recursive dev",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "clean": "pnpm --recursive clean && pnpm store prune"
   },
   "keywords": [
     "monorepo",
@@ -31,7 +31,7 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "pnpm": ">=8.0.0"
   }
 }
 

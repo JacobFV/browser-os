@@ -4,8 +4,38 @@ Windows-style UI components for React.
 
 ## Installation
 
+### As a Published Package
+
 ```bash
 npm install @browser-os/windows
+# or
+pnpm add @browser-os/windows
+# or
+yarn add @browser-os/windows
+```
+
+### In the Monorepo
+
+This package is part of the browser-os monorepo. When working within the monorepo, it's referenced using the pnpm workspace protocol:
+
+```json
+{
+  "dependencies": {
+    "@browser-os/windows": "workspace:*"
+  }
+}
+```
+
+After adding the dependency, run:
+
+```bash
+pnpm install
+```
+
+Then build the package:
+
+```bash
+pnpm --filter @browser-os/windows build
 ```
 
 ## Usage
@@ -70,6 +100,20 @@ A Start menu component.
   ]}
 />
 ```
+
+## Development
+
+This package is built using [tsup](https://tsup.egoist.dev/). To develop:
+
+```bash
+# Build once
+pnpm build
+
+# Watch mode for development
+pnpm dev
+```
+
+The package exports both CommonJS and ESM formats, along with TypeScript declarations.
 
 ## License
 
