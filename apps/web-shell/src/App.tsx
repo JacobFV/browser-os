@@ -20,10 +20,24 @@ export const WebShell: React.FC = () => {
       if (event.type === 'open') {
         const win = windowManager.windows.get(event.winId);
         if (win) {
-          setWindows(prev => [...prev, { id: win.id, title: win.title, appId: win.appId }]);
+          setWindows(prev => {
+            if (prev.find(w => w.id === win.id)) return prev;
+            return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+          });
         }
       } else if (event.type === 'close') {
         setWindows(prev => prev.filter(w => w.id !== event.winId));
+      } else if (event.type === 'minimize' || event.type === 'restore') {
+        // Update windows list to reflect state changes
+        setWindows(prev => {
+          const win = windowManager.windows.get(event.winId);
+          if (!win) return prev;
+          const exists = prev.find(w => w.id === win.id);
+          if (!exists && win.state !== 'minimized') {
+            return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+          }
+          return prev;
+        });
       }
     });
     
@@ -40,7 +54,13 @@ export const WebShell: React.FC = () => {
   };
 
   const handleWindowClick = (winId: string) => {
-    windowManager.focusWindow(winId);
+    const win = windowManager.windows.get(winId);
+    if (win?.state === 'minimized') {
+      windowManager.restoreWindow(winId);
+      windowManager.focusWindow(winId);
+    } else {
+      windowManager.focusWindow(winId);
+    }
   };
 
   const handleWindowClose = (winId: string) => {
@@ -57,7 +77,7 @@ export const WebShell: React.FC = () => {
 
   const handleWindowMinimize = (winId: string) => {
     windowManager.minimizeWindow(winId);
-    setWindows(prev => prev.filter(w => w.id !== winId));
+    // Keep window in taskbar list but mark as minimized
   };
 
   const handleWindowMaximize = (winId: string) => {
