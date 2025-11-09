@@ -47,6 +47,14 @@ export const WebShell: React.FC = () => {
     closeWindow(winId);
   };
 
+  const handleWindowMove = (winId: string, x: number, y: number) => {
+    windowManager.moveWindow(winId, x, y);
+  };
+
+  const handleWindowResize = (winId: string, w: number, h: number) => {
+    windowManager.resizeWindow(winId, w, h);
+  };
+
   const allWindows = Array.from(windowManager.windows.values())
     .filter(w => w.state !== 'minimized')
     .sort((a, b) => b.z - a.z);
@@ -66,6 +74,8 @@ export const WebShell: React.FC = () => {
           window={win}
           onClose={handleWindowClose}
           onFocus={handleWindowClick}
+          onMove={handleWindowMove}
+          onResize={handleWindowResize}
         />
       ))}
     </div>
