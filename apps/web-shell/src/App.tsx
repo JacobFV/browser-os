@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shell } from '@browser-os/shell';
 import { applyTheme } from '@browser-os/theme';
 import { windowManager } from '@browser-os/windowing';
-import { openWindow } from '@browser-os/windowing';
+import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
+import { eventBus } from '@browser-os/core';
 
 export const WebShell: React.FC = () => {
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
@@ -13,6 +14,20 @@ export const WebShell: React.FC = () => {
 
   React.useEffect(() => {
     applyTheme('win95');
+    
+    // Listen for window events
+    const unsubscribe = eventBus.on('window', (event) => {
+      if (event.type === 'open') {
+        const win = windowManager.windows.get(event.winId);
+        if (win) {
+          setWindows(prev => [...prev, { id: win.id, title: win.title, appId: win.appId }]);
+        }
+      } else if (event.type === 'close') {
+        setWindows(prev => prev.filter(w => w.id !== event.winId));
+      }
+    });
+    
+    return unsubscribe;
   }, []);
 
   const handleIconClick = (icon: any) => {
@@ -21,7 +36,6 @@ export const WebShell: React.FC = () => {
         appId: icon.appId,
         title: icon.label,
       });
-      setWindows([...windows, { id: win.id, title: win.title, appId: win.appId }]);
     }
   };
 
@@ -29,8 +43,16 @@ export const WebShell: React.FC = () => {
     windowManager.focusWindow(winId);
   };
 
+  const handleWindowClose = (winId: string) => {
+    closeWindow(winId);
+  };
+
+  const allWindows = Array.from(windowManager.windows.values())
+    .filter(w => w.state !== 'minimized')
+    .sort((a, b) => b.z - a.z);
+
   return (
-    <div className="web-shell">
+    <div className="web-shell" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Shell
         mode="desktop"
         windows={windows}
@@ -38,6 +60,14 @@ export const WebShell: React.FC = () => {
         onWindowClick={handleWindowClick}
         onIconClick={handleIconClick}
       />
+      {allWindows.map((win) => (
+        <WindowView
+          key={win.id}
+          window={win}
+          onClose={handleWindowClose}
+          onFocus={handleWindowClick}
+        />
+      ))}
     </div>
   );
 };
