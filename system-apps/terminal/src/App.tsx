@@ -39,7 +39,11 @@ export const TerminalApp: React.FC = () => {
     const fitAddon = new FitAddon();
     xterm.loadAddon(fitAddon);
     xterm.open(terminalRef.current);
-    fitAddon.fit();
+    
+    // Wait for next frame to ensure container has dimensions
+    requestAnimationFrame(() => {
+      fitAddon.fit();
+    });
 
     xtermRef.current = xterm;
     fitAddonRef.current = fitAddon;
