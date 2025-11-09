@@ -84,7 +84,7 @@ export const BasicWindowingExample: React.FC = () => {
           </button>
         </div>
         <div className="info">
-          <p><strong>Active Windows:</strong> {windowManager.windows.size}</p>
+          <p><strong>Active Windows:</strong> {Array.from(windowManager.windows.values()).filter(w => w.state !== 'minimized').length}</p>
           <p><strong>Focused Window:</strong> {windowManager.focusedWindowId || 'None'}</p>
         </div>
       </div>
