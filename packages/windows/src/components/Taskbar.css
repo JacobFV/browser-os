@@ -1,0 +1,52 @@
+.browser-os-taskbar {
+  display: flex;
+  align-items: center;
+  background: #c0c0c0;
+  border-top: 2px outset #c0c0c0;
+  height: 30px;
+  padding: 2px;
+  font-family: 'MS Sans Serif', sans-serif;
+}
+
+.browser-os-taskbar__start {
+  background: linear-gradient(to bottom, #c0c0c0, #808080);
+  border: 2px outset #c0c0c0;
+  padding: 2px 8px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.browser-os-taskbar__start:hover {
+  background: linear-gradient(to bottom, #d4d0c8, #a0a0a0);
+}
+
+.browser-os-taskbar__start:active {
+  border-style: inset;
+}
+
+.browser-os-taskbar__start-text {
+  color: black;
+}
+
+.browser-os-taskbar__tasks {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  margin: 0 4px;
+}
+
+.browser-os-taskbar__tray {
+  width: 100px;
+  height: 24px;
+  background: #c0c0c0;
+  border: 2px inset #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 4px;
+}
+

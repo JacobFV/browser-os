@@ -1,0 +1,5 @@
+/* Import all component styles */
+@import './components/Window.css';
+@import './components/Taskbar.css';
+@import './components/StartMenu.css';
+
