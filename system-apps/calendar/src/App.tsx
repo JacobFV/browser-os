@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Button, Dialog, DialogActions, Input, Textarea } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Calendar.css';
 
 interface CalendarEvent {
@@ -67,9 +69,9 @@ export const CalendarApp: React.FC = () => {
   return (
     <div className="calendar-app" style={{ padding: '20px', width: '100%', height: '100%' }}>
       <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={handlePrevMonth}>←</button>
+        <Button onClick={handlePrevMonth}>←</Button>
         <h2>{monthNames[month]} {year}</h2>
-        <button onClick={handleNextMonth}>→</button>
+        <Button onClick={handleNextMonth}>→</Button>
       </div>
 
       <div className="calendar-grid">
@@ -150,36 +152,39 @@ const EventDialog: React.FC<EventDialogProps> = ({ date, onClose, onSave }) => {
   const [description, setDescription] = useState('');
 
   return (
-    <div className="event-dialog-overlay" onClick={onClose}>
-      <div className="event-dialog" onClick={(e) => e.stopPropagation()}>
-        <h3>Add Event - {date.toLocaleDateString()}</h3>
-        <input
-          type="text"
-          placeholder="Event title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
-        />
-        <input
-          type="time"
-          placeholder="Time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '8px', minHeight: '100px' }}
-        />
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <button onClick={onClose}>Cancel</button>
-          <button onClick={() => onSave(title, time, description)} disabled={!title}>
+    <Dialog
+      open={true}
+      onClose={onClose}
+      title={`Add Event - ${date.toLocaleDateString()}`}
+      actions={
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={() => onSave(title, time, description)} disabled={!title}>
             Save
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogActions>
+      }
+    >
+      <Input
+        type="text"
+        placeholder="Event title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        style={{ width: '100%', marginBottom: '8px' }}
+      />
+      <Input
+        type="time"
+        placeholder="Time"
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        style={{ width: '100%', marginBottom: '8px' }}
+      />
+      <Textarea
+        placeholder="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        style={{ width: '100%', marginBottom: '8px', minHeight: '100px' }}
+      />
+    </Dialog>
   );
 };

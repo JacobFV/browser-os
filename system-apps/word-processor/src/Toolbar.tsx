@@ -1,5 +1,6 @@
 import React from 'react';
-import './Toolbar.css';
+import { Toolbar as UIToolbar, Button, Separator, Select } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 
 interface ToolbarProps {
   onFormat: (command: string, value?: string) => void;
@@ -7,31 +8,18 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onFormat }) => {
   return (
-    <div className="toolbar">
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('bold')}
-        title="Bold (Ctrl+B)"
-      >
+    <UIToolbar>
+      <Button onClick={() => onFormat('bold')} title="Bold (Ctrl+B)">
         <strong>B</strong>
-      </button>
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('italic')}
-        title="Italic (Ctrl+I)"
-      >
+      </Button>
+      <Button onClick={() => onFormat('italic')} title="Italic (Ctrl+I)">
         <em>I</em>
-      </button>
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('underline')}
-        title="Underline (Ctrl+U)"
-      >
+      </Button>
+      <Button onClick={() => onFormat('underline')} title="Underline (Ctrl+U)">
         <u>U</u>
-      </button>
-      <div className="toolbar-separator" />
-      <select
-        className="toolbar-select"
+      </Button>
+      <Separator orientation="vertical" />
+      <Select
         onChange={(e) => onFormat('fontSize', e.target.value)}
         defaultValue="3"
       >
@@ -42,9 +30,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onFormat }) => {
         <option value="5">18pt</option>
         <option value="6">24pt</option>
         <option value="7">36pt</option>
-      </select>
-      <select
-        className="toolbar-select"
+      </Select>
+      <Select
         onChange={(e) => onFormat('fontName', e.target.value)}
         defaultValue="Arial"
       >
@@ -53,30 +40,18 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onFormat }) => {
         <option value="Courier New">Courier New</option>
         <option value="Georgia">Georgia</option>
         <option value="Verdana">Verdana</option>
-      </select>
-      <div className="toolbar-separator" />
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('justifyLeft')}
-        title="Align Left"
-      >
+      </Select>
+      <Separator orientation="vertical" />
+      <Button onClick={() => onFormat('justifyLeft')} title="Align Left">
         ⬅
-      </button>
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('justifyCenter')}
-        title="Align Center"
-      >
+      </Button>
+      <Button onClick={() => onFormat('justifyCenter')} title="Align Center">
         ⬌
-      </button>
-      <button
-        className="toolbar-btn"
-        onClick={() => onFormat('justifyRight')}
-        title="Align Right"
-      >
+      </Button>
+      <Button onClick={() => onFormat('justifyRight')} title="Align Right">
         ➡
-      </button>
-    </div>
+      </Button>
+    </UIToolbar>
   );
 };
 

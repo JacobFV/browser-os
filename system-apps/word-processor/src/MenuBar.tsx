@@ -1,5 +1,6 @@
 import React from 'react';
-import './MenuBar.css';
+import { MenuBar as UIMenuBar, Menu, MenuItem } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 
 interface MenuBarProps {
   onNew: () => void;
@@ -17,59 +18,30 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   onClose,
 }) => {
   return (
-    <div className="menu-bar">
-      <div className="menu-item">
-        <span className="menu-label">File</span>
-        <div className="menu-dropdown">
-          <div className="menu-option" onClick={onNew}>
-            New <span className="menu-shortcut">Ctrl+N</span>
-          </div>
-          <div className="menu-option" onClick={onOpen}>
-            Open... <span className="menu-shortcut">Ctrl+O</span>
-          </div>
-          <div className="menu-separator" />
-          <div className="menu-option" onClick={onSave}>
-            Save <span className="menu-shortcut">Ctrl+S</span>
-          </div>
-          <div className="menu-option" onClick={onSaveAs}>
-            Save As... <span className="menu-shortcut">Ctrl+Shift+S</span>
-          </div>
-          <div className="menu-separator" />
-          <div className="menu-option" onClick={onClose}>
-            Close
-          </div>
-        </div>
-      </div>
-      <div className="menu-item">
-        <span className="menu-label">Edit</span>
-        <div className="menu-dropdown">
-          <div className="menu-option">
-            Undo <span className="menu-shortcut">Ctrl+Z</span>
-          </div>
-          <div className="menu-option">
-            Redo <span className="menu-shortcut">Ctrl+Y</span>
-          </div>
-          <div className="menu-separator" />
-          <div className="menu-option">
-            Cut <span className="menu-shortcut">Ctrl+X</span>
-          </div>
-          <div className="menu-option">
-            Copy <span className="menu-shortcut">Ctrl+C</span>
-          </div>
-          <div className="menu-option">
-            Paste <span className="menu-shortcut">Ctrl+V</span>
-          </div>
-        </div>
-      </div>
-      <div className="menu-item">
-        <span className="menu-label">Format</span>
-        <div className="menu-dropdown">
-          <div className="menu-option">Bold <span className="menu-shortcut">Ctrl+B</span></div>
-          <div className="menu-option">Italic <span className="menu-shortcut">Ctrl+I</span></div>
-          <div className="menu-option">Underline <span className="menu-shortcut">Ctrl+U</span></div>
-        </div>
-      </div>
-    </div>
+    <UIMenuBar>
+      <Menu label="File">
+        <MenuItem label="New" onClick={onNew} shortcut="Ctrl+N" />
+        <MenuItem label="Open..." onClick={onOpen} shortcut="Ctrl+O" />
+        <MenuItem separator />
+        <MenuItem label="Save" onClick={onSave} shortcut="Ctrl+S" />
+        <MenuItem label="Save As..." onClick={onSaveAs} shortcut="Ctrl+Shift+S" />
+        <MenuItem separator />
+        <MenuItem label="Close" onClick={onClose} />
+      </Menu>
+      <Menu label="Edit">
+        <MenuItem label="Undo" shortcut="Ctrl+Z" />
+        <MenuItem label="Redo" shortcut="Ctrl+Y" />
+        <MenuItem separator />
+        <MenuItem label="Cut" shortcut="Ctrl+X" />
+        <MenuItem label="Copy" shortcut="Ctrl+C" />
+        <MenuItem label="Paste" shortcut="Ctrl+V" />
+      </Menu>
+      <Menu label="Format">
+        <MenuItem label="Bold" shortcut="Ctrl+B" />
+        <MenuItem label="Italic" shortcut="Ctrl+I" />
+        <MenuItem label="Underline" shortcut="Ctrl+U" />
+      </Menu>
+    </UIMenuBar>
   );
 };
 

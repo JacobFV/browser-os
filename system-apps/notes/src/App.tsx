@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
 import { vfs } from '@browser-os/fs';
+import { Toolbar, Button, StatusBar, Textarea } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Notepad.css';
 
 export const NotesApp: React.FC = () => {
@@ -69,26 +71,26 @@ export const NotesApp: React.FC = () => {
   };
 
   return (
-    <div className="notepad-app">
-      <div className="notepad-menu">
-        <button onClick={handleNew}>File</button>
-        <button onClick={handleOpen}>Open...</button>
-        <button onClick={handleSave}>Save</button>
-        <button onClick={handleSaveAs}>Save As...</button>
-      </div>
-      <div className="notepad-title">
+    <div className="notepad-app" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Toolbar>
+        <Button onClick={handleNew}>File</Button>
+        <Button onClick={handleOpen}>Open...</Button>
+        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={handleSaveAs}>Save As...</Button>
+      </Toolbar>
+      <StatusBar>
         {fileUri ? fileUri.split('/').pop() : 'Untitled'}
         {modified && ' *'}
-      </div>
-      <textarea
+      </StatusBar>
+      <Textarea
         ref={textareaRef}
-        className="notepad-editor"
         value={content}
         onChange={(e) => {
           setContent(e.target.value);
           setModified(true);
         }}
         placeholder="Type your notes here..."
+        style={{ flex: 1, width: '100%', border: 'none', resize: 'none' }}
       />
       
       <FileDialog

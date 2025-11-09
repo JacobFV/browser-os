@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Toolbar, Button, Input, Separator } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Browser.css';
 
 export const BrowserApp: React.FC = () => {
@@ -35,21 +37,22 @@ export const BrowserApp: React.FC = () => {
 
   return (
     <div className="browser-app" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div className="browser-toolbar" style={{ padding: '8px', borderBottom: '1px solid #ccc', display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <button onClick={() => iframeRef.current?.contentWindow?.history.back()}>←</button>
-        <button onClick={() => iframeRef.current?.contentWindow?.history.forward()}>→</button>
-        <button onClick={() => iframeRef.current?.contentWindow?.location.reload()}>↻</button>
-        <input
+      <Toolbar>
+        <Button onClick={() => iframeRef.current?.contentWindow?.history.back()}>←</Button>
+        <Button onClick={() => iframeRef.current?.contentWindow?.history.forward()}>→</Button>
+        <Button onClick={() => iframeRef.current?.contentWindow?.location.reload()}>↻</Button>
+        <Separator orientation="vertical" />
+        <Input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyPress={handleKeyPress}
-          style={{ flex: 1, padding: '4px 8px' }}
+          style={{ flex: 1 }}
           placeholder="Enter URL"
         />
-        <button onClick={handleNavigate}>Go</button>
+        <Button onClick={handleNavigate}>Go</Button>
         {loading && <span>Loading...</span>}
-      </div>
+      </Toolbar>
       <iframe
         ref={iframeRef}
         src={currentUrl}

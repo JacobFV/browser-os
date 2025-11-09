@@ -1,5 +1,6 @@
 import React from 'react';
-import './StatusBar.css';
+import { StatusBar as UIStatusBar } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 
 interface StatusBarProps {
   wordCount: number;
@@ -8,14 +9,10 @@ interface StatusBarProps {
 
 export const StatusBar: React.FC<StatusBarProps> = ({ wordCount, charCount }) => {
   return (
-    <div className="status-bar">
-      <div className="status-item">
-        Words: {wordCount}
-      </div>
-      <div className="status-item">
-        Characters: {charCount}
-      </div>
-    </div>
+    <UIStatusBar>
+      <span>Words: {wordCount}</span>
+      <span>Characters: {charCount}</span>
+    </UIStatusBar>
   );
 };
 

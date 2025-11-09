@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Button } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Calculator.css';
 
 export const CalculatorApp: React.FC = () => {
@@ -77,28 +79,28 @@ export const CalculatorApp: React.FC = () => {
     <div className="calculator-app">
       <div className="calculator-display">{display}</div>
       <div className="calculator-buttons">
-        <button onClick={clear} className="calculator-button function">C</button>
-        <button onClick={() => inputOperation('/')} className="calculator-button operator">÷</button>
-        <button onClick={() => inputOperation('*')} className="calculator-button operator">×</button>
-        <button onClick={() => inputOperation('-')} className="calculator-button operator">−</button>
+        <Button onClick={clear} className="calculator-button function">C</Button>
+        <Button onClick={() => inputOperation('/')} className="calculator-button operator">÷</Button>
+        <Button onClick={() => inputOperation('*')} className="calculator-button operator">×</Button>
+        <Button onClick={() => inputOperation('-')} className="calculator-button operator">−</Button>
         
-        <button onClick={() => inputNumber('7')} className="calculator-button">7</button>
-        <button onClick={() => inputNumber('8')} className="calculator-button">8</button>
-        <button onClick={() => inputNumber('9')} className="calculator-button">9</button>
-        <button onClick={() => inputOperation('+')} className="calculator-button operator">+</button>
+        <Button onClick={() => inputNumber('7')} className="calculator-button">7</Button>
+        <Button onClick={() => inputNumber('8')} className="calculator-button">8</Button>
+        <Button onClick={() => inputNumber('9')} className="calculator-button">9</Button>
+        <Button onClick={() => inputOperation('+')} className="calculator-button operator">+</Button>
         
-        <button onClick={() => inputNumber('4')} className="calculator-button">4</button>
-        <button onClick={() => inputNumber('5')} className="calculator-button">5</button>
-        <button onClick={() => inputNumber('6')} className="calculator-button">6</button>
-        <button onClick={performCalculation} className="calculator-button equals">=</button>
+        <Button onClick={() => inputNumber('4')} className="calculator-button">4</Button>
+        <Button onClick={() => inputNumber('5')} className="calculator-button">5</Button>
+        <Button onClick={() => inputNumber('6')} className="calculator-button">6</Button>
+        <Button onClick={performCalculation} className="calculator-button equals">=</Button>
         
-        <button onClick={() => inputNumber('1')} className="calculator-button">1</button>
-        <button onClick={() => inputNumber('2')} className="calculator-button">2</button>
-        <button onClick={() => inputNumber('3')} className="calculator-button">3</button>
-        <button className="calculator-button" style={{ gridRow: 'span 2' }}></button>
+        <Button onClick={() => inputNumber('1')} className="calculator-button">1</Button>
+        <Button onClick={() => inputNumber('2')} className="calculator-button">2</Button>
+        <Button onClick={() => inputNumber('3')} className="calculator-button">3</Button>
+        <Button className="calculator-button" style={{ gridRow: 'span 2' }}></Button>
         
-        <button onClick={() => inputNumber('0')} className="calculator-button" style={{ gridColumn: 'span 2' }}>0</button>
-        <button onClick={inputDecimal} className="calculator-button">.</button>
+        <Button onClick={() => inputNumber('0')} className="calculator-button" style={{ gridColumn: 'span 2' }}>0</Button>
+        <Button onClick={inputDecimal} className="calculator-button">.</Button>
       </div>
     </div>
   );

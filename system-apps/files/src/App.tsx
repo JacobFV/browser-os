@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { vfs, Entry } from '@browser-os/fs';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
+import { Toolbar, Button, ButtonGroup, Dialog, DialogActions, Input, Separator } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Files.css';
 
 export const FilesApp: React.FC = () => {
@@ -136,35 +138,35 @@ export const FilesApp: React.FC = () => {
 
   return (
     <div className="files-app">
-      <div className="files-toolbar">
-        <button onClick={handleUp} disabled={currentPath.split('/').filter(Boolean).length <= 2}>
+      <Toolbar>
+        <Button onClick={handleUp} disabled={currentPath.split('/').filter(Boolean).length <= 2}>
           ↑ Up
-        </button>
-        <input
+        </Button>
+        <Input
           type="text"
           value={currentPath}
           readOnly
-          className="files-path"
+          style={{ flex: 1 }}
         />
-        <button onClick={() => setShowNewFolderDialog(true)}>New Folder</button>
-        <button onClick={handleDelete} disabled={selectedFiles.size === 0}>
+        <Button onClick={() => setShowNewFolderDialog(true)}>New Folder</Button>
+        <Button onClick={handleDelete} disabled={selectedFiles.size === 0}>
           Delete
-        </button>
-        <div className="files-view-toggle">
-          <button
+        </Button>
+        <ButtonGroup variant="segmented">
+          <Button
             onClick={() => setViewMode('grid')}
             className={viewMode === 'grid' ? 'active' : ''}
           >
             Grid
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setViewMode('list')}
             className={viewMode === 'list' ? 'active' : ''}
           >
             List
-          </button>
-        </div>
-      </div>
+          </Button>
+        </ButtonGroup>
+      </Toolbar>
 
       <div className="files-content">
         {loading ? (
@@ -214,31 +216,30 @@ export const FilesApp: React.FC = () => {
         )}
       </div>
 
-      {showNewFolderDialog && (
-        <div className="files-dialog-overlay" onClick={() => setShowNewFolderDialog(false)}>
-          <div className="files-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>New Folder</h3>
-            <input
-              type="text"
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="Folder name"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleNewFolder();
-                } else if (e.key === 'Escape') {
-                  setShowNewFolderDialog(false);
-                }
-              }}
-            />
-            <div className="files-dialog-actions">
-              <button onClick={() => setShowNewFolderDialog(false)}>Cancel</button>
-              <button onClick={handleNewFolder}>Create</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={showNewFolderDialog}
+        onClose={() => setShowNewFolderDialog(false)}
+        title="New Folder"
+      >
+        <Input
+          type="text"
+          value={newFolderName}
+          onChange={(e) => setNewFolderName(e.target.value)}
+          placeholder="Folder name"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleNewFolder();
+            } else if (e.key === 'Escape') {
+              setShowNewFolderDialog(false);
+            }
+          }}
+        />
+        <DialogActions>
+          <Button onClick={() => setShowNewFolderDialog(false)}>Cancel</Button>
+          <Button onClick={handleNewFolder}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

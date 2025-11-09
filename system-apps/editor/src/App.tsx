@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as monaco from 'monaco-editor';
 import { vfs } from '@browser-os/fs';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
+import { Toolbar, Button, StatusBar } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Editor.css';
 
 export const EditorApp: React.FC = () => {
@@ -108,16 +110,16 @@ export const EditorApp: React.FC = () => {
 
   return (
     <div className="editor-app" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '8px', borderBottom: '1px solid #ccc', display: 'flex', gap: '8px' }}>
-        <button onClick={handleOpen}>Open</button>
-        <button onClick={handleSave} disabled={!currentFile && !modified}>Save</button>
-        <button onClick={handleSaveAs}>Save As</button>
-        <span style={{ marginLeft: 'auto', color: modified ? 'orange' : 'green' }}>
-          {currentFile ? currentFile.split('/').pop() : 'Untitled'}
-          {modified ? ' *' : ''}
-        </span>
-      </div>
+      <Toolbar>
+        <Button onClick={handleOpen}>Open</Button>
+        <Button onClick={handleSave} disabled={!currentFile && !modified}>Save</Button>
+        <Button onClick={handleSaveAs}>Save As</Button>
+      </Toolbar>
       <div ref={editorRef} style={{ flex: 1, width: '100%' }} />
+      <StatusBar>
+        {currentFile ? currentFile.split('/').pop() : 'Untitled'}
+        {modified ? ' *' : ''}
+      </StatusBar>
       
       <FileDialog
         open={showOpenDialog}

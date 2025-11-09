@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { applyTheme } from '@browser-os/theme';
+import { Select, Checkbox, Separator } from '@browser-os/ui';
+import '@browser-os/ui/dist/ui.css';
 import './Settings.css';
 
 export const SettingsApp: React.FC = () => {
@@ -25,8 +27,8 @@ export const SettingsApp: React.FC = () => {
         <div className="settings-section">
           <h2>Appearance</h2>
           <div className="settings-group">
-            <label>Theme:</label>
-            <select
+            <Select
+              label="Theme:"
               value={currentTheme}
               onChange={(e) => handleThemeChange(e.target.value)}
             >
@@ -34,37 +36,35 @@ export const SettingsApp: React.FC = () => {
               <option value="macos">macOS</option>
               <option value="monaco">Monaco</option>
               <option value="glass">Glass</option>
-            </select>
+            </Select>
           </div>
         </div>
+
+        <Separator />
 
         <div className="settings-section">
           <h2>System</h2>
           <div className="settings-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={settings.animations}
-                onChange={(e) =>
-                  setSettings(prev => ({ ...prev, animations: e.target.checked }))
-                }
-              />
-              Enable animations
-            </label>
+            <Checkbox
+              label="Enable animations"
+              checked={settings.animations}
+              onChange={(e) =>
+                setSettings(prev => ({ ...prev, animations: e.target.checked }))
+              }
+            />
           </div>
           <div className="settings-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={settings.sound}
-                onChange={(e) =>
-                  setSettings(prev => ({ ...prev, sound: e.target.checked }))
-                }
-              />
-              Enable sound effects
-            </label>
+            <Checkbox
+              label="Enable sound effects"
+              checked={settings.sound}
+              onChange={(e) =>
+                setSettings(prev => ({ ...prev, sound: e.target.checked }))
+              }
+            />
           </div>
         </div>
+
+        <Separator />
 
         <div className="settings-section">
           <h2>About</h2>
