@@ -1,14 +1,9 @@
 import { createId } from '@browser-os/core';
 import { eventBus, ProcessEvent, ProcessState } from '@browser-os/core';
-import { builtInCommands } from './commands'; // Import built-in commands
+import { builtInCommands } from './commands';
+export * from './types';
 
 export type Pid = string;
-
-export interface ProcessStreams {
-  stdin: WritableStream<string>;
-  stdout: WritableStream<string>; // Commands write to stdout
-  stderr: WritableStream<string>; // Commands write to stderr
-}
 
 /**
  * Create paired streams for stdout/stderr
@@ -58,17 +53,6 @@ export interface Process {
   parentPid?: Pid; // Parent process
   children: Set<Pid>; // Child processes
   streams?: ProcessStreams; // STDIN/STDOUT/STDERR
-}
-
-export interface CommandHandler {
-  name: string;
-  description?: string;
-  execute: (
-    args: string[],
-    streams: ProcessStreams,
-    cwd: string,
-    env: Record<string, string>
-  ) => Promise<number>; // Returns exit code
 }
 
 class ProcessManager {

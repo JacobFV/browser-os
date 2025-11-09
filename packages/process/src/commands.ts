@@ -1,4 +1,4 @@
-import { CommandHandler, ProcessStreams } from './index';
+import { CommandHandler, ProcessStreams } from './types';
 import { vfs } from '@browser-os/fs';
 
 // Helper to write to stdout
