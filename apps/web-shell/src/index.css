@@ -14,3 +14,95 @@ body {
   height: 100vh;
 }
 
+.web-shell {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.desktop {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: #008080;
+}
+
+.desktop-icons {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.desktop-icon {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border: 1px solid transparent;
+}
+
+.desktop-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px dashed #fff;
+}
+
+.desktop-icon .icon {
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.desktop-icon .label {
+  color: #fff;
+  font-size: 12px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  text-align: center;
+  max-width: 80px;
+  word-wrap: break-word;
+}
+
+.taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background-color: #c0c0c0;
+  border-top: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 4px;
+}
+
+.taskbar-item {
+  padding: 4px 12px;
+  background-color: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.taskbar-item:hover {
+  background-color: #d4d0c8;
+}
+
+.taskbar-item:active {
+  border-style: inset;
+}
+
+.window {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.window-titlebar {
+  user-select: none;
+}
+
+.window-close:hover {
+  background-color: #ff0000 !important;
+  color: #fff;
+}
+
