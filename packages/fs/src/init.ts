@@ -1,4 +1,6 @@
-import { vfs, FsDriver, createMemDriver } from '@browser-os/fs';
+import { vfs } from './index';
+import type { FsDriver } from './index';
+import { createMemDriver } from './index';
 
 export interface FilesystemInitOptions {
   mounts?: Array<{ mountPoint: string; driver: FsDriver }>;

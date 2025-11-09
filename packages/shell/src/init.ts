@@ -8,7 +8,8 @@ import { applyTheme, ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
 import { AppRegistry } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
-import { initFilesystem, FilesystemInitOptions } from '@browser-os/fs';
+import type { FilesystemInitOptions } from '@browser-os/fs';
+import { initFilesystem } from '@browser-os/fs';
 import { AppManifest } from '@browser-os/core';
 
 export interface DesktopShellInitOptions {

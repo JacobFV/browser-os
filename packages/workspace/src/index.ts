@@ -50,7 +50,13 @@ class WorkspaceManager {
     currentWindows.forEach(winId => windowManager.closeWindow(winId));
     
     // Restore windows
-    workspace.windows.forEach(winData => {
+    workspace.windows.forEach((winData: {
+      appId: string;
+      title: string;
+      bounds: { x: number; y: number; w: number; h: number };
+      state: string;
+      payload?: Record<string, any>;
+    }) => {
       windowManager.openWindow({
         appId: winData.appId,
         title: winData.title,

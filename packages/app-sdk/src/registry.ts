@@ -31,8 +31,9 @@ export class AppRegistry {
     }
     
     try {
-      // Dynamic import of the app entry point
-      const module = await import(manifest.entry);
+      // Dynamic import of the app entry point - entry is a string path
+      const entryPath: string = manifest.entry;
+      const module = await import(entryPath);
       return module.default || module[appId] || null;
     } catch (error: any) {
       console.error(`Failed to load app ${appId}:`, error);

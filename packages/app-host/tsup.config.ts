@@ -7,6 +7,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['@browser-os/windowing', '@browser-os/settings'],
+  external: ['@browser-os/core', '@browser-os/windowing', '@browser-os/process'],
+  tsconfig: './tsconfig.json',
 });
 

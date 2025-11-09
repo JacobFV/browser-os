@@ -85,9 +85,7 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
             });
           }
         }
-      }
-      
-      if (event.type === 'update') {
+      } else if (event.type === 'update') {
         // Ensure window is in list when updated and trigger re-render
         const win = windowManager.windows.get(event.winId);
         if (win) {

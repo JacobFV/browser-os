@@ -1,5 +1,3 @@
-import { createIdbDriver } from '@browser-os/fs';
-
 const SETTINGS_DB_NAME = 'browser-os-settings';
 const SETTINGS_STORE_NAME = 'settings';
 
