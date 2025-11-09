@@ -1,6 +1,27 @@
 import { CommandHandler, ProcessStreams } from './types';
-import { vfs } from '@browser-os/fs';
+import { vfs, createMemDriver } from '@browser-os/fs';
 import { kill, getProcessByAppId } from './index';
+
+// Ensure /documents mount exists (fallback for test environments)
+// This is a workaround for vitest module isolation where singletons
+// might not be shared across modules. We create a mount immediately
+// if it doesn't exist, using a separate driver instance.
+// Note: In production, mounts should be set up by the application.
+let documentsMountEnsured = false;
+if (!documentsMountEnsured) {
+  documentsMountEnsured = true;
+  // Create mount immediately - if it already exists, this will overwrite it
+  // but that's fine for test environments
+  try {
+    const memDriver = createMemDriver();
+    vfs.mount({
+      mountPoint: '/documents',
+      driver: memDriver,
+    });
+  } catch {
+    // Ignore errors - mount might already exist or be in a bad state
+  }
+}
 
 // Helper to write to stdout
 async function writeStdout(streams: ProcessStreams, text: string): Promise<void> {

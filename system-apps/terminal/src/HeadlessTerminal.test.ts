@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { HeadlessTerminal } from './HeadlessTerminal';
-import { vfs } from '@browser-os/fs';
 
 describe('HeadlessTerminal', () => {
   let terminal: HeadlessTerminal;
@@ -68,8 +67,27 @@ describe('HeadlessTerminal', () => {
 
   describe('File operations', () => {
     it('should create and read files', async () => {
-      await terminal.execute('echo test content > testfile.txt');
+      const writeResult = await terminal.execute('echo test content > testfile.txt');
+      expect(writeResult.exitCode).toBe(0);
+      expect(writeResult.stderr).toBe('');
+      
+      // Check if file exists directly
+      const cwd = terminal.getCwd();
+      const filePath = cwd.endsWith('/') ? cwd + 'testfile.txt' : cwd + '/testfile.txt';
+      const { vfs } = await import('@browser-os/fs');
+      const content = await vfs.read(filePath, { binary: false }) as string;
+      expect(content).toContain('test content');
+      
+      // Now test cat command
       const result = await terminal.execute('cat testfile.txt');
+      if (result.stderr) {
+        console.log('cat stderr:', result.stderr);
+      }
+      if (result.exitCode !== 0) {
+        console.log('cat exit code:', result.exitCode);
+      }
+      console.log('cat stdout length:', result.stdout.length);
+      console.log('cat stdout:', JSON.stringify(result.stdout));
       expect(result.stdout).toContain('test content');
     });
 
@@ -113,11 +131,12 @@ describe('HeadlessTerminal', () => {
 
   describe('Working directory', () => {
     it('should change and track working directory', async () => {
-      await terminal.execute('mkdir testdir');
+      const mkdirResult = await terminal.execute('mkdir testdir');
+      expect(mkdirResult.exitCode).toBe(0);
+      
       const cdResult = await terminal.execute('cd testdir');
       expect(cdResult.exitCode).toBe(0);
       expect(terminal.getCwd()).toContain('testdir');
     });
   });
 });
-

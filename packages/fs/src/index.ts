@@ -42,6 +42,11 @@ class VfsImpl implements Vfs {
     eventBus.emit('fs', { type: 'mount', mountPoint: m.mountPoint, driver: m.driver.id });
   }
 
+  // Expose mounts for debugging
+  getMounts(): string[] {
+    return Array.from(this.mounts.keys());
+  }
+
   resolve(uri: string): { driver: FsDriver; path: string } {
     if (!uri.startsWith('vfs://')) {
       throw new Error(`Invalid URI: ${uri}`);
@@ -107,6 +112,14 @@ class VfsImpl implements Vfs {
 }
 
 export const vfs = new VfsImpl();
+
+// In test environments, expose a way to check if mounts are shared
+if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+  (globalThis as any).__vfs_debug = {
+    getMounts: () => vfs.getMounts(),
+    instance: vfs,
+  };
+}
 
 export function createMemDriver(): FsDriver {
   const files = new Map<string, Uint8Array | string>();

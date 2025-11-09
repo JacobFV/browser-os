@@ -175,6 +175,8 @@ export class HeadlessTerminal {
     // Split by ; first, then handle && and ||
     const parts = this.splitCommandChain(commandLine);
     let lastResult: ExecutionResult = { stdout: '', stderr: '', exitCode: 0 };
+    let accumulatedStdout = '';
+    let accumulatedStderr = '';
     
     for (const part of parts) {
       const trimmed = part.trim();
@@ -187,6 +189,8 @@ export class HeadlessTerminal {
           const { command, operator } = chainPart;
           const result = await this.executeSingleCommandLine(command);
           lastResult = result;
+          accumulatedStdout += result.stdout;
+          accumulatedStderr += result.stderr;
           
           if (operator === '&&' && result.exitCode !== 0) {
             // Stop on first failure
@@ -198,10 +202,16 @@ export class HeadlessTerminal {
         }
       } else {
         lastResult = await this.executeSingleCommandLine(trimmed);
+        accumulatedStdout += lastResult.stdout;
+        accumulatedStderr += lastResult.stderr;
       }
     }
     
-    return lastResult;
+    return { 
+      stdout: accumulatedStdout, 
+      stderr: accumulatedStderr, 
+      exitCode: lastResult.exitCode 
+    };
   }
 
   /**
@@ -318,7 +328,7 @@ export class HeadlessTerminal {
     }
     
     // Handle single command with no pipes
-    if (parsed.commands.length === 1 && !parsed.stdoutRedirect && !parsed.stdinRedirect && !parsed.background) {
+    if (parsed.commands.length === 1 && !parsed.stdinRedirect && !parsed.background) {
       const { command, args } = parsed.commands[0];
       
       // Handle built-in shell commands
@@ -331,7 +341,9 @@ export class HeadlessTerminal {
       }
 
       if (command === 'alias') {
-        return await this.handleAlias(args);
+        // Join args back together to handle quoted values like ll="ls -l"
+        const aliasArg = args.join(' ');
+        return await this.handleAlias([aliasArg]);
       }
 
       if (command === 'history') {
@@ -344,6 +356,39 @@ export class HeadlessTerminal {
 
       if (command === 'which') {
         return await this.handleWhich(args);
+      }
+
+      // If there's output redirection, handle it specially
+      if (parsed.stdoutRedirect) {
+        const result = await this.executeSingleCommand(command, args);
+        
+        // Get cwd from shell process if available
+        let commandCwd = this.cwd;
+        if (this.shellPid) {
+          const shellProc = getProcess(this.shellPid);
+          if (shellProc?.cwd) {
+            commandCwd = shellProc.cwd;
+          }
+        }
+        
+        // Write output to file
+        const filePath = parsed.stdoutRedirect.file.startsWith('vfs://')
+          ? parsed.stdoutRedirect.file
+          : commandCwd.endsWith('/')
+            ? commandCwd + parsed.stdoutRedirect.file
+            : commandCwd + '/' + parsed.stdoutRedirect.file;
+        
+        try {
+          if (parsed.stdoutRedirect.append) {
+            const existing = await vfs.read(filePath, { binary: false }).catch(() => '') as string;
+            await vfs.write(filePath, existing + result.stdout);
+          } else {
+            await vfs.write(filePath, result.stdout);
+          }
+          return { stdout: '', stderr: result.stderr, exitCode: result.exitCode };
+        } catch (error: any) {
+          return { stdout: '', stderr: `Error writing to file: ${error.message}\n`, exitCode: 1 };
+        }
       }
 
       // Execute single command
@@ -422,9 +467,12 @@ export class HeadlessTerminal {
     }
 
     for (const arg of args) {
-      const match = arg.match(/^([A-Za-z_][A-Za-z0-9_]*)=['"]?(.*?)['"]?$/);
+      // Handle both ll="ls -l" and ll='ls -l' formats
+      // Match: name="value" or name='value' or name=value
+      const match = arg.match(/^([A-Za-z_][A-Za-z0-9_]*)=(?:"([^"]*)"|'([^']*)'|(.+))$/);
       if (match) {
-        const [, name, value] = match;
+        const [, name, doubleQuoted, singleQuoted, unquoted] = match;
+        const value = doubleQuoted || singleQuoted || unquoted || '';
         this.aliases.set(name, value);
       } else {
         return { stdout: '', stderr: `alias: invalid syntax: ${arg}\n`, exitCode: 1 };
