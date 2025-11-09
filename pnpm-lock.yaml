@@ -29,10 +29,10 @@ importers:
       '@browser-os/web-shell':
         specifier: workspace:*
         version: link:../web-shell
+    devDependencies:
       electron:
         specifier: ^28.0.0
         version: 28.3.3
-    devDependencies:
       electron-builder:
         specifier: ^24.0.0
         version: 24.13.3(electron-builder-squirrel-windows@24.13.3)
@@ -73,6 +73,9 @@ importers:
 
   apps/web-shell:
     dependencies:
+      '@browser-os/app-sdk':
+        specifier: workspace:*
+        version: link:../../packages/app-sdk
       '@browser-os/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -221,6 +224,12 @@ importers:
 
   examples/win95:
     dependencies:
+      '@browser-os/taskbar':
+        specifier: workspace:*
+        version: link:../../packages/taskbar
+      '@browser-os/windowing':
+        specifier: workspace:*
+        version: link:../../packages/windowing
       react:
         specifier: ^18.2.0
         version: 18.3.1

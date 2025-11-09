@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "echo 'System apps are loaded as components, no build needed'",
     "test": "vitest",
     "test:watch": "vitest --watch"
   },

@@ -5,14 +5,13 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
-    open: true,
+    port: 3001,
   },
   resolve: {
     alias: {
-      '@browser-os/windowing': path.resolve(__dirname, '../../packages/windowing/src'),
-      '@browser-os/taskbar': path.resolve(__dirname, '../../packages/taskbar/src'),
       '@browser-os/core': path.resolve(__dirname, '../../packages/core/src'),
+      '@browser-os/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@browser-os/theme': path.resolve(__dirname, '../../packages/theme/src'),
     },
   },
 });

@@ -25,8 +25,10 @@ export const AppRenderer: React.FC<AppRendererProps> = ({ appId, windowId, paylo
     if (appRegistry) {
       const manifest = appRegistry.get(appId);
       if (manifest) {
-        appRegistry.loadApp(appId).then((component: React.ComponentType<any>) => {
-          setAppComponent(() => component);
+        appRegistry.loadApp(appId).then((component: React.ComponentType<any> | null) => {
+          if (component) {
+            setAppComponent(() => component);
+          }
           setLoading(false);
         }).catch(() => {
           setLoading(false);

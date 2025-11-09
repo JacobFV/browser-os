@@ -3,10 +3,10 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
-  dts: false, // DTS disabled - types available via source files in monorepo
+  dts: true,
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['@browser-os/windowing', '@browser-os/settings'],
+  external: ['@browser-os/core', 'react', 'react-dom'],
 });
 

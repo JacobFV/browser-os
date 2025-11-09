@@ -47,8 +47,6 @@ export const WindowView: React.FC<WindowViewProps> = ({
           },
           move(event) {
             if (dragStartPosRef.current) {
-              const x = dragStartPosRef.current.x + event.dx;
-              const y = dragStartPosRef.current.y + event.dy;
               // Apply transform directly during drag for smooth movement
               event.target.style.transform = `translate(${event.dx}px, ${event.dy}px)`;
               // Don't call onMove during drag - it causes re-renders

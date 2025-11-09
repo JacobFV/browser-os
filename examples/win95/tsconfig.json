@@ -14,7 +14,13 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@browser-os/windowing": ["../../packages/windowing/src"],
+      "@browser-os/taskbar": ["../../packages/taskbar/src"],
+      "@browser-os/core": ["../../packages/core/src"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

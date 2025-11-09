@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: ['src/index.tsx', 'src/init.ts', 'src/state.ts'],
   format: ['cjs', 'esm'],
-  dts: false, // Temporarily disabled due to workspace package resolution issues
+  dts: false, // DTS disabled - types available via source files in monorepo
   splitting: false,
   sourcemap: true,
   clean: true,
@@ -20,6 +20,7 @@ export default defineConfig({
     '@browser-os/desktop',
     '@browser-os/app-sdk',
     '@browser-os/core',
+    '@browser-os/taskbar',
   ],
   tsconfig: './tsconfig.json',
 });

@@ -30,8 +30,8 @@ class TelemetryManager {
       this.events.shift();
     }
     
-    // Emit event for listeners
-    eventBus.emit('telemetry', telemetryEvent);
+    // Note: Telemetry events are stored internally and can be queried via getEvents()
+    // If external event emission is needed, add 'telemetry' channel to core event bus
   }
   
   getEvents(type?: string): TelemetryEvent[] {

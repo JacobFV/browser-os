@@ -12,6 +12,9 @@ dist/
 build/
 *.tsbuildinfo
 
+# Turbo
+.turbo
+
 # Misc
 .DS_Store
 *.pem

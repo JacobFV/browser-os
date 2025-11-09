@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-// TODO: Update to use new @browser-os packages
-// import { Window, Taskbar, StartMenu } from '@browser-os/windowing';
+import { WindowView } from '@browser-os/windowing';
+import { Taskbar } from '@browser-os/taskbar';
+import type { Window } from '@browser-os/windowing';
 
 // Generate random position within allowable bounds
 const getRandomPosition = (windowWidth: number, windowHeight: number) => {
@@ -15,7 +16,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   
   // Initialize windows without positions first
-  const [windows, setWindows] = useState(() => [
+  const [windows, setWindows] = useState<Array<{ id: number; title: string; minimized: boolean; x: number; y: number }>>(() => [
     { id: 1, title: 'My Computer', minimized: false, x: 0, y: 0 },
     { id: 2, title: 'Notepad', minimized: false, x: 0, y: 0 },
   ]);
@@ -80,75 +81,109 @@ function App() {
       >
         {windows
           .filter((w) => !w.minimized)
-          .map((window) => (
-            <Window
-              key={window.id}
-              title={window.title}
-              width={500}
-              height={400}
-              x={window.x}
-              y={window.y}
-              onClose={() => closeWindow(window.id)}
-              onMinimize={() => toggleWindow(window.id)}
-              onMaximize={() => {}}
-              onPositionChange={(x: number, y: number) => updateWindowPosition(window.id, x, y)}
-            >
-              <div
-                className="window-content"
-                style={{
-                  padding: '16px',
-                }}
+          .map((window) => {
+            const windowData: Window = {
+              id: window.id.toString(),
+              appId: 'example-app',
+              title: window.title,
+              state: 'floating',
+              z: 1,
+              bounds: { x: window.x, y: window.y, w: 500, h: 400 },
+              workspaceId: 'default',
+            };
+            return (
+              <WindowView
+                key={window.id}
+                window={windowData}
+                onClose={() => closeWindow(window.id)}
+                onFocus={() => {}}
+                onMinimize={() => toggleWindow(window.id)}
+                onMove={(_winId: string, x: number, y: number) => updateWindowPosition(window.id, x, y)}
               >
-                <h2 style={{ marginBottom: '12px', fontSize: '16px' }}>{window.title}</h2>
-                <p style={{ marginBottom: '8px', lineHeight: 1.5 }}>Welcome to Windows 95!</p>
-                <p style={{ marginBottom: '8px', lineHeight: 1.5 }}>
-                  This is a demonstration of the browser-os Windows components.
-                </p>
-              </div>
-            </Window>
-          ))}
+                <div
+                  className="window-content"
+                  style={{
+                    padding: '16px',
+                  }}
+                >
+                  <h2 style={{ marginBottom: '12px', fontSize: '16px' }}>{window.title}</h2>
+                  <p style={{ marginBottom: '8px', lineHeight: 1.5 }}>Welcome to Windows 95!</p>
+                  <p style={{ marginBottom: '8px', lineHeight: 1.5 }}>
+                    This is a demonstration of the browser-os Windows components.
+                  </p>
+                </div>
+              </WindowView>
+            );
+          })}
       </div>
 
-      <Taskbar onStartClick={() => setMenuOpen(!menuOpen)}>
-        {windows.map((window) => (
-          <button
-            key={window.id}
-            className="taskbar-button"
-            onClick={() => toggleWindow(window.id)}
-            style={{
-              background: 'linear-gradient(to bottom, #c0c0c0, #808080)',
-              border: '2px outset #c0c0c0',
-              padding: '4px 12px',
-              height: '24px',
-              cursor: 'pointer',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              color: 'black',
-              fontFamily: "'MS Sans Serif', sans-serif",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, #d4d0c8, #a0a0a0)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, #c0c0c0, #808080)';
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.borderStyle = 'inset';
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.borderStyle = 'outset';
-            }}
-          >
-            {window.title}
-          </button>
-        ))}
-      </Taskbar>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', background: '#c0c0c0', borderTop: '2px solid #808080' }}>
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            background: 'linear-gradient(to bottom, #c0c0c0, #808080)',
+            border: '2px outset #c0c0c0',
+            padding: '4px 12px',
+            height: '24px',
+            cursor: 'pointer',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            color: 'black',
+            fontFamily: "'MS Sans Serif', sans-serif",
+          }}
+        >
+          Start
+        </button>
+        <Taskbar
+          windows={windows.map(w => ({ id: w.id.toString(), title: w.title, appId: 'example-app' }))}
+          onWindowClick={(winId: string) => toggleWindow(parseInt(winId))}
+        />
+      </div>
 
-      <StartMenu
-        isOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        items={menuItems}
-      />
+      {menuOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '28px',
+            left: '0',
+            background: '#c0c0c0',
+            border: '2px outset #c0c0c0',
+            minWidth: '200px',
+            zIndex: 10000,
+          }}
+        >
+          {menuItems.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                item.onClick();
+                setMenuOpen(false);
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '8px 16px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '11px',
+                fontFamily: "'MS Sans Serif', sans-serif",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#000080';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'black';
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
