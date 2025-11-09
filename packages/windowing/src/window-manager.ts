@@ -93,6 +93,18 @@ class WindowManagerImpl implements WindowManager {
     }
   }
 
+  minimizeWindow(winId: string): void {
+    this.setWindowState(winId, 'minimized');
+  }
+
+  maximizeWindow(winId: string): void {
+    this.setWindowState(winId, 'maximized');
+  }
+
+  restoreWindow(winId: string): void {
+    this.setWindowState(winId, 'floating');
+  }
+
   setWindowState(winId: string, state: WindowState): void {
     const window = this.windows.get(winId);
     if (window) {
