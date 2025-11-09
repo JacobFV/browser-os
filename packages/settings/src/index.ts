@@ -102,24 +102,6 @@ class SettingsStoreImpl implements SettingsStore {
   }
 }
 
-export const settingsStore = new SettingsStoreImpl();
-
-export async function getSetting<T = any>(key: string): Promise<T | undefined> {
-  return settingsStore.get<T>(key);
-}
-
-export async function setSetting<T = any>(key: string, value: T): Promise<void> {
-  return settingsStore.set(key, value);
-}
-
-export async function deleteSetting(key: string): Promise<void> {
-  return settingsStore.delete(key);
-}
-
-export async function getAllSettings(): Promise<Record<string, any>> {
-  return settingsStore.getAll();
-}
-
-export async function clearSettings(): Promise<void> {
-  return settingsStore.clear();
-}
+// SettingsStoreImpl is exported as a class - instances should be created via dependency injection
+export { SettingsStoreImpl };
+export type { SettingsStore };

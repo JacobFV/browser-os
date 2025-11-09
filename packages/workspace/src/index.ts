@@ -1,6 +1,6 @@
-import { windowManager } from '@browser-os/windowing';
+import { WindowManager } from '@browser-os/windowing';
 import { Window } from '@browser-os/windowing';
-import { settingsStore } from '@browser-os/settings';
+import { SettingsStoreImpl } from '@browser-os/settings';
 
 export interface Workspace {
   id: string;
@@ -14,12 +14,19 @@ export interface Workspace {
   }>;
 }
 
-class WorkspaceManager {
+export class WorkspaceManager {
   private currentWorkspaceId: string = 'default';
+  private windowManager: WindowManager;
+  private settingsStore: SettingsStoreImpl;
+  
+  constructor(windowManager: WindowManager, settingsStore: SettingsStoreImpl) {
+    this.windowManager = windowManager;
+    this.settingsStore = settingsStore;
+  }
   
   async saveWorkspace(name?: string): Promise<string> {
     const workspaceId = name || `workspace-${Date.now()}`;
-    const windows = Array.from(windowManager.windows.values());
+    const windows = Array.from(this.windowManager.windows.values());
     
     const workspace: Workspace = {
       id: workspaceId,
@@ -33,21 +40,21 @@ class WorkspaceManager {
       })),
     };
     
-    await settingsStore.set(`workspace:${workspaceId}`, workspace);
+    await this.settingsStore.set(`workspace:${workspaceId}`, workspace);
     await this.addToWorkspaceList(workspaceId);
     
     return workspaceId;
   }
   
   async loadWorkspace(workspaceId: string): Promise<void> {
-    const workspace = await settingsStore.get<Workspace>(`workspace:${workspaceId}`);
+    const workspace = await this.settingsStore.get<Workspace>(`workspace:${workspaceId}`);
     if (!workspace) {
       throw new Error(`Workspace not found: ${workspaceId}`);
     }
     
     // Close all current windows
-    const currentWindows = Array.from(windowManager.windows.keys());
-    currentWindows.forEach(winId => windowManager.closeWindow(winId));
+    const currentWindows = Array.from(this.windowManager.windows.keys());
+    currentWindows.forEach(winId => this.windowManager.closeWindow(winId));
     
     // Restore windows
     workspace.windows.forEach((winData: {
@@ -57,7 +64,7 @@ class WorkspaceManager {
       state: string;
       payload?: Record<string, any>;
     }) => {
-      windowManager.openWindow({
+      this.windowManager.openWindow({
         appId: winData.appId,
         title: winData.title,
         bounds: winData.bounds,
@@ -65,14 +72,14 @@ class WorkspaceManager {
       });
       
       // Restore window state
-      const restoredWin = Array.from(windowManager.windows.values())
+      const restoredWin = Array.from(this.windowManager.windows.values())
         .find(w => w.appId === winData.appId && w.title === winData.title);
       
       if (restoredWin) {
         if (winData.state === 'maximized') {
-          windowManager.maximizeWindow(restoredWin.id);
+          this.windowManager.maximizeWindow(restoredWin.id);
         } else if (winData.state === 'minimized') {
-          windowManager.minimizeWindow(restoredWin.id);
+          this.windowManager.minimizeWindow(restoredWin.id);
         }
       }
     });
@@ -81,7 +88,7 @@ class WorkspaceManager {
   }
   
   async listWorkspaces(): Promise<string[]> {
-    const list = await settingsStore.get<string[]>('workspace:list') || [];
+    const list = await this.settingsStore.get<string[]>('workspace:list') || [];
     return list;
   }
   
@@ -89,15 +96,15 @@ class WorkspaceManager {
     const list = await this.listWorkspaces();
     if (!list.includes(workspaceId)) {
       list.push(workspaceId);
-      await settingsStore.set('workspace:list', list);
+      await this.settingsStore.set('workspace:list', list);
     }
   }
   
   async deleteWorkspace(workspaceId: string): Promise<void> {
-    await settingsStore.delete(`workspace:${workspaceId}`);
+    await this.settingsStore.delete(`workspace:${workspaceId}`);
     const list = await this.listWorkspaces();
     const filtered = list.filter(id => id !== workspaceId);
-    await settingsStore.set('workspace:list', filtered);
+    await this.settingsStore.set('workspace:list', filtered);
   }
   
   getCurrentWorkspaceId(): string {
@@ -105,24 +112,5 @@ class WorkspaceManager {
   }
 }
 
-export const workspaceManager = new WorkspaceManager();
-
-export async function saveWorkspace(name?: string): Promise<string> {
-  return workspaceManager.saveWorkspace(name);
-}
-
-export async function loadWorkspace(workspaceId: string): Promise<void> {
-  return workspaceManager.loadWorkspace(workspaceId);
-}
-
-export async function listWorkspaces(): Promise<string[]> {
-  return workspaceManager.listWorkspaces();
-}
-
-export async function deleteWorkspace(workspaceId: string): Promise<void> {
-  return workspaceManager.deleteWorkspace(workspaceId);
-}
-
-export function getCurrentWorkspaceId(): string {
-  return workspaceManager.getCurrentWorkspaceId();
-}
+// WorkspaceManager is exported as a class - instances should be created via dependency injection
+export { WorkspaceManager };

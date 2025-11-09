@@ -1,15 +1,9 @@
-import { vfs } from '@browser-os/fs';
-import { processManager } from '@browser-os/process';
-import { windowManager } from '@browser-os/windowing';
-import { workspaceManager } from '@browser-os/workspace';
-import { appHost } from '@browser-os/app-host';
-import { settingsStore } from '@browser-os/settings';
 import { applyTheme, ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
 import { AppRegistry, OS, App } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
 import type { FilesystemInitOptions } from '@browser-os/fs';
-import { initFilesystem } from '@browser-os/fs';
+import { initFilesystem, VfsImpl } from '@browser-os/fs';
 import { AppManifest } from '@browser-os/core';
 
 export interface DesktopShellInitOptions {
@@ -33,8 +27,13 @@ export interface DesktopShellInitOptions {
 }
 
 export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShellState {
-  // Initialize filesystem
-  initFilesystem(options?.vfs);
+  // Create OS instance first (this creates all services)
+  const os = new OS({
+    apps: options?.apps?.appInstances,
+  });
+
+  // Initialize filesystem using OS VFS instance
+  initFilesystem(os.getVFS(), options?.vfs);
 
   // Initialize theme
   const themeSkin = options?.theme?.skin || 'win95';
@@ -50,28 +49,25 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
     }
   }
 
-  // Create OS with app instances
-  const os = new OS({
-    apps: options?.apps?.appInstances,
-  });
-
   // Get desktop icons
   const desktopIcons = options?.desktop?.icons || [];
 
-  // Create and return state
+  // Create and return state with instances from OS
   const state: DesktopShellState = {
-    vfs,
-    processManager,
-    windowManager,
-    workspaceManager,
-    appHost,
-    settingsStore,
+    vfs: os.getVFS(),
+    processManager: os.getProcessManager(),
+    windowManager: os.getWindowManager(),
+    workspaceManager: os.getWorkspaceManager(),
+    appHost: os.getAppHost(),
+    settingsStore: os.getSettingsStore(),
     desktopIcons,
     initialTheme: themeSkin,
     wallpaper: options?.desktop?.wallpaper,
     appRegistry,
     appManager: os.getAppManager(),
     os,
+    cursor: os.getCursorManager(),
+    telemetry: os.getTelemetryManager(),
   };
 
   return state;

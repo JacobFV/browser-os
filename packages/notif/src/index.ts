@@ -1,4 +1,4 @@
-import { eventBus, NotificationEvent, createId } from '@browser-os/core';
+import { EventBus, NotificationEvent, createId } from '@browser-os/core';
 
 export interface Notification {
   id: string;
@@ -8,8 +8,13 @@ export interface Notification {
   read: boolean;
 }
 
-class NotificationManager {
+export class NotificationManager {
   private notifications: Map<string, Notification> = new Map();
+  private eventBus: EventBus;
+  
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
+  }
   
   show(title: string, body?: string): string {
     const id = createId();
@@ -22,7 +27,7 @@ class NotificationManager {
     };
     
     this.notifications.set(id, notification);
-    eventBus.emit('notif', { type: 'show', id, title, body });
+    this.eventBus.emit('notif', { type: 'show', id, title, body });
     
     return id;
   }
@@ -31,14 +36,14 @@ class NotificationManager {
     const notification = this.notifications.get(id);
     if (notification) {
       this.notifications.delete(id);
-      eventBus.emit('notif', { type: 'dismiss', id });
+      this.eventBus.emit('notif', { type: 'dismiss', id });
     }
   }
   
   click(id: string): void {
     const notification = this.notifications.get(id);
     if (notification) {
-      eventBus.emit('notif', { type: 'click', id });
+      this.eventBus.emit('notif', { type: 'click', id });
     }
   }
   
@@ -61,34 +66,4 @@ class NotificationManager {
     const ids = Array.from(this.notifications.keys());
     ids.forEach(id => this.dismiss(id));
   }
-}
-
-export const notificationManager = new NotificationManager();
-
-export function showNotification(title: string, body?: string): string {
-  return notificationManager.show(title, body);
-}
-
-export function dismissNotification(id: string): void {
-  notificationManager.dismiss(id);
-}
-
-export function clickNotification(id: string): void {
-  notificationManager.click(id);
-}
-
-export function getAllNotifications(): Notification[] {
-  return notificationManager.getAll();
-}
-
-export function getUnreadNotifications(): Notification[] {
-  return notificationManager.getUnread();
-}
-
-export function markNotificationRead(id: string): void {
-  notificationManager.markRead(id);
-}
-
-export function clearNotifications(): void {
-  notificationManager.clear();
 }

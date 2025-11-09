@@ -2,7 +2,7 @@ import React from 'react';
 import { Window } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
 import type { Pid } from '@browser-os/process';
-import { WindowBounds, WindowState } from '@browser-os/core';
+import { WindowBounds, WindowState, EventBus } from '@browser-os/core';
 
 /**
  * Abstract base class for all applications in browser-os
@@ -22,6 +22,7 @@ export abstract class App {
   // Process management
   protected pid?: Pid;
   protected processManager: ProcessManager;
+  protected eventBus: EventBus;
   
   // State management (app-level, shared across windows)
   protected state: Map<string, any> = new Map();
@@ -29,8 +30,9 @@ export abstract class App {
   // Window tracking (apps own their windows)
   protected windows: Map<string, Window> = new Map();
   
-  constructor(processManager: ProcessManager) {
+  constructor(processManager: ProcessManager, eventBus: EventBus) {
     this.processManager = processManager;
+    this.eventBus = eventBus;
   }
   
   /**

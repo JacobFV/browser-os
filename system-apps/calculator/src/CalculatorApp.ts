@@ -2,6 +2,7 @@ import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
 import { CalculatorView } from './CalculatorView';
 
 /**
@@ -12,8 +13,8 @@ export class CalculatorApp extends App {
   readonly name = 'Calculator';
   readonly version = '1.0.0';
   
-  constructor(processManager: ProcessManager) {
-    super(processManager);
+  constructor(processManager: ProcessManager, eventBus: EventBus) {
+    super(processManager, eventBus);
   }
   
   initialWindow(config?: Record<string, any>): Window {
@@ -22,7 +23,8 @@ export class CalculatorApp extends App {
       'Calculator',
       { x: 200, y: 200, w: 300, h: 400 },
       config?.workspaceId || 'default',
-      config
+      config,
+      this.eventBus
     );
   }
   

@@ -1,6 +1,6 @@
 import { Window } from '@browser-os/windowing';
 import { AppManifest } from '@browser-os/core';
-import { spawnApp, kill, getProcessByWindowId } from '@browser-os/process';
+import { ProcessManager } from '@browser-os/process';
 
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;
@@ -19,8 +19,13 @@ export interface SandboxedApp {
   windowId?: string;
 }
 
-class AppHost {
+export class AppHost {
   private apps: Map<string, SandboxedApp> = new Map();
+  private processManager: ProcessManager;
+  
+  constructor(processManager: ProcessManager) {
+    this.processManager = processManager;
+  }
   
   async createSandboxedApp(manifest: AppManifest, windowId: string): Promise<SandboxedApp> {
     const iframe = document.createElement('iframe');
@@ -33,7 +38,7 @@ class AppHost {
     iframe.src = manifest.entry;
     
     // Spawn process for this app
-    const pid = spawnApp(manifest.id, undefined, windowId);
+    const pid = this.processManager.spawnApp(manifest.id, undefined, windowId);
     
     const app: SandboxedApp = {
       id: manifest.id,
@@ -84,12 +89,12 @@ class AppHost {
       case 'exit':
         // Handle app self-termination
         if (app.pid) {
-          kill(app.pid);
+          this.processManager.kill(app.pid);
         } else if (app.windowId) {
           // Fallback: try to find process by windowId
-          const proc = getProcessByWindowId(app.windowId);
+          const proc = this.processManager.getProcessByWindowId(app.windowId);
           if (proc) {
-            kill(proc.pid);
+            this.processManager.kill(proc.pid);
           }
         }
         break;
@@ -155,24 +160,5 @@ class AppHost {
   }
 }
 
-export const appHost = new AppHost();
-
-export async function createSandboxedApp(manifest: AppManifest, windowId: string): Promise<SandboxedApp> {
-  return appHost.createSandboxedApp(manifest, windowId);
-}
-
-export async function mountApp(appId: string): Promise<void> {
-  return appHost.mountApp(appId);
-}
-
-export async function unmountApp(appId: string): Promise<void> {
-  return appHost.unmountApp(appId);
-}
-
-export async function suspendApp(appId: string): Promise<void> {
-  return appHost.suspendApp(appId);
-}
-
-export async function resumeApp(appId: string): Promise<void> {
-  return appHost.resumeApp(appId);
-}
+// AppHost is exported as a class - instances should be created via dependency injection
+export { AppHost };

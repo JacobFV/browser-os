@@ -1,4 +1,4 @@
-import { eventBus, CursorEvent, createId } from '@browser-os/core';
+import { EventBus, CursorEvent, createId } from '@browser-os/core';
 
 export interface Cursor {
   id: string;
@@ -8,11 +8,13 @@ export interface Cursor {
   color?: string;
 }
 
-class CursorManager {
+export class CursorManager {
   private cursors: Map<string, Cursor> = new Map();
   private localCursorId: string;
+  private eventBus: EventBus;
   
-  constructor() {
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
     this.localCursorId = createId();
     this.cursors.set(this.localCursorId, {
       id: this.localCursorId,
@@ -26,7 +28,7 @@ class CursorManager {
     if (cursor) {
       cursor.x = x;
       cursor.y = y;
-      eventBus.emit('cursor', { type: 'move', id: this.localCursorId, x, y });
+      this.eventBus.emit('cursor', { type: 'move', id: this.localCursorId, x, y });
     }
   }
   
@@ -38,12 +40,12 @@ class CursorManager {
       y: 0,
       color,
     });
-    eventBus.emit('cursor', { type: 'enter', id });
+    this.eventBus.emit('cursor', { type: 'enter', id });
   }
   
   removeRemoteCursor(id: string): void {
     this.cursors.delete(id);
-    eventBus.emit('cursor', { type: 'leave', id });
+    this.eventBus.emit('cursor', { type: 'leave', id });
   }
   
   updateRemoteCursor(id: string, x: number, y: number): void {
@@ -51,7 +53,7 @@ class CursorManager {
     if (cursor) {
       cursor.x = x;
       cursor.y = y;
-      eventBus.emit('cursor', { type: 'move', id, x, y });
+      this.eventBus.emit('cursor', { type: 'move', id, x, y });
     }
   }
   
@@ -66,34 +68,4 @@ class CursorManager {
   getRemoteCursors(): Cursor[] {
     return Array.from(this.cursors.values()).filter(c => c.id !== this.localCursorId);
   }
-}
-
-export const cursorManager = new CursorManager();
-
-export function updateLocalCursor(x: number, y: number): void {
-  cursorManager.updateLocalCursor(x, y);
-}
-
-export function addRemoteCursor(id: string, userId?: string, color?: string): void {
-  cursorManager.addRemoteCursor(id, userId, color);
-}
-
-export function removeRemoteCursor(id: string): void {
-  cursorManager.removeRemoteCursor(id);
-}
-
-export function updateRemoteCursor(id: string, x: number, y: number): void {
-  cursorManager.updateRemoteCursor(id, x, y);
-}
-
-export function getAllCursors(): Cursor[] {
-  return cursorManager.getAllCursors();
-}
-
-export function getLocalCursor(): Cursor | undefined {
-  return cursorManager.getLocalCursor();
-}
-
-export function getRemoteCursors(): Cursor[] {
-  return cursorManager.getRemoteCursors();
 }

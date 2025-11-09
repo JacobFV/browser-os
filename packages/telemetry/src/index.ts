@@ -1,4 +1,4 @@
-import { eventBus } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
 
 export interface TelemetryEvent {
   type: string;
@@ -13,9 +13,14 @@ export interface SystemMetrics {
   windows: number;
 }
 
-class TelemetryManager {
+export class TelemetryManager {
   private events: TelemetryEvent[] = [];
   private maxEvents = 1000;
+  private eventBus: EventBus;
+  
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
+  }
   
   record(event: Omit<TelemetryEvent, 'timestamp'>): void {
     const telemetryEvent: TelemetryEvent = {
@@ -61,22 +66,4 @@ class TelemetryManager {
       windows,
     };
   }
-}
-
-export const telemetryManager = new TelemetryManager();
-
-export function recordTelemetry(event: Omit<TelemetryEvent, 'timestamp'>): void {
-  telemetryManager.record(event);
-}
-
-export function getTelemetryEvents(type?: string): TelemetryEvent[] {
-  return telemetryManager.getEvents(type);
-}
-
-export function clearTelemetry(): void {
-  telemetryManager.clear();
-}
-
-export function getSystemMetrics(): SystemMetrics {
-  return telemetryManager.getSystemMetrics();
 }

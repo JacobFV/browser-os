@@ -1,21 +1,23 @@
-import { vfs } from '@browser-os/fs';
-import { processManager } from '@browser-os/process';
-import { windowManager, WindowManager } from '@browser-os/windowing';
-import { workspaceManager } from '@browser-os/workspace';
-import { appHost } from '@browser-os/app-host';
-import { settingsStore } from '@browser-os/settings';
+import { WindowManager } from '@browser-os/windowing';
+import { WorkspaceManager } from '@browser-os/workspace';
+import { AppHost } from '@browser-os/app-host';
+import { SettingsStoreImpl } from '@browser-os/settings';
+import { VfsImpl } from '@browser-os/fs';
+import { ProcessManager } from '@browser-os/process';
 import { ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
 import { AppRegistry, AppManager, OS } from '@browser-os/app-sdk';
+import { CursorManager } from '@browser-os/cursor';
+import { TelemetryManager } from '@browser-os/telemetry';
 
 export interface DesktopShellState {
-  // Core systems (singletons, but initialized)
-  vfs: typeof vfs;
-  processManager: typeof processManager;
-  windowManager: typeof windowManager;
-  workspaceManager: typeof workspaceManager;
-  appHost: typeof appHost;
-  settingsStore: typeof settingsStore;
+  // Core systems (instances from OS)
+  vfs: VfsImpl;
+  processManager: ProcessManager;
+  windowManager: WindowManager;
+  workspaceManager: WorkspaceManager;
+  appHost: AppHost;
+  settingsStore: SettingsStoreImpl;
   
   // Desktop configuration
   desktopIcons: DesktopIcon[];
@@ -30,7 +32,7 @@ export interface DesktopShellState {
   os?: OS;
   
   // Optional services
-  cursor?: any; // CursorService - type when implemented
-  telemetry?: any; // TelemetryService - type when implemented
+  cursor?: CursorManager;
+  telemetry?: TelemetryManager;
 }
 

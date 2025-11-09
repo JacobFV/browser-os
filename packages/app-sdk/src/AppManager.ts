@@ -3,7 +3,7 @@ import { App } from './App';
 import { Window } from '@browser-os/windowing';
 import { WindowManager } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
-import { eventBus } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
 
 /**
  * Manages app instances, registration, and lifecycle
@@ -13,16 +13,19 @@ export class AppManager {
   private apps: Map<string, App> = new Map();
   private windowManager: WindowManager;
   private processManager: ProcessManager;
+  private eventBus: EventBus;
   
   constructor(
     windowManager: WindowManager,
-    processManager: ProcessManager
+    processManager: ProcessManager,
+    eventBus: EventBus
   ) {
     this.windowManager = windowManager;
     this.processManager = processManager;
+    this.eventBus = eventBus;
     
     // Listen for window close events
-    eventBus.on('window', (event) => {
+    this.eventBus.on('window', (event) => {
       if (event.type === 'close') {
         const window = this.windowManager.windows.get(event.winId);
         if (window) {
@@ -86,7 +89,7 @@ export class AppManager {
     app.registerWindow(window);
     
     // Emit window open event
-    eventBus.emit('window', { type: 'open', winId: window.id, appId });
+    this.eventBus.emit('window', { type: 'open', winId: window.id, appId });
     
     return window;
   }
@@ -108,7 +111,7 @@ export class AppManager {
       this.windowManager.focusedWindowId = null;
     }
     
-    eventBus.emit('window', { type: 'close', winId: windowId });
+    this.eventBus.emit('window', { type: 'close', winId: windowId });
   }
   
   /**

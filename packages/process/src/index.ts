@@ -38,13 +38,14 @@ export function createPairedStreams(): {
 
 // Process interface is exported from types.ts
 
-class ProcessManager {
+export class ProcessManager {
   private processes: Map<Pid, Process> = new Map();
   private commands: Map<string, CommandHandler> = new Map();
   private nextPidCounter = 1;
 
   constructor() {
-    // Built-in commands are registered via commands.ts import
+    // Register built-in commands
+    builtInCommands.forEach(cmd => this.registerCommand(cmd));
   }
 
   registerCommand(handler: CommandHandler): void {
@@ -326,61 +327,6 @@ class ProcessManager {
   }
 }
 
-export const processManager = new ProcessManager();
-
-// Register built-in commands
-builtInCommands.forEach(cmd => processManager.registerCommand(cmd));
-
-export function spawn(appId: string, parentPid?: Pid): Pid {
-  return processManager.spawnApp(appId, parentPid);
-}
-
-export function executeCommand(
-  command: string,
-  args: string[],
-  options?: {
-    cwd?: string;
-    env?: Record<string, string>;
-    parentPid?: Pid;
-    stdin?: ReadableStream<string>;
-    timeout?: number;
-  }
-): Promise<Pid> {
-  return processManager.executeCommand(command, args, options);
-}
-
-export function kill(pid: Pid): void {
-  processManager.kill(pid);
-}
-
-export function send(pid: Pid, topic: string, msg: any): void {
-  processManager.send(pid, topic, msg);
-}
-
-export function registerCommand(handler: CommandHandler): void {
-  processManager.registerCommand(handler);
-}
-
-export function getCommand(name: string): CommandHandler | undefined {
-  return processManager.getCommand(name);
-}
-
-export function getAllCommands(): CommandHandler[] {
-  return processManager.getAllCommands();
-}
-
-export function getProcess(pid: Pid): Process | undefined {
-  return processManager.getProcess(pid);
-}
-
-export function spawnApp(appId: string, parentPid?: Pid, windowId?: string): Pid {
-  return processManager.spawnApp(appId, parentPid, windowId);
-}
-
-export function getProcessByWindowId(windowId: string): Process | undefined {
-  return processManager.getProcessByWindowId(windowId);
-}
-
-export function getProcessByAppId(appId: string): Process[] {
-  return processManager.getProcessByAppId(appId);
-}
+// ProcessManager is exported as a class - instances should be created via dependency injection
+// Register built-in commands in constructor
+export { ProcessManager };

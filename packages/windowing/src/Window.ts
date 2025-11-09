@@ -1,4 +1,4 @@
-import { WindowState, WindowBounds, createId, eventBus } from '@browser-os/core';
+import { WindowState, WindowBounds, createId, EventBus } from '@browser-os/core';
 import { WindowEvent } from '@browser-os/core';
 
 /**
@@ -16,6 +16,7 @@ export class Window {
   private _workspaceId: string;
   private _z: number;
   private _payload?: Record<string, any>;
+  private eventBus: EventBus;
   
   // Store original bounds for restore
   private _originalBounds?: WindowBounds;
@@ -25,7 +26,8 @@ export class Window {
     title: string,
     bounds: WindowBounds = { x: 100, y: 100, w: 800, h: 600 },
     workspaceId: string = 'default',
-    payload?: Record<string, any>
+    payload?: Record<string, any>,
+    eventBus: EventBus
   ) {
     this.id = createId();
     this.appId = appId;
@@ -35,6 +37,7 @@ export class Window {
     this._workspaceId = workspaceId;
     this._z = 0;
     this._payload = payload;
+    this.eventBus = eventBus;
   }
   
   // Getters
@@ -66,7 +69,7 @@ export class Window {
   setTitle(title: string, source: 'app' | 'os' = 'os'): void {
     if (this._title !== title) {
       this._title = title;
-      eventBus.emit('window', { type: 'update', winId: this.id });
+      this.eventBus.emit('window', { type: 'update', winId: this.id });
     }
   }
   
@@ -93,7 +96,7 @@ export class Window {
       const eventType = state === 'minimized' ? 'minimize' :
                        state === 'maximized' ? 'maximize' :
                        state === 'fullscreen' ? 'maximize' : 'restore';
-      eventBus.emit('window', { type: eventType as any, winId: this.id });
+      this.eventBus.emit('window', { type: eventType as any, winId: this.id });
     }
   }
   
@@ -122,7 +125,7 @@ export class Window {
     
     if (changed) {
       if (bounds.x !== undefined || bounds.y !== undefined) {
-        eventBus.emit('window', { 
+        this.eventBus.emit('window', { 
           type: 'move', 
           winId: this.id, 
           x: this._bounds.x, 
@@ -130,7 +133,7 @@ export class Window {
         });
       }
       if (bounds.w !== undefined || bounds.h !== undefined) {
-        eventBus.emit('window', { 
+        this.eventBus.emit('window', { 
           type: 'resize', 
           winId: this.id, 
           w: this._bounds.w, 
@@ -159,25 +162,25 @@ export class Window {
   setWorkspaceId(workspaceId: string, source: 'app' | 'os' = 'os'): void {
     if (this._workspaceId !== workspaceId) {
       this._workspaceId = workspaceId;
-      eventBus.emit('window', { type: 'update', winId: this.id });
+      this.eventBus.emit('window', { type: 'update', winId: this.id });
     }
   }
   
   setZ(z: number, source: 'app' | 'os' = 'os'): void {
     if (this._z !== z) {
       this._z = z;
-      eventBus.emit('window', { type: 'update', winId: this.id });
+      this.eventBus.emit('window', { type: 'update', winId: this.id });
     }
   }
   
   setPayload(payload: Record<string, any>, source: 'app' | 'os' = 'os'): void {
     this._payload = { ...payload };
-    eventBus.emit('window', { type: 'update', winId: this.id });
+    this.eventBus.emit('window', { type: 'update', winId: this.id });
   }
   
   updatePayload(updates: Record<string, any>, source: 'app' | 'os' = 'os'): void {
     this._payload = { ...(this._payload || {}), ...updates };
-    eventBus.emit('window', { type: 'update', winId: this.id });
+    this.eventBus.emit('window', { type: 'update', winId: this.id });
   }
   
   /**

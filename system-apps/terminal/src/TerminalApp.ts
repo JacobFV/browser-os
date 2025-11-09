@@ -2,7 +2,8 @@ import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
+import { EventBus } from '@browser-os/core';
 import { ShellProcess } from './ShellProcess';
 import { TerminalView } from './TerminalView';
 
@@ -18,10 +19,11 @@ export class TerminalApp extends App {
   
   constructor(
     processManager: ProcessManager,
-    private vfs: typeof vfs,
+    eventBus: EventBus,
+    private vfs: VfsImpl,
     private initialDir: string = 'vfs://documents/'
   ) {
-    super(processManager);
+    super(processManager, eventBus);
   }
   
   initialWindow(config?: Record<string, any>): Window {
@@ -32,7 +34,8 @@ export class TerminalApp extends App {
       'Terminal',
       { x: 100, y: 100, w: 800, h: 600 },
       config?.workspaceId || 'default',
-      { initialDir, ...config }
+      { initialDir, ...config },
+      this.eventBus
     );
   }
   

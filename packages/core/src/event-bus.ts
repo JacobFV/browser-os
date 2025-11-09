@@ -46,7 +46,7 @@ export type NotificationEvent =
   | { type: 'dismiss'; id: string }
   | { type: 'click'; id: string };
 
-class EventBus {
+export class EventBus {
   private handlers: Map<string, Set<EventHandler>> = new Map();
 
   /**
@@ -94,8 +94,6 @@ class EventBus {
     }
   }
 }
-
-export const eventBus = new EventBus();
 
 /**
  * Base types

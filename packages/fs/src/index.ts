@@ -34,12 +34,17 @@ export interface Vfs {
   resolve(uri: string): { driver: FsDriver; path: string };
 }
 
-class VfsImpl implements Vfs {
+export class VfsImpl implements Vfs {
   private mounts: Map<string, Mount> = new Map();
+  private eventBus: EventBus;
+
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
+  }
 
   mount(m: Mount): void {
     this.mounts.set(m.mountPoint, m);
-    eventBus.emit('fs', { type: 'mount', mountPoint: m.mountPoint, driver: m.driver.id });
+    this.eventBus.emit('fs', { type: 'mount', mountPoint: m.mountPoint, driver: m.driver.id });
   }
 
   // Expose mounts for debugging
@@ -86,7 +91,7 @@ class VfsImpl implements Vfs {
     try {
       const { driver, path } = this.resolve(uri);
       await driver.write(path, data, opts);
-      eventBus.emit('fs', { type: 'write', path: uri });
+      this.eventBus.emit('fs', { type: 'write', path: uri });
     } catch (error: any) {
       throw new Error(`Failed to write ${uri}: ${error.message}`);
     }
@@ -111,17 +116,10 @@ class VfsImpl implements Vfs {
   }
 }
 
-export const vfs = new VfsImpl();
+// VfsImpl is exported as a class - instances should be created via dependency injection
+export { VfsImpl };
 
 export * from './init';
-
-// In test environments, expose a way to check if mounts are shared
-if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
-  (globalThis as any).__vfs_debug = {
-    getMounts: () => vfs.getMounts(),
-    instance: vfs,
-  };
-}
 
 export function createMemDriver(): FsDriver {
   const files = new Map<string, Uint8Array | string>();
@@ -193,7 +191,7 @@ export function createMemDriver(): FsDriver {
       const existed = files.has(path);
       files.set(path, data);
       notifyWatchers(path, existed ? 'write' : 'write');
-      eventBus.emit('fs', { type: 'write', path });
+      // Note: Drivers don't emit events directly - VFS handles that
     },
     async rm(path: string, opts?: { recursive?: boolean }): Promise<void> {
       if (opts?.recursive) {
@@ -207,7 +205,7 @@ export function createMemDriver(): FsDriver {
         toDelete.forEach(fp => {
           files.delete(fp);
           notifyWatchers(fp, 'delete');
-          eventBus.emit('fs', { type: 'delete', path: fp });
+          // Note: Drivers don't emit events directly - VFS handles that
         });
       } else {
         files.delete(path);
@@ -215,7 +213,7 @@ export function createMemDriver(): FsDriver {
         const dirMarker = path.endsWith('/') ? path + '.dir' : path + '/.dir';
         files.delete(dirMarker);
         notifyWatchers(path, 'delete');
-        eventBus.emit('fs', { type: 'delete', path });
+        // Note: Drivers don't emit events directly - VFS handles that
       }
     },
     async readdir(path: string): Promise<Entry[]> {

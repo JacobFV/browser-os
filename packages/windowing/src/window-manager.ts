@@ -1,5 +1,5 @@
-import { WindowState, WindowBounds, createId } from '@browser-os/core';
-import { eventBus } from '@browser-os/core';
+import { WindowState, WindowBounds, createId, EventBus } from '@browser-os/core';
+import { WindowEvent } from '@browser-os/core';
 import { Window } from './Window';
 
 // Re-export Window class
@@ -11,10 +11,15 @@ export interface WindowManager {
   nextZ: number;
 }
 
-class WindowManagerImpl implements WindowManager {
+export class WindowManagerImpl implements WindowManager {
   windows: Map<string, Window> = new Map();
   focusedWindowId: string | null = null;
   nextZ: number = 1;
+  private eventBus: EventBus;
+
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
+  }
 
   openWindow(options: {
     appId: string;
@@ -29,14 +34,15 @@ class WindowManagerImpl implements WindowManager {
       options.title,
       options.bounds || { x: 100, y: 100, w: 800, h: 600 },
       options.workspaceId || 'default',
-      options.payload
+      options.payload,
+      this.eventBus
     );
     
     window.setZ(this.nextZ++, 'os');
     this.windows.set(window.id, window);
     this.focusWindow(window.id);
     
-    eventBus.emit('window', { type: 'open', winId: window.id, appId: options.appId });
+    this.eventBus.emit('window', { type: 'open', winId: window.id, appId: options.appId });
     
     return window;
   }
@@ -48,7 +54,7 @@ class WindowManagerImpl implements WindowManager {
     window.setZ(this.nextZ++, 'os');
     this.windows.set(window.id, window);
     this.focusWindow(window.id);
-    eventBus.emit('window', { type: 'open', winId: window.id, appId: window.appId });
+    this.eventBus.emit('window', { type: 'open', winId: window.id, appId: window.appId });
   }
 
   closeWindow(winId: string): void {
@@ -58,7 +64,7 @@ class WindowManagerImpl implements WindowManager {
       if (this.focusedWindowId === winId) {
         this.focusedWindowId = null;
       }
-      eventBus.emit('window', { type: 'close', winId });
+      this.eventBus.emit('window', { type: 'close', winId });
     }
   }
 
@@ -67,11 +73,11 @@ class WindowManagerImpl implements WindowManager {
     if (window) {
       if (this.focusedWindowId !== winId) {
         if (this.focusedWindowId) {
-          eventBus.emit('window', { type: 'blur', winId: this.focusedWindowId });
+          this.eventBus.emit('window', { type: 'blur', winId: this.focusedWindowId });
         }
         this.focusedWindowId = winId;
         window.setZ(this.nextZ++, 'os');
-        eventBus.emit('window', { type: 'focus', winId });
+        this.eventBus.emit('window', { type: 'focus', winId });
       }
     }
   }
@@ -139,31 +145,13 @@ class WindowManagerImpl implements WindowManager {
   }
 }
 
-export const windowManager = new WindowManagerImpl();
+// WindowManager is exported as a class - instances should be created via dependency injection
+export { WindowManagerImpl as WindowManager };
 
-export function openWindow(options: {
-  appId: string;
-  title: string;
-  bounds?: WindowBounds;
-  workspaceId?: string;
-  payload?: Record<string, any>;
-}): Window {
-  return windowManager.openWindow(options);
-}
-
-export function closeWindow(winId: string): void {
-  windowManager.closeWindow(winId);
-}
-
-export function focusWindow(winId: string): void {
-  windowManager.focusWindow(winId);
-}
-
-export function updateWindowTitle(winId: string, title: string): void {
-  windowManager.updateWindowTitle(winId, title);
-}
-
-export function arrangeWindows(pattern: 'grid-2x2' | 'stack-right' | 'monocle'): void {
+export function arrangeWindows(
+  windowManager: WindowManager,
+  pattern: 'grid-2x2' | 'stack-right' | 'monocle'
+): void {
   const windows = Array.from(windowManager.windows.values())
     .filter(w => w.state === 'floating')
     .sort((a, b) => b.z - a.z);

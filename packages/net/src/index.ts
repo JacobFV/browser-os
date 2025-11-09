@@ -18,7 +18,7 @@ export interface NetworkResponse {
   arrayBuffer(): Promise<ArrayBuffer>;
 }
 
-class NetworkManager {
+export class NetworkManager {
   private permissions: Map<string, Set<Capability>> = new Map();
   
   grantCapability(appId: string, capability: Capability): void {
@@ -70,26 +70,4 @@ class NetworkManager {
     
     return new WebSocket(url);
   }
-}
-
-export const networkManager = new NetworkManager();
-
-export function grantNetworkCapability(appId: string, capability: Capability): void {
-  networkManager.grantCapability(appId, capability);
-}
-
-export function revokeNetworkCapability(appId: string, capability: Capability): void {
-  networkManager.revokeCapability(appId, capability);
-}
-
-export function hasNetworkCapability(appId: string, capability: Capability): boolean {
-  return networkManager.hasCapability(appId, capability);
-}
-
-export async function networkFetch(appId: string, request: NetworkRequest): Promise<NetworkResponse> {
-  return networkManager.fetch(appId, request);
-}
-
-export function createNetworkWebSocket(appId: string, url: string): WebSocket {
-  return networkManager.createWebSocket(appId, url);
 }

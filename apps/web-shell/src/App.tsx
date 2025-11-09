@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shell, DesktopShellState } from '@browser-os/shell';
-import { openWindow, closeWindow, WindowView, Window } from '@browser-os/windowing';
-import { eventBus, createId, WindowEvent } from '@browser-os/core';
+import { WindowView, Window } from '@browser-os/windowing';
+import { createId, WindowEvent } from '@browser-os/core';
 import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow';
 import { AppRenderer } from './AppRenderer';
 
@@ -10,7 +10,7 @@ export interface WebShellProps {
 }
 
 export const WebShell: React.FC<WebShellProps> = ({ state }) => {
-  const { windowManager, desktopIcons } = state;
+  const { windowManager, desktopIcons, os } = state;
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
   const [mode, setMode] = useState<'desktop' | 'mobile'>('desktop');
   const [showAppSwitcher, setShowAppSwitcher] = useState(false);
@@ -28,6 +28,10 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
   }, []);
 
   React.useEffect(() => {
+    if (!os) return;
+    
+    const eventBus = os.getEventBus();
+    
     // Sync windows list with window manager on mount
     const syncWindows = () => {
       const allWindows = Array.from(windowManager.windows.values()) as Window[];
@@ -111,39 +115,14 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
   }, []);
 
   const handleIconClick = (icon: { id: string; label: string; icon?: string; appId?: string; x: number; y: number }) => {
-    if (icon.appId) {
-      if (state.os) {
-        // Use OS to launch app
-        if (icon.appId === 'os.word-processor') {
-          // Create new document for word processor
-          const docId = createId();
-          state.os.launchApp(icon.appId, { documentId: docId });
-        } else {
-          state.os.launchApp(icon.appId, { title: icon.label });
-        }
-      } else if (state.appManager) {
-        // Use AppManager to launch app
-        if (icon.appId === 'os.word-processor') {
-          const docId = createId();
-          state.appManager.launchApp(icon.appId, { documentId: docId });
-        } else {
-          state.appManager.launchApp(icon.appId, { title: icon.label });
-        }
+    if (icon.appId && os) {
+      // Use OS to launch app
+      if (icon.appId === 'os.word-processor') {
+        // Create new document for word processor
+        const docId = createId();
+        os.launchApp(icon.appId, { documentId: docId });
       } else {
-        // Fallback to legacy
-        if (icon.appId === 'os.word-processor') {
-          const docId = createId();
-          openWindow({
-            appId: icon.appId,
-            title: 'Untitled',
-            payload: { documentId: docId },
-          });
-        } else {
-          openWindow({
-            appId: icon.appId,
-            title: icon.label,
-          });
-        }
+        os.launchApp(icon.appId, { title: icon.label });
       }
     }
   };
@@ -159,12 +138,8 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
   };
 
   const handleWindowClose = (winId: string) => {
-    if (state.os) {
-      state.os.closeWindow(winId);
-    } else if (state.appManager) {
-      state.appManager.closeWindow(winId);
-    } else {
-      closeWindow(winId);
+    if (os) {
+      os.closeWindow(winId);
     }
   };
 

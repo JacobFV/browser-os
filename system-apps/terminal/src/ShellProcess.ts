@@ -1,7 +1,7 @@
 import { Window } from '@browser-os/windowing';
 import { ProcessManager, ProcessStreams, createPairedStreams } from '@browser-os/process';
 import type { Pid } from '@browser-os/process';
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
 
 /**
  * Simple event emitter for shell output/error events
@@ -52,7 +52,7 @@ export class ShellProcess {
   
   constructor(
     private processManager: ProcessManager,
-    private vfs: typeof vfs,
+    private vfs: VfsImpl,
     initialDir: string = 'vfs://documents/'
   ) {
     this.cwd = initialDir;
