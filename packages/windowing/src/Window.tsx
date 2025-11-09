@@ -92,23 +92,32 @@ export const WindowView: React.FC<WindowViewProps> = ({
     onFocus(window.id);
   };
 
+  const windowStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: window.bounds.x,
+    top: window.bounds.y,
+    width: window.bounds.w,
+    height: window.bounds.h,
+    zIndex: window.z,
+    border: '2px solid #000',
+    backgroundColor: '#c0c0c0',
+    display: 'flex',
+    flexDirection: 'column',
+    cursor: isDragging ? 'grabbing' : 'default',
+  };
+
+  if (window.state === 'maximized') {
+    windowStyle.width = '100vw';
+    windowStyle.height = 'calc(100vh - 40px)'; // Account for taskbar
+    windowStyle.left = 0;
+    windowStyle.top = 0;
+  }
+
   return (
     <div
       ref={windowRef}
       className="window"
-      style={{
-        position: 'absolute',
-        left: window.bounds.x,
-        top: window.bounds.y,
-        width: window.bounds.w,
-        height: window.bounds.h,
-        zIndex: window.z,
-        border: '2px solid #000',
-        backgroundColor: '#c0c0c0',
-        display: 'flex',
-        flexDirection: 'column',
-        cursor: isDragging ? 'grabbing' : 'default',
-      }}
+      style={windowStyle}
       onMouseDown={handleMouseDown}
     >
       <div
