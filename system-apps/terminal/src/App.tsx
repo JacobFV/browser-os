@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal as XTerm } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
-import { processManager, executeCommand, getCommand, createPairedStreams, ProcessStreams } from '@browser-os/process';
+import { spawnApp, getProcess, executeCommand, getCommand, getAllCommands, createPairedStreams, ProcessStreams } from '@browser-os/process';
 import { vfs } from '@browser-os/fs';
 import './Terminal.css';
 
@@ -20,8 +20,8 @@ export const TerminalApp: React.FC = () => {
     if (!terminalRef.current) return;
 
     // Create a shell process to track cwd
-    shellPidRef.current = processManager.spawnApp('terminal-shell');
-    const shellProc = processManager.getProcess(shellPidRef.current);
+    shellPidRef.current = spawnApp('terminal-shell');
+    const shellProc = getProcess(shellPidRef.current);
     if (shellProc) {
       shellProc.cwd = currentDir;
     }
@@ -125,8 +125,8 @@ export const TerminalApp: React.FC = () => {
         if (parts.length === 1) {
           // Complete command name
           const cmd = lastPart;
-          const commands = processManager.getAllCommands().map(c => c.name);
-          const matches = commands.filter(c => c.startsWith(cmd));
+          const commands = getAllCommands().map((c: { name: string }) => c.name);
+          const matches = commands.filter((c: string) => c.startsWith(cmd));
           if (matches.length === 1) {
             const completion = matches[0].slice(cmd.length);
             currentCommandRef.current += completion;
@@ -134,7 +134,7 @@ export const TerminalApp: React.FC = () => {
           } else if (matches.length > 1) {
             // Show all matches
             xterm.writeln('');
-            matches.forEach(m => xterm.writeln(m));
+            matches.forEach((m: string) => xterm.writeln(m));
             prompt(xterm);
             xterm.write(currentCommandRef.current);
           }
@@ -155,19 +155,19 @@ export const TerminalApp: React.FC = () => {
             
             const entries = await vfs.readdir(dirPath || currentDir);
             const matches = entries
-              .filter(e => e.name.startsWith(prefix))
-              .map(e => e.name);
+              .filter((e: { name: string }) => e.name.startsWith(prefix))
+              .map((e: { name: string }) => e.name);
             
             if (matches.length === 1) {
               const completion = matches[0].slice(prefix.length);
-              const isDir = entries.find(e => e.name === matches[0])?.stat.type === 'directory';
+              const isDir = entries.find((e: { name: string; stat: { type: string } }) => e.name === matches[0])?.stat.type === 'directory';
               currentCommandRef.current += completion + (isDir ? '/' : '');
               xterm.write(completion + (isDir ? '/' : ''));
             } else if (matches.length > 1) {
               // Show all matches
               xterm.writeln('');
-              matches.forEach(m => {
-                const entry = entries.find(e => e.name === m);
+              matches.forEach((m: string) => {
+                const entry = entries.find((e: { name: string; stat: { type: string } }) => e.name === m);
                 const suffix = entry?.stat.type === 'directory' ? '/' : '';
                 xterm.writeln(m + suffix);
               });
@@ -271,7 +271,7 @@ export const TerminalApp: React.FC = () => {
     // Get environment variables from shell process
     let env: Record<string, string> = {};
     if (shellPidRef.current) {
-      const shellProc = processManager.getProcess(shellPidRef.current);
+      const shellProc = getProcess(shellPidRef.current);
       if (shellProc?.env) {
         env = { ...shellProc.env };
       }
@@ -316,7 +316,7 @@ export const TerminalApp: React.FC = () => {
             setCurrentDir(newDir);
             // Update shell process cwd
             if (shellPidRef.current) {
-              const shellProc = processManager.getProcess(shellPidRef.current);
+              const shellProc = getProcess(shellPidRef.current);
               if (shellProc) {
                 shellProc.cwd = newDir;
               }
@@ -332,8 +332,8 @@ export const TerminalApp: React.FC = () => {
 
       if (command === 'help') {
         xterm.writeln('Available commands:');
-        const commands = processManager.getAllCommands();
-        commands.forEach(cmd => {
+        const commands = getAllCommands();
+        commands.forEach((cmd: { name: string; description?: string }) => {
           xterm.writeln(`  ${cmd.name.padEnd(12)} - ${cmd.description || ''}`);
         });
         xterm.writeln('  cd <dir>      - Change directory');
@@ -431,7 +431,7 @@ export const TerminalApp: React.FC = () => {
     // Get cwd from shell process if available, otherwise use currentDir state
     let commandCwd = currentDir;
     if (shellPidRef.current) {
-      const shellProc = processManager.getProcess(shellPidRef.current);
+      const shellProc = getProcess(shellPidRef.current);
       if (shellProc?.cwd) {
         commandCwd = shellProc.cwd;
       }
@@ -441,7 +441,7 @@ export const TerminalApp: React.FC = () => {
       // Get environment variables from shell process
       let env: Record<string, string> = {};
       if (shellPidRef.current) {
-        const shellProc = processManager.getProcess(shellPidRef.current);
+        const shellProc = getProcess(shellPidRef.current);
         if (shellProc?.env) {
           env = { ...shellProc.env };
         }
@@ -476,7 +476,7 @@ export const TerminalApp: React.FC = () => {
     // Get cwd from shell process if available
     let commandCwd = currentDir;
     if (shellPidRef.current) {
-      const shellProc = processManager.getProcess(shellPidRef.current);
+      const shellProc = getProcess(shellPidRef.current);
       if (shellProc?.cwd) {
         commandCwd = shellProc.cwd;
       }
@@ -618,7 +618,7 @@ export const TerminalApp: React.FC = () => {
       // Get environment variables from shell process
       let env: Record<string, string> = {};
       if (shellPidRef.current) {
-        const shellProc = processManager.getProcess(shellPidRef.current);
+        const shellProc = getProcess(shellPidRef.current);
         if (shellProc?.env) {
           env = { ...shellProc.env };
         }

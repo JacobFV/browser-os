@@ -370,8 +370,6 @@ export function executeCommand(
   return processManager.executeCommand(command, args, options);
 }
 
-export { createPairedStreams };
-
 export function kill(pid: Pid): void {
   processManager.kill(pid);
 }
@@ -386,4 +384,16 @@ export function registerCommand(handler: CommandHandler): void {
 
 export function getCommand(name: string): CommandHandler | undefined {
   return processManager.getCommand(name);
+}
+
+export function getAllCommands(): CommandHandler[] {
+  return processManager.getAllCommands();
+}
+
+export function getProcess(pid: Pid): Process | undefined {
+  return processManager.getProcess(pid);
+}
+
+export function spawnApp(appId: string, parentPid?: Pid): Pid {
+  return processManager.spawnApp(appId, parentPid);
 }

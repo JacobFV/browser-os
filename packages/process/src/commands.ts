@@ -1,4 +1,4 @@
-import { CommandHandler, registerCommand, ProcessStreams } from '@browser-os/process';
+import { CommandHandler, registerCommand, ProcessStreams } from './index';
 import { vfs } from '@browser-os/fs';
 
 // Helper to write to stdout
@@ -64,7 +64,7 @@ registerCommand({
     
     try {
       const entries = await vfs.readdir(targetPath);
-      const output = entries.map(e => e.name).join('  ') + '\n';
+      const output = entries.map((e: { name: string }) => e.name).join('  ') + '\n';
       await writeStdout(streams, output);
       return 0;
     } catch (error: any) {

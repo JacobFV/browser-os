@@ -7,5 +7,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
+  external: ['@browser-os/core', '@browser-os/fs'],
 });
 
