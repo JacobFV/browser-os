@@ -16,6 +16,74 @@ export const TerminalApp: React.FC = () => {
   const currentCommandRef = useRef<string>('');
   const shellPidRef = useRef<string | null>(null);
 
+  // Define prompt function before useEffect
+  const prompt = useCallback((xterm: XTerm) => {
+    const dirName = currentDir.split('/').filter(Boolean).pop() || '/';
+    xterm.write(`\x1b[32muser@browser-os\x1b[0m:\x1b[34m${dirName}\x1b[0m$ `);
+  }, [currentDir]);
+
+  /**
+   * Expand environment variables in a string
+   * Supports $VAR and ${VAR} syntax
+   */
+  const expandEnvVars = useCallback((text: string, env: Record<string, string>): string => {
+    return text.replace(/\$\{([^}]+)\}|\$([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, braced, simple) => {
+      const varName = braced || simple;
+      return env[varName] || '';
+    });
+  }, []);
+  
+  /**
+   * Parse command line for pipes, redirections, and background execution
+   */
+  const parseCommandLine = useCallback((line: string): {
+    commands: Array<{ command: string; args: string[] }>;
+    background: boolean;
+    stdoutRedirect?: { file: string; append: boolean };
+    stdinRedirect?: string;
+  } => {
+    const trimmed = line.trim();
+    const background = trimmed.endsWith('&');
+    const lineWithoutBg = background ? trimmed.slice(0, -1).trim() : trimmed;
+    
+    // Check for output redirection (> or >>)
+    let stdoutRedirect: { file: string; append: boolean } | undefined;
+    let stdinRedirect: string | undefined;
+    let commandPart = lineWithoutBg;
+    
+    // Check for >> (append) first, then >
+    const appendMatch = commandPart.match(/(.+?)\s*>>\s*(.+)/);
+    if (appendMatch) {
+      commandPart = appendMatch[1].trim();
+      stdoutRedirect = { file: appendMatch[2].trim(), append: true };
+    } else {
+      const redirectMatch = commandPart.match(/(.+?)\s*>\s*(.+)/);
+      if (redirectMatch) {
+        commandPart = redirectMatch[1].trim();
+        stdoutRedirect = { file: redirectMatch[2].trim(), append: false };
+      }
+    }
+    
+    // Check for input redirection (<)
+    const stdinMatch = commandPart.match(/(.+?)\s*<\s*(.+)/);
+    if (stdinMatch) {
+      commandPart = stdinMatch[1].trim();
+      stdinRedirect = stdinMatch[2].trim();
+    }
+    
+    // Split by pipes
+    const pipeParts = commandPart.split('|').map(p => p.trim());
+    const commands = pipeParts.map(part => {
+      const cmdParts = part.split(/\s+/);
+      return {
+        command: cmdParts[0],
+        args: cmdParts.slice(1),
+      };
+    });
+    
+    return { commands, background, stdoutRedirect, stdinRedirect };
+  }, []);
+
   useEffect(() => {
     if (!terminalRef.current) return;
 
@@ -83,7 +151,12 @@ export const TerminalApp: React.FC = () => {
           setHistory(prev => [...prev, command]);
           setHistoryIndex(-1);
           
-          await executeCommandLine(command, xterm);
+          try {
+            await executeCommandLine(command, xterm);
+          } catch (error: any) {
+            xterm.writeln(`Error: ${error.message}`);
+            console.error('Command execution error:', error);
+          }
         }
         
         prompt(xterm);
@@ -200,76 +273,10 @@ export const TerminalApp: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       xterm.dispose();
     };
-  }, [currentDir, history, historyIndex]);
+  }, [currentDir, history, historyIndex, prompt, expandEnvVars, parseCommandLine]);
 
-  const prompt = (xterm: XTerm) => {
-    const dirName = currentDir.split('/').filter(Boolean).pop() || '/';
-    xterm.write(`\x1b[32muser@browser-os\x1b[0m:\x1b[34m${dirName}\x1b[0m$ `);
-  };
-
-  /**
-   * Expand environment variables in a string
-   * Supports $VAR and ${VAR} syntax
-   */
-  const expandEnvVars = (text: string, env: Record<string, string>): string => {
-    return text.replace(/\$\{([^}]+)\}|\$([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, braced, simple) => {
-      const varName = braced || simple;
-      return env[varName] || '';
-    });
-  };
-  
-  /**
-   * Parse command line for pipes, redirections, and background execution
-   */
-  const parseCommandLine = (line: string): {
-    commands: Array<{ command: string; args: string[] }>;
-    background: boolean;
-    stdoutRedirect?: { file: string; append: boolean };
-    stdinRedirect?: string;
-  } => {
-    const trimmed = line.trim();
-    const background = trimmed.endsWith('&');
-    const lineWithoutBg = background ? trimmed.slice(0, -1).trim() : trimmed;
-    
-    // Check for output redirection (> or >>)
-    let stdoutRedirect: { file: string; append: boolean } | undefined;
-    let stdinRedirect: string | undefined;
-    let commandPart = lineWithoutBg;
-    
-    // Check for >> (append) first, then >
-    const appendMatch = commandPart.match(/(.+?)\s*>>\s*(.+)/);
-    if (appendMatch) {
-      commandPart = appendMatch[1].trim();
-      stdoutRedirect = { file: appendMatch[2].trim(), append: true };
-    } else {
-      const redirectMatch = commandPart.match(/(.+?)\s*>\s*(.+)/);
-      if (redirectMatch) {
-        commandPart = redirectMatch[1].trim();
-        stdoutRedirect = { file: redirectMatch[2].trim(), append: false };
-      }
-    }
-    
-    // Check for input redirection (<)
-    const stdinMatch = commandPart.match(/(.+?)\s*<\s*(.+)/);
-    if (stdinMatch) {
-      commandPart = stdinMatch[1].trim();
-      stdinRedirect = stdinMatch[2].trim();
-    }
-    
-    // Split by pipes
-    const pipeParts = commandPart.split('|').map(p => p.trim());
-    const commands = pipeParts.map(part => {
-      const cmdParts = part.split(/\s+/);
-      return {
-        command: cmdParts[0],
-        args: cmdParts.slice(1),
-      };
-    });
-    
-    return { commands, background, stdoutRedirect, stdinRedirect };
-  };
-
-  const executeCommandLine = async (line: string, xterm: XTerm) => {
+  // Define executeCommandLine function
+  const executeCommandLine = useCallback(async (line: string, xterm: XTerm) => {
     const parsed = parseCommandLine(line);
     
     // Get environment variables from shell process
@@ -359,8 +366,8 @@ export const TerminalApp: React.FC = () => {
     
     // Handle pipes or redirections
     await executePipedCommands(parsed, xterm);
-  };
-  
+  }, [currentDir, expandEnvVars, parseCommandLine]);
+
   const executeSingleCommand = async (command: string, args: string[], xterm: XTerm) => {
     const handler = getCommand(command);
     if (!handler) {
