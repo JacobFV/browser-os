@@ -1,11 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
 import { Toolbar, Button, StatusBar, Textarea } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Notepad.css';
 
-export const NotesApp: React.FC = () => {
+interface NotesViewProps {
+  window: Window;
+  vfs: VfsImpl;
+}
+
+export const NotesView: React.FC<NotesViewProps> = ({ window, vfs }) => {
   const [content, setContent] = useState<string>('');
   const [fileUri, setFileUri] = useState<string | null>(null);
   const [modified, setModified] = useState(false);
@@ -121,3 +127,4 @@ export const NotesApp: React.FC = () => {
     </div>
   );
 };
+

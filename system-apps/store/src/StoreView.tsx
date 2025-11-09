@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getAllAppManifests, loadAppManifest, registerAppManifest } from '@apps/web-shell/app-manifest';
-import { openWindow } from '@browser-os/windowing';
+import { AppManager } from '@browser-os/app-sdk';
+import { Window } from '@browser-os/windowing';
 import './Store.css';
 
-export const StoreApp: React.FC = () => {
+interface StoreViewProps {
+  window: Window;
+  appManager: AppManager;
+}
+
+export const StoreView: React.FC<StoreViewProps> = ({ window, appManager }) => {
   const [installedApps, setInstalledApps] = useState<any[]>([]);
   const [availableApps, setAvailableApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +45,7 @@ export const StoreApp: React.FC = () => {
       // In a real implementation, this would download and install the app
       const manifest = await loadAppManifest(`/apps/${app.id}/manifest.json`);
       registerAppManifest(manifest);
+      appManager.registerManifest(manifest);
       setInstalledApps([...installedApps, manifest]);
       alert(`Installed ${app.name}`);
     } catch (error: any) {
@@ -46,12 +53,15 @@ export const StoreApp: React.FC = () => {
     }
   };
 
-  const handleLaunch = (app: any) => {
-    openWindow({
-      appId: app.id,
-      title: app.name,
-      bounds: { x: 100, y: 100, w: 800, h: 600 },
-    });
+  const handleLaunch = async (app: any) => {
+    try {
+      await appManager.launchApp(app.id, {
+        title: app.name,
+        bounds: { x: 100, y: 100, w: 800, h: 600 },
+      });
+    } catch (error: any) {
+      alert(`Failed to launch app: ${error.message}`);
+    }
   };
 
   const handleUpdate = async (app: any) => {
@@ -110,3 +120,4 @@ export const StoreApp: React.FC = () => {
     </div>
   );
 };
+

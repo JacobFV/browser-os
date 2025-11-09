@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as monaco from 'monaco-editor';
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
 import { Toolbar, Button, StatusBar } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Editor.css';
 
-export const EditorApp: React.FC = () => {
+interface EditorViewProps {
+  window: Window;
+  vfs: VfsImpl;
+}
+
+export const EditorView: React.FC<EditorViewProps> = ({ window, vfs }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
@@ -52,7 +58,7 @@ export const EditorApp: React.FC = () => {
       await vfs.write(currentFile, content);
       setModified(false);
     }
-  }, [currentFile]);
+  }, [currentFile, vfs]);
 
   const handleSaveAs = useCallback(() => {
     setShowSaveDialog(true);
@@ -92,7 +98,7 @@ export const EditorApp: React.FC = () => {
         alert(`Error opening file: ${error.message}`);
       }
     }
-  }, []);
+  }, [vfs]);
 
   const handleSaveDialogConfirm = useCallback(async (result: FileDialogResult) => {
     setShowSaveDialog(false);
@@ -106,7 +112,7 @@ export const EditorApp: React.FC = () => {
         setModified(false);
       }
     }
-  }, []);
+  }, [vfs]);
 
   return (
     <div className="editor-app" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -152,3 +158,4 @@ export const EditorApp: React.FC = () => {
     </div>
   );
 };
+

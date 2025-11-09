@@ -19,7 +19,7 @@ export const AppRenderer: React.FC<AppRendererProps> = ({ window, appManager }) 
     }
     
     // Get app component (works with both App instances and manifest-based apps)
-    appManager.getAppComponent(window.id).then((component) => {
+    appManager.getAppComponent(window.id).then((component: React.ComponentType<any> | null) => {
       setAppComponent(() => component || null);
       setLoading(false);
     });

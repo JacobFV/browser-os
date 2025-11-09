@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shell, DesktopShellState } from '@browser-os/shell';
 import { WindowView, Window } from '@browser-os/windowing';
-import { createId, WindowEvent } from '@browser-os/core';
-import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow';
+import { WindowEvent } from '@browser-os/core';
 import { AppRenderer } from './AppRenderer';
 
 export interface WebShellProps {
@@ -53,10 +52,8 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
       } else if (event.type === 'close') {
         setWindows(prev => prev.filter(w => w.id !== event.winId));
       } else if (event.type === 'minimize') {
-        // Remove minimized windows from visible list
         setWindows(prev => prev.filter(w => w.id !== event.winId));
       } else if (event.type === 'restore') {
-        // Add restored window back to list
         const win = windowManager.windows.get(event.winId);
         if (win) {
           setWindows(prev => {
@@ -67,63 +64,17 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
             return prev;
           });
         }
-      } else if (event.type === 'maximize') {
-        // Trigger re-render for maximize
+      } else if (event.type === 'maximize' || event.type === 'focus' || event.type === 'update') {
         syncWindows();
-      } else if (event.type === 'focus') {
-        // Ensure window is in list when focused and trigger re-render
-        const win = windowManager.windows.get(event.winId);
-        if (win) {
-          if (win.state === 'minimized') {
-            // Remove minimized windows
-            setWindows(prev => prev.filter(w => w.id !== win.id));
-          } else {
-            setWindows(prev => {
-              const exists = prev.find(w => w.id === win.id);
-              if (!exists) {
-                return [...prev, { id: win.id, title: win.title, appId: win.appId }];
-              } else {
-                // Update title if changed
-                return prev.map(w => w.id === win.id ? { ...w, title: win.title } : w);
-              }
-            });
-          }
-        }
-      } else if (event.type === 'update') {
-        // Ensure window is in list when updated and trigger re-render
-        const win = windowManager.windows.get(event.winId);
-        if (win) {
-          if (win.state === 'minimized') {
-            // Remove minimized windows
-            setWindows(prev => prev.filter(w => w.id !== win.id));
-          } else {
-            setWindows(prev => {
-              const exists = prev.find(w => w.id === win.id);
-              if (!exists) {
-                return [...prev, { id: win.id, title: win.title, appId: win.appId }];
-              } else {
-                // Update title if changed
-                return prev.map(w => w.id === win.id ? { ...w, title: win.title } : w);
-              }
-            });
-          }
-        }
       }
     });
     
     return unsubscribe;
-  }, []);
+  }, [os, windowManager]);
 
   const handleIconClick = (icon: { id: string; label: string; icon?: string; appId?: string; x: number; y: number }) => {
     if (icon.appId && os) {
-      // Use OS to launch app
-      if (icon.appId === 'os.word-processor') {
-        // Create new document for word processor
-        const docId = createId();
-        os.launchApp(icon.appId, { documentId: docId }).catch(console.error);
-      } else {
-        os.launchApp(icon.appId, { title: icon.label }).catch(console.error);
-      }
+      os.launchApp(icon.appId, { title: icon.label }).catch(console.error);
     }
   };
 
@@ -176,18 +127,10 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
       <div className="web-shell mobile" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#008080' }}>
         {focusedWindow ? (
           <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-            {focusedWindow.appId === 'os.word-processor' && focusedWindow.payload?.documentId ? (
-              <DocumentWindow
-                documentId={focusedWindow.payload.documentId}
-                windowId={focusedWindow.id}
-                initialFileUri={focusedWindow.payload.fileUri}
-              />
-            ) : (
-              <AppRenderer
-                window={focusedWindow}
-                appManager={state.appManager}
-              />
-            )}
+            <AppRenderer
+              window={focusedWindow}
+              appManager={state.appManager}
+            />
             {/* Back button */}
             <button
               onClick={() => {
@@ -337,47 +280,21 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
         onWindowClick={handleWindowClick}
         onIconClick={handleIconClick}
       />
-      {allWindows.map((win: Window) => {
-        // Render DocumentWindow for word processor windows
-        if (win.appId === 'os.word-processor' && win.payload?.documentId) {
-          return (
-            <WindowView
-              key={win.id}
-              window={win}
-              onClose={handleWindowClose}
-              onFocus={handleWindowClick}
-              onMove={handleWindowMove}
-              onResize={handleWindowResize}
-              onMinimize={handleWindowMinimize}
-              onMaximize={handleWindowMaximize}
-              onRestore={handleWindowRestore}
-            >
-              <DocumentWindow
-                documentId={win.payload.documentId}
-                windowId={win.id}
-                initialFileUri={win.payload.fileUri}
-              />
-            </WindowView>
-          );
-        }
-        
-        // Render other apps
-        return (
-          <WindowView
-            key={win.id}
-            window={win}
-            onClose={handleWindowClose}
-            onFocus={handleWindowClick}
-            onMove={handleWindowMove}
-            onResize={handleWindowResize}
-            onMinimize={handleWindowMinimize}
-            onMaximize={handleWindowMaximize}
-            onRestore={handleWindowRestore}
-          >
-            <AppRenderer window={win} appManager={state.appManager} />
-          </WindowView>
-        );
-      })}
+      {allWindows.map((win: Window) => (
+        <WindowView
+          key={win.id}
+          window={win}
+          onClose={handleWindowClose}
+          onFocus={handleWindowClick}
+          onMove={handleWindowMove}
+          onResize={handleWindowResize}
+          onMinimize={handleWindowMinimize}
+          onMaximize={handleWindowMaximize}
+          onRestore={handleWindowRestore}
+        >
+          <AppRenderer window={win} appManager={state.appManager} />
+        </WindowView>
+      ))}
     </div>
   );
 };

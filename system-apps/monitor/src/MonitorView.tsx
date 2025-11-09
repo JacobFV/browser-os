@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { processManager, kill } from '@browser-os/process';
-import { eventBus } from '@browser-os/core';
+import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
+import { Window } from '@browser-os/windowing';
 import './Monitor.css';
 
-export const MonitorApp: React.FC = () => {
+interface MonitorViewProps {
+  window: Window;
+  processManager: ProcessManager;
+  eventBus: EventBus;
+}
+
+export const MonitorView: React.FC<MonitorViewProps> = ({ window, processManager, eventBus }) => {
   const [processes, setProcesses] = useState(processManager.getAllProcesses());
   const [selectedPid, setSelectedPid] = useState<string | null>(null);
 
@@ -23,11 +30,11 @@ export const MonitorApp: React.FC = () => {
       unsubscribe();
       clearInterval(interval);
     };
-  }, []);
+  }, [processManager, eventBus]);
 
   const handleKill = (pid: string) => {
     if (confirm(`Kill process ${pid}?`)) {
-      kill(pid);
+      processManager.kill(pid);
     }
   };
 
@@ -108,3 +115,4 @@ export const MonitorApp: React.FC = () => {
     </div>
   );
 };
+

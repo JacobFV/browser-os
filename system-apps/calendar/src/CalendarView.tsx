@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, Input, Textarea } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Calendar.css';
 
@@ -11,7 +12,11 @@ interface CalendarEvent {
   description?: string;
 }
 
-export const CalendarApp: React.FC = () => {
+interface CalendarViewProps {
+  window: Window;
+}
+
+export const CalendarView: React.FC<CalendarViewProps> = ({ window }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [showEventDialog, setShowEventDialog] = useState(false);
@@ -188,3 +193,4 @@ const EventDialog: React.FC<EventDialogProps> = ({ date, onClose, onSave }) => {
     </Dialog>
   );
 };
+

@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { applyTheme } from '@browser-os/theme';
 import { Select, Checkbox, Separator } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Settings.css';
 
-export const SettingsApp: React.FC = () => {
+interface SettingsViewProps {
+  window: Window;
+}
+
+export const SettingsView: React.FC<SettingsViewProps> = ({ window }) => {
   const [currentTheme, setCurrentTheme] = useState<string>('win95');
   const [settings, setSettings] = useState({
     theme: 'win95',
@@ -78,3 +83,4 @@ export const SettingsApp: React.FC = () => {
     </div>
   );
 };
+

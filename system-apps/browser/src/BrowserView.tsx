@@ -1,9 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Toolbar, Button, Input, Separator } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Browser.css';
 
-export const BrowserApp: React.FC = () => {
+interface BrowserViewProps {
+  window: Window;
+}
+
+export const BrowserView: React.FC<BrowserViewProps> = ({ window }) => {
   const [url, setUrl] = useState('https://example.com');
   const [currentUrl, setCurrentUrl] = useState('https://example.com');
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -63,3 +68,4 @@ export const BrowserApp: React.FC = () => {
     </div>
   );
 };
+

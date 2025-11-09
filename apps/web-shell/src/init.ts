@@ -3,6 +3,13 @@ import { defaultDesktopIcons } from './defaults';
 import { TerminalApp } from '@system-apps/terminal';
 import { CalculatorApp } from '@system-apps/calculator';
 import { FilesApp } from '@system-apps/files';
+import { NotesApp } from '@system-apps/notes';
+import { MonitorApp } from '@system-apps/monitor';
+import { SettingsApp } from '@system-apps/settings';
+import { EditorApp } from '@system-apps/editor';
+import { BrowserApp } from '@system-apps/browser';
+import { CalendarApp } from '@system-apps/calendar';
+import { StoreApp } from '@system-apps/store';
 
 export interface WebShellInitOptions extends DesktopShellInitOptions {
   // Web-shell specific options can go here
@@ -43,9 +50,51 @@ export async function initWebShell(options?: WebShellInitOptions): Promise<Deskt
       state.os.getEventBus(),
       state.os.getVFS()
     );
+    const notesApp = new NotesApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus(),
+      state.os.getVFS()
+    );
+    const monitorApp = new MonitorApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus()
+    );
+    const settingsApp = new SettingsApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus()
+    );
+    const editorApp = new EditorApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus(),
+      state.os.getVFS()
+    );
+    const browserApp = new BrowserApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus()
+    );
+    const calendarApp = new CalendarApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus()
+    );
+    const storeApp = new StoreApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus(),
+      state.os.getAppManager()
+    );
     
     // Register apps
-    state.os.registerApps([terminalApp, calculatorApp, filesApp]);
+    state.os.registerApps([
+      terminalApp,
+      calculatorApp,
+      filesApp,
+      notesApp,
+      monitorApp,
+      settingsApp,
+      editorApp,
+      browserApp,
+      calendarApp,
+      storeApp,
+    ]);
   }
 
   return state;
