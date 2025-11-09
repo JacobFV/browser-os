@@ -55,6 +55,19 @@ export const WebShell: React.FC = () => {
     windowManager.resizeWindow(winId, w, h);
   };
 
+  const handleWindowMinimize = (winId: string) => {
+    windowManager.minimizeWindow(winId);
+    setWindows(prev => prev.filter(w => w.id !== winId));
+  };
+
+  const handleWindowMaximize = (winId: string) => {
+    windowManager.maximizeWindow(winId);
+  };
+
+  const handleWindowRestore = (winId: string) => {
+    windowManager.restoreWindow(winId);
+  };
+
   const allWindows = Array.from(windowManager.windows.values())
     .filter(w => w.state !== 'minimized')
     .sort((a, b) => b.z - a.z);
@@ -76,6 +89,9 @@ export const WebShell: React.FC = () => {
           onFocus={handleWindowClick}
           onMove={handleWindowMove}
           onResize={handleWindowResize}
+          onMinimize={handleWindowMinimize}
+          onMaximize={handleWindowMaximize}
+          onRestore={handleWindowRestore}
         />
       ))}
     </div>

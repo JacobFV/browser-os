@@ -8,6 +8,9 @@ export interface WindowViewProps {
   onFocus: (winId: string) => void;
   onMove?: (winId: string, x: number, y: number) => void;
   onResize?: (winId: string, w: number, h: number) => void;
+  onMinimize?: (winId: string) => void;
+  onMaximize?: (winId: string) => void;
+  onRestore?: (winId: string) => void;
   children?: React.ReactNode;
 }
 
@@ -17,6 +20,9 @@ export const WindowView: React.FC<WindowViewProps> = ({
   onFocus,
   onMove,
   onResize,
+  onMinimize,
+  onMaximize,
+  onRestore,
   children,
 }) => {
   const windowRef = useRef<HTMLDivElement>(null);
@@ -118,18 +124,70 @@ export const WindowView: React.FC<WindowViewProps> = ({
         }}
       >
         <span className="window-title">{window.title}</span>
-        <button
-          className="window-close"
-          onClick={() => onClose(window.id)}
-          style={{
-            background: '#c0c0c0',
-            border: '1px solid #000',
-            cursor: 'pointer',
-            padding: '2px 8px',
-          }}
-        >
-          ×
-        </button>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          {onMinimize && (
+            <button
+              className="window-minimize"
+              onClick={() => onMinimize(window.id)}
+              style={{
+                background: '#c0c0c0',
+                border: '1px solid #000',
+                cursor: 'pointer',
+                padding: '2px 8px',
+                fontSize: '12px',
+              }}
+              title="Minimize"
+            >
+              −
+            </button>
+          )}
+          {onMaximize && window.state !== 'maximized' && (
+            <button
+              className="window-maximize"
+              onClick={() => onMaximize(window.id)}
+              style={{
+                background: '#c0c0c0',
+                border: '1px solid #000',
+                cursor: 'pointer',
+                padding: '2px 8px',
+                fontSize: '12px',
+              }}
+              title="Maximize"
+            >
+              □
+            </button>
+          )}
+          {onRestore && window.state === 'maximized' && (
+            <button
+              className="window-restore"
+              onClick={() => onRestore(window.id)}
+              style={{
+                background: '#c0c0c0',
+                border: '1px solid #000',
+                cursor: 'pointer',
+                padding: '2px 8px',
+                fontSize: '12px',
+              }}
+              title="Restore"
+            >
+              ⊞
+            </button>
+          )}
+          <button
+            className="window-close"
+            onClick={() => onClose(window.id)}
+            style={{
+              background: '#c0c0c0',
+              border: '1px solid #000',
+              cursor: 'pointer',
+              padding: '2px 8px',
+              fontSize: '12px',
+            }}
+            title="Close"
+          >
+            ×
+          </button>
+        </div>
       </div>
       <div
         className="window-content"
