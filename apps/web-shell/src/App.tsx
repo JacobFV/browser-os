@@ -15,6 +15,14 @@ export const WebShell: React.FC = () => {
   React.useEffect(() => {
     applyTheme('win95');
     
+    // Sync windows list with window manager on mount
+    const syncWindows = () => {
+      const allWindows = Array.from(windowManager.windows.values());
+      setWindows(allWindows.map(win => ({ id: win.id, title: win.title, appId: win.appId })));
+    };
+    
+    syncWindows();
+    
     // Listen for window events
     const unsubscribe = eventBus.on('window', (event) => {
       if (event.type === 'open') {
@@ -28,16 +36,17 @@ export const WebShell: React.FC = () => {
       } else if (event.type === 'close') {
         setWindows(prev => prev.filter(w => w.id !== event.winId));
       } else if (event.type === 'minimize' || event.type === 'restore') {
-        // Update windows list to reflect state changes
-        setWindows(prev => {
-          const win = windowManager.windows.get(event.winId);
-          if (!win) return prev;
-          const exists = prev.find(w => w.id === win.id);
-          if (!exists && win.state !== 'minimized') {
+        // Sync windows list to reflect state changes
+        syncWindows();
+      } else if (event.type === 'focus') {
+        // Ensure window is in list when focused
+        const win = windowManager.windows.get(event.winId);
+        if (win && win.state !== 'minimized') {
+          setWindows(prev => {
+            if (prev.find(w => w.id === win.id)) return prev;
             return [...prev, { id: win.id, title: win.title, appId: win.appId }];
-          }
-          return prev;
-        });
+          });
+        }
       }
     });
     
