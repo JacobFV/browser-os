@@ -1,7 +1,8 @@
 import { AppManifest } from '@browser-os/core';
-import { z } from 'zod';
 import { AppManifestSchema } from '@browser-os/core';
+import React from 'react';
 
+// Legacy global registry for backwards compatibility
 const appManifests = new Map<string, AppManifest>();
 
 export async function loadAppManifest(manifestPath: string): Promise<AppManifest> {
@@ -39,7 +40,7 @@ export async function loadAppFromManifest(appId: string): Promise<React.Componen
   try {
     // Dynamic import of the app entry point
     const module = await import(manifest.entry);
-    return module.default || module[manifest.id] || null;
+    return module.default || module[appId] || null;
   } catch (error: any) {
     console.error(`Failed to load app ${appId}:`, error);
     return null;

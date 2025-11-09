@@ -2,16 +2,30 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal as XTerm } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
-import { spawnApp, getProcess, executeCommand, getCommand, getAllCommands, createPairedStreams } from '@browser-os/process';
+import { executeCommand, createPairedStreams, processManager } from '@browser-os/process';
 import type { ProcessStreams } from '@browser-os/process';
 import { vfs } from '@browser-os/fs';
 import './Terminal.css';
 
-export const TerminalApp: React.FC = () => {
+export interface TerminalAppConfig {
+  processManager?: typeof processManager;
+  vfs?: typeof vfs;
+  initialDir?: string;
+}
+
+export interface TerminalAppProps {
+  config?: TerminalAppConfig;
+}
+
+export const TerminalApp: React.FC<TerminalAppProps> = ({ config }) => {
+  const pm = config?.processManager || processManager;
+  const fs = config?.vfs || vfs;
+  const initialDir = config?.initialDir || 'vfs://documents/';
+  
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<XTerm | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
-  const [currentDir, setCurrentDir] = useState<string>('vfs://documents/');
+  const [currentDir, setCurrentDir] = useState<string>(initialDir);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const currentCommandRef = useRef<string>('');
@@ -89,8 +103,8 @@ export const TerminalApp: React.FC = () => {
     if (!terminalRef.current) return;
 
     // Create a shell process to track cwd
-    shellPidRef.current = spawnApp('terminal-shell');
-    const shellProc = getProcess(shellPidRef.current);
+    shellPidRef.current = pm.spawnApp('terminal-shell');
+    const shellProc = pm.getProcess(shellPidRef.current);
     if (shellProc) {
       shellProc.cwd = currentDir;
     }
@@ -209,7 +223,7 @@ export const TerminalApp: React.FC = () => {
         if (parts.length === 1) {
           // Complete command name
           const cmd = lastPart;
-          const commands = getAllCommands().map((c: { name: string }) => c.name);
+          const commands = pm.getAllCommands().map((c: { name: string }) => c.name);
           const matches = commands.filter((c: string) => c.startsWith(cmd));
           if (matches.length === 1) {
             const completion = matches[0].slice(cmd.length);
@@ -237,7 +251,7 @@ export const TerminalApp: React.FC = () => {
             const dirPath = lastSlash >= 0 ? basePath.slice(0, lastSlash + 1) : basePath;
             const prefix = lastSlash >= 0 ? basePath.slice(lastSlash + 1) : basePath;
             
-            const entries = await vfs.readdir(dirPath || currentDir);
+            const entries = await fs.readdir(dirPath || currentDir);
             const matches = entries
               .filter((e: { name: string }) => e.name.startsWith(prefix))
               .map((e: { name: string }) => e.name);
@@ -299,7 +313,7 @@ export const TerminalApp: React.FC = () => {
     // Get environment variables from shell process
     let env: Record<string, string> = {};
     if (shellPidRef.current) {
-      const shellProc = getProcess(shellPidRef.current);
+      const shellProc = pm.getProcess(shellPidRef.current);
       if (shellProc?.env) {
         env = { ...shellProc.env };
       }
@@ -338,13 +352,13 @@ export const TerminalApp: React.FC = () => {
             : currentDir + '/' + args[0];
         
         try {
-          const stat = await vfs.stat(targetPath);
+          const stat = await fs.stat(targetPath);
           if (stat.type === 'directory') {
             const newDir = targetPath.endsWith('/') ? targetPath : targetPath + '/';
             setCurrentDir(newDir);
             // Update shell process cwd
             if (shellPidRef.current) {
-              const shellProc = getProcess(shellPidRef.current);
+              const shellProc = pm.getProcess(shellPidRef.current);
               if (shellProc) {
                 shellProc.cwd = newDir;
               }
@@ -361,7 +375,7 @@ export const TerminalApp: React.FC = () => {
       if (command === 'help') {
         console.log('Help command detected');
         xterm.writeln('Available commands:');
-        const commands = getAllCommands();
+        const commands = pm.getAllCommands();
         console.log('Found commands:', commands.length);
         commands.forEach((cmd: { name: string; description?: string }) => {
           xterm.writeln(`  ${cmd.name.padEnd(12)} - ${cmd.description || ''}`);
@@ -389,7 +403,7 @@ export const TerminalApp: React.FC = () => {
   }, [currentDir, expandEnvVars, parseCommandLine]);
 
   const executeSingleCommand = async (command: string, args: string[], xterm: XTerm) => {
-    const handler = getCommand(command);
+    const handler = pm.getCommand(command);
     if (!handler) {
       xterm.writeln(`Command not found: ${command}`);
       xterm.writeln(`Type "help" for available commands.`);
@@ -462,7 +476,7 @@ export const TerminalApp: React.FC = () => {
     // Get cwd from shell process if available, otherwise use currentDir state
     let commandCwd = currentDir;
     if (shellPidRef.current) {
-      const shellProc = getProcess(shellPidRef.current);
+      const shellProc = pm.getProcess(shellPidRef.current);
       if (shellProc?.cwd) {
         commandCwd = shellProc.cwd;
       }
@@ -472,7 +486,7 @@ export const TerminalApp: React.FC = () => {
       // Get environment variables from shell process
       let env: Record<string, string> = {};
       if (shellPidRef.current) {
-        const shellProc = getProcess(shellPidRef.current);
+        const shellProc = pm.getProcess(shellPidRef.current);
         if (shellProc?.env) {
           env = { ...shellProc.env };
         }
@@ -507,7 +521,7 @@ export const TerminalApp: React.FC = () => {
     // Get cwd from shell process if available
     let commandCwd = currentDir;
     if (shellPidRef.current) {
-      const shellProc = getProcess(shellPidRef.current);
+      const shellProc = pm.getProcess(shellPidRef.current);
       if (shellProc?.cwd) {
         commandCwd = shellProc.cwd;
       }
@@ -522,7 +536,7 @@ export const TerminalApp: React.FC = () => {
           : commandCwd.endsWith('/')
             ? commandCwd + parsed.stdinRedirect
             : commandCwd + '/' + parsed.stdinRedirect;
-        const content = await vfs.read(filePath, { binary: false }) as string;
+        const content = await fs.read(filePath, { binary: false }) as string;
         stdinSource = new ReadableStream({
           start(controller) {
             controller.enqueue(content);
@@ -543,7 +557,7 @@ export const TerminalApp: React.FC = () => {
       const { command, args } = parsed.commands[i];
       const isLast = i === parsed.commands.length - 1;
       
-      const handler = getCommand(command);
+      const handler = pm.getCommand(command);
       if (!handler) {
         xterm.writeln(`Command not found: ${command}`);
         return;
@@ -611,10 +625,10 @@ export const TerminalApp: React.FC = () => {
               
               try {
                 if (parsed.stdoutRedirect.append) {
-                  const existing = await vfs.read(filePath, { binary: false }).catch(() => '') as string;
-                  await vfs.write(filePath, existing + output);
+                  const existing = await fs.read(filePath, { binary: false }).catch(() => '') as string;
+                  await fs.write(filePath, existing + output);
                 } else {
-                  await vfs.write(filePath, output);
+                  await fs.write(filePath, output);
                 }
               } catch (error: any) {
                 xterm.writeln(`Error writing to file: ${error.message}`);
@@ -649,7 +663,7 @@ export const TerminalApp: React.FC = () => {
       // Get environment variables from shell process
       let env: Record<string, string> = {};
       if (shellPidRef.current) {
-        const shellProc = getProcess(shellPidRef.current);
+        const shellProc = pm.getProcess(shellPidRef.current);
         if (shellProc?.env) {
           env = { ...shellProc.env };
         }

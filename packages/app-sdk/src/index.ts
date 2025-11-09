@@ -1,3 +1,5 @@
+export * from './registry';
+
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;
   unmount?: () => void | Promise<void>;

@@ -6,34 +6,51 @@ import { CalculatorApp } from '@system-apps/calculator/App';
 import { MonitorApp } from '@system-apps/monitor/App';
 import { SettingsApp } from '@system-apps/settings/App';
 import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow';
+import { AppRegistry } from '@browser-os/app-sdk';
 import { loadAppFromManifest, getAppManifest } from './app-manifest';
 
 interface AppRendererProps {
   appId: string;
   windowId: string;
   payload?: Record<string, any>;
+  appRegistry?: AppRegistry;
 }
 
-export const AppRenderer: React.FC<AppRendererProps> = ({ appId, windowId, payload }) => {
+export const AppRenderer: React.FC<AppRendererProps> = ({ appId, windowId, payload, appRegistry }) => {
   const [AppComponent, setAppComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [loading, setLoading] = React.useState(true);
   
   React.useEffect(() => {
-    // Check if app has a manifest
-    const manifest = getAppManifest(appId);
-    if (manifest) {
-      // Load from manifest
-      loadAppFromManifest(appId).then(component => {
-        setAppComponent(() => component);
+    // Use appRegistry if provided, otherwise fall back to legacy app-manifest
+    if (appRegistry) {
+      const manifest = appRegistry.get(appId);
+      if (manifest) {
+        appRegistry.loadApp(appId).then((component: React.ComponentType<any>) => {
+          setAppComponent(() => component);
+          setLoading(false);
+        }).catch(() => {
+          setLoading(false);
+        });
+      } else {
         setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      }
     } else {
-      // Use hardcoded apps
-      setLoading(false);
+      // Legacy: Check if app has a manifest
+      const manifest = getAppManifest(appId);
+      if (manifest) {
+        // Load from manifest
+        loadAppFromManifest(appId).then(component => {
+          setAppComponent(() => component);
+          setLoading(false);
+        }).catch(() => {
+          setLoading(false);
+        });
+      } else {
+        // Use hardcoded apps
+        setLoading(false);
+      }
     }
-  }, [appId]);
+  }, [appId, appRegistry]);
   
   if (loading) {
     return <div style={{ padding: '20px' }}>Loading app...</div>;

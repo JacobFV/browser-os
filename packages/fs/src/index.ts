@@ -113,6 +113,8 @@ class VfsImpl implements Vfs {
 
 export const vfs = new VfsImpl();
 
+export * from './init';
+
 // In test environments, expose a way to check if mounts are shared
 if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
   (globalThis as any).__vfs_debug = {
