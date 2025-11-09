@@ -1,0 +1,44 @@
+.word-editor {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  outline: none;
+  min-height: 100%;
+}
+
+.word-editor:focus {
+  outline: none;
+}
+
+.word-editor p {
+  margin: 0 0 8px 0;
+}
+
+.word-editor h1,
+.word-editor h2,
+.word-editor h3 {
+  margin: 16px 0 8px 0;
+  font-weight: bold;
+}
+
+.word-editor h1 {
+  font-size: 24pt;
+}
+
+.word-editor h2 {
+  font-size: 18pt;
+}
+
+.word-editor h3 {
+  font-size: 14pt;
+}
+
+.word-editor ul,
+.word-editor ol {
+  margin: 8px 0;
+  padding-left: 30px;
+}
+

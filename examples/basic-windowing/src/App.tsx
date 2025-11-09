@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { windowManager } from '@browser-os/windowing';
 import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
 import { eventBus } from '@browser-os/core';
@@ -38,17 +38,17 @@ export const BasicWindowingExample: React.FC = () => {
     closeWindow(winId);
   };
 
-  const handleWindowMove = (winId: string, x: number, y: number) => {
+  const handleWindowMove = useCallback((winId: string, x: number, y: number) => {
     windowManager.moveWindow(winId, x, y);
-  };
+  }, []);
 
-  const handleWindowResize = (winId: string, w: number, h: number) => {
+  const handleWindowResize = useCallback((winId: string, w: number, h: number) => {
     windowManager.resizeWindow(winId, w, h);
-  };
+  }, []);
 
-  const handleWindowFocus = (winId: string) => {
+  const handleWindowFocus = useCallback((winId: string) => {
     windowManager.focusWindow(winId);
-  };
+  }, []);
 
   const handleWindowMinimize = (winId: string) => {
     windowManager.minimizeWindow(winId);

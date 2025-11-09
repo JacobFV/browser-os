@@ -360,6 +360,37 @@ importers:
         specifier: ^5.3.0
         version: 5.9.3
 
+  packages/dialogs:
+    dependencies:
+      '@browser-os/core':
+        specifier: workspace:*
+        version: link:../core
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../ui
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.0(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+
   packages/fs:
     dependencies:
       '@browser-os/core':
@@ -888,6 +919,49 @@ importers:
       xterm:
         specifier: ^5.3.0
         version: 5.3.0
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/word-processor:
+    dependencies:
+      '@browser-os/app-sdk':
+        specifier: workspace:*
+        version: link:../../packages/app-sdk
+      '@browser-os/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@browser-os/dialogs':
+        specifier: workspace:*
+        version: link:../../packages/dialogs
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@browser-os/windowing':
+        specifier: workspace:*
+        version: link:../../packages/windowing
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
     devDependencies:
       '@types/react':
         specifier: ^18.2.0

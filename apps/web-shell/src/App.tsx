@@ -3,7 +3,9 @@ import { Shell } from '@browser-os/shell';
 import { applyTheme } from '@browser-os/theme';
 import { windowManager } from '@browser-os/windowing';
 import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
-import { eventBus } from '@browser-os/core';
+import { eventBus, createId } from '@browser-os/core';
+import { vfs, createMemDriver } from '@browser-os/fs';
+import { DocumentWindow } from '../../system-apps/word-processor/src/DocumentWindow';
 
 export const WebShell: React.FC = () => {
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
@@ -11,7 +13,17 @@ export const WebShell: React.FC = () => {
   const [desktopIcons] = useState([
     { id: '1', label: 'Files', icon: '📁', appId: 'files', x: 50, y: 50 },
     { id: '2', label: 'Terminal', icon: '💻', appId: 'terminal', x: 50, y: 150 },
+    { id: '3', label: 'Word Processor', icon: '📝', appId: 'os.word-processor', x: 50, y: 250 },
   ]);
+
+  // Initialize VFS with documents mount
+  useEffect(() => {
+    const memDriver = createMemDriver();
+    vfs.mount({
+      mountPoint: '/documents',
+      driver: memDriver,
+    });
+  }, []);
 
   React.useEffect(() => {
     applyTheme('win95');
@@ -65,10 +77,20 @@ export const WebShell: React.FC = () => {
 
   const handleIconClick = (icon: any) => {
     if (icon.appId) {
-      const win = openWindow({
-        appId: icon.appId,
-        title: icon.label,
-      });
+      if (icon.appId === 'os.word-processor') {
+        // Create new document for word processor
+        const docId = createId();
+        openWindow({
+          appId: icon.appId,
+          title: 'Untitled',
+          payload: { documentId: docId },
+        });
+      } else {
+        const win = openWindow({
+          appId: icon.appId,
+          title: icon.label,
+        });
+      }
     }
   };
 
@@ -120,19 +142,45 @@ export const WebShell: React.FC = () => {
         onWindowClick={handleWindowClick}
         onIconClick={handleIconClick}
       />
-      {allWindows.map((win) => (
-        <WindowView
-          key={win.id}
-          window={win}
-          onClose={handleWindowClose}
-          onFocus={handleWindowClick}
-          onMove={handleWindowMove}
-          onResize={handleWindowResize}
-          onMinimize={handleWindowMinimize}
-          onMaximize={handleWindowMaximize}
-          onRestore={handleWindowRestore}
-        />
-      ))}
+      {allWindows.map((win) => {
+        // Render DocumentWindow for word processor windows
+        if (win.appId === 'os.word-processor' && win.payload?.documentId) {
+          return (
+            <WindowView
+              key={win.id}
+              window={win}
+              onClose={handleWindowClose}
+              onFocus={handleWindowClick}
+              onMove={handleWindowMove}
+              onResize={handleWindowResize}
+              onMinimize={handleWindowMinimize}
+              onMaximize={handleWindowMaximize}
+              onRestore={handleWindowRestore}
+            >
+              <DocumentWindow
+                documentId={win.payload.documentId}
+                windowId={win.id}
+                initialFileUri={win.payload.fileUri}
+              />
+            </WindowView>
+          );
+        }
+        
+        // Default window view for other apps
+        return (
+          <WindowView
+            key={win.id}
+            window={win}
+            onClose={handleWindowClose}
+            onFocus={handleWindowClick}
+            onMove={handleWindowMove}
+            onResize={handleWindowResize}
+            onMinimize={handleWindowMinimize}
+            onMaximize={handleWindowMaximize}
+            onRestore={handleWindowRestore}
+          />
+        );
+      })}
     </div>
   );
 };

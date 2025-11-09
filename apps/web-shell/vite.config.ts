@@ -17,6 +17,8 @@ export default defineConfig({
       '@browser-os/desktop': path.resolve(__dirname, '../../packages/desktop/src'),
       '@browser-os/process': path.resolve(__dirname, '../../packages/process/src'),
       '@browser-os/fs': path.resolve(__dirname, '../../packages/fs/src'),
+      '@browser-os/dialogs': path.resolve(__dirname, '../../packages/dialogs/src'),
+      '@browser-os/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },
 });

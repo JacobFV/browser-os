@@ -28,6 +28,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const isInteractingRef = useRef(false);
 
   useEffect(() => {
     if (!windowRef.current) return;
@@ -39,6 +40,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
       .draggable({
         listeners: {
           start() {
+            isInteractingRef.current = true;
             setIsDragging(true);
             dragStartPosRef.current = { x: window.bounds.x, y: window.bounds.y };
             onFocus(window.id);
@@ -47,13 +49,21 @@ export const WindowView: React.FC<WindowViewProps> = ({
             if (dragStartPosRef.current) {
               const x = dragStartPosRef.current.x + event.dx;
               const y = dragStartPosRef.current.y + event.dy;
-              if (onMove) {
-                onMove(window.id, x, y);
-              }
+              // Apply transform directly during drag for smooth movement
+              event.target.style.transform = `translate(${event.dx}px, ${event.dy}px)`;
+              // Don't call onMove during drag - it causes re-renders
             }
           },
-          end() {
+          end(event) {
+            isInteractingRef.current = false;
             setIsDragging(false);
+            // Reset transform and update position via callback
+            event.target.style.transform = '';
+            if (dragStartPosRef.current && onMove) {
+              const x = dragStartPosRef.current.x + event.dx;
+              const y = dragStartPosRef.current.y + event.dy;
+              onMove(window.id, x, y);
+            }
             dragStartPosRef.current = null;
           },
         },
@@ -70,7 +80,19 @@ export const WindowView: React.FC<WindowViewProps> = ({
       .resizable({
         edges: { left: true, right: true, bottom: true, top: true },
         listeners: {
+          start() {
+            isInteractingRef.current = true;
+          },
           move(event) {
+            // Apply size changes directly during resize
+            const { width, height } = event.rect;
+            event.target.style.width = `${width}px`;
+            event.target.style.height = `${height}px`;
+            // Don't call onResize during resize - it causes re-renders
+          },
+          end(event) {
+            isInteractingRef.current = false;
+            // Update size via callback after resize completes
             const { width, height } = event.rect;
             if (onResize) {
               onResize(window.id, width, height);
@@ -87,7 +109,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
     return () => {
       interact(element).unset();
     };
-  }, [window.id, window.bounds.w, window.bounds.h, onFocus, onMove, onResize]);
+  }, [window.id, onFocus, onMove, onResize]); // Removed window.bounds.w and window.bounds.h
 
   if (window.state === 'minimized') {
     return null;
