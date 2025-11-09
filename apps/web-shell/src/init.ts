@@ -1,7 +1,7 @@
 import { initDesktopShell, DesktopShellInitOptions, DesktopShellState } from '@browser-os/shell';
 import { defaultDesktopIcons } from './defaults';
-import { TerminalApp } from '@system-apps/terminal/TerminalApp';
-import { CalculatorApp } from '@system-apps/calculator/CalculatorApp';
+import { TerminalApp } from '@system-apps/terminal';
+import { CalculatorApp } from '@system-apps/calculator';
 import { processManager } from '@browser-os/process';
 import { vfs } from '@browser-os/fs';
 

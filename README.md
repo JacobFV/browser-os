@@ -8,11 +8,14 @@ browser-os provides a complete OS-in-a-tab experience - a fully functional opera
 
 ### Key Features
 
+- **Object-Oriented Architecture**: Apps are classes that extend `App`, with clear separation of logic and UI
+- **Apps as Processes**: Every app spawns a process with full lifecycle management
+- **Window Ownership**: Apps create and own their windows, with shared control between App and OS
 - **Desktop & Mobile Shells**: Seamlessly switch between desktop and mobile modes
-- **Advanced Windowing**: Floating windows with snap-to-grid, drag/resize, and multi-workspace support
+- **Advanced Windowing**: Window class with shared control, snap-to-grid, drag/resize, multi-workspace
 - **Virtual Filesystem**: Multiple backend drivers (IndexedDB, OPFS, Memory, localStorage)
 - **Process Management**: Full process lifecycle with IPC and monitoring
-- **App System**: Sandboxed apps with capability-based permissions
+- **App System**: Object-oriented app architecture with AppManager and OS orchestration
 - **Theme System**: Multiple skins (Win95, macOS, Monaco, Glass) with runtime switching
 - **Built-in Apps**: Files, Terminal, Editor, Browser, Notes, Calendar, Settings, Store, Monitor
 - **Real-time Collaboration**: Optional cursor presence and multi-user support via Yjs
@@ -168,17 +171,18 @@ shell → windowing + taskbar + desktop
 
 ## Documentation
 
-- [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture
+- [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture and OOP design
+- [Getting Started Guide](./docs/GETTING_STARTED.md) - Quick start with app development
 - [App Development Guide](./docs/DEVELOPMENT.md) - Building apps for browser-os
 - [Contributing Guide](./docs/CONTRIBUTING.md) - Contributing to the project
 
 ## Package Documentation
 
 - [@browser-os/core](./packages/core/README.md) - Core utilities and event bus
-- [@browser-os/windowing](./packages/windowing/README.md) - Window management system
+- [@browser-os/windowing](./packages/windowing/README.md) - Window class and WindowManager
+- [@browser-os/app-sdk](./packages/app-sdk/README.md) - App base class, AppManager, and OS
 - [@browser-os/fs](./packages/fs/README.md) - Virtual filesystem
 - [@browser-os/process](./packages/process/README.md) - Process management
-- [@browser-os/app-sdk](./packages/app-sdk/README.md) - App SDK and manifest
 
 ## Examples
 

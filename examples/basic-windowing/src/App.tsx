@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { windowManager } from '@browser-os/windowing';
-import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
+import { windowManager, Window, WindowView } from '@browser-os/windowing';
 import { eventBus } from '@browser-os/core';
 import './App.css';
 
@@ -20,30 +19,41 @@ export const BasicWindowingExample: React.FC = () => {
   }, []);
 
   const handleOpenWindow = (title: string, content: string) => {
-    openWindow({
-      appId: `app-${Date.now()}`,
+    // Create window using Window class
+    const window = new Window(
+      `app-${Date.now()}`,
       title,
-      bounds: { 
+      { 
         x: 100 + Math.random() * 200, 
         y: 100 + Math.random() * 200, 
         w: 500, 
         h: 400 
       },
-      payload: { content },
-    });
+      'default',
+      { content }
+    );
+    
+    // Register with window manager
+    windowManager.registerWindow(window);
     setWindowUpdateTrigger(prev => prev + 1);
   };
 
   const handleCloseWindow = (winId: string) => {
-    closeWindow(winId);
+    windowManager.closeWindow(winId);
   };
 
   const handleWindowMove = useCallback((winId: string, x: number, y: number) => {
-    windowManager.moveWindow(winId, x, y);
+    const window = windowManager.getWindow(winId);
+    if (window) {
+      window.moveTo(x, y, 'os');
+    }
   }, []);
 
   const handleWindowResize = useCallback((winId: string, w: number, h: number) => {
-    windowManager.resizeWindow(winId, w, h);
+    const window = windowManager.getWindow(winId);
+    if (window) {
+      window.resizeTo(w, h, 'os');
+    }
   }, []);
 
   const handleWindowFocus = useCallback((winId: string) => {
@@ -51,15 +61,24 @@ export const BasicWindowingExample: React.FC = () => {
   }, []);
 
   const handleWindowMinimize = (winId: string) => {
-    windowManager.minimizeWindow(winId);
+    const window = windowManager.getWindow(winId);
+    if (window) {
+      window.minimize('os');
+    }
   };
 
   const handleWindowMaximize = (winId: string) => {
-    windowManager.maximizeWindow(winId);
+    const window = windowManager.getWindow(winId);
+    if (window) {
+      window.maximize('os');
+    }
   };
 
   const handleWindowRestore = (winId: string) => {
-    windowManager.restoreWindow(winId);
+    const window = windowManager.getWindow(winId);
+    if (window) {
+      window.restore('os');
+    }
   };
 
   // Get all non-minimized windows, sorted by z-index
@@ -71,7 +90,7 @@ export const BasicWindowingExample: React.FC = () => {
     <div className="basic-windowing-example">
       <div className="controls">
         <h1>Basic Windowing Example</h1>
-        <p>Demonstrates core windowing functionality</p>
+        <p>Demonstrates core windowing functionality with Window class</p>
         <div className="button-group">
           <button onClick={() => handleOpenWindow('Window 1', 'This is the first window. You can drag it around!')}>
             Open Window 1
@@ -119,4 +138,3 @@ export const BasicWindowingExample: React.FC = () => {
     </div>
   );
 };
-

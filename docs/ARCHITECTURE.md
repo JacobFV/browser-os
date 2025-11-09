@@ -1,336 +1,284 @@
-# Browser OS - Architecture Documentation
+# Browser-OS Architecture Documentation
 
 ## Overview
 
-browser-os is a complete operating system that runs in the browser. It provides desktop and mobile shells, window management, a virtual filesystem, process management, and an app ecosystem.
+Browser-OS is a complete operating system that runs in the browser, built with an object-oriented architecture where apps are processes that own and control their windows.
 
-## Core Architecture
+## Core Architecture Principles
 
-### Desktop Shell Composition
+### 1. Apps as Processes
 
-The desktop shell is composed of:
+Every application in browser-os is a class that extends `App`:
+
+```typescript
+class MyApp extends App {
+  readonly id = 'my-app';
+  readonly name = 'My Application';
+  readonly version = '1.0.0';
+  
+  initialWindow(config?: Record<string, any>): Window {
+    return new Window(this.id, 'My Window', bounds);
+  }
+  
+  createComponent(window: Window): React.ComponentType {
+    return () => <MyAppView window={window} />;
+  }
+}
+```
+
+### 2. Apps Own Windows
+
+Apps create and initialize their own `Window` instances:
+
+- Apps define window configuration in `initialWindow()`
+- Apps can create multiple windows via `createWindow()`
+- Apps track their windows via `getWindows()`
+
+### 3. Shared Window Control
+
+Both Apps and the OS can modify window properties:
+
+```typescript
+// From App
+window.setTitle('App Title', 'app');
+window.moveTo(100, 100, 'app');
+
+// From OS
+window.setTitle('OS Title', 'os');
+window.maximize('os');
+```
+
+Changes are synchronized via the event bus.
+
+### 4. Separation of Concerns
+
+- **App Class**: Business logic, process management, state
+- **View Component**: Pure UI rendering (React component)
+- **Window Class**: Window state and properties
+- **WindowManager**: OS-level window management
+
+## Architecture Layers
 
 ```
-Shell = Windowing + Desktop + Taskbar + Workspaces + App Host + Process Manager + FS + Cursor + Theme
+┌─────────────────────────────────────────┐
+│           OS Class                       │
+│  - Orchestrates all subsystems          │
+│  - Provides unified API                  │
+└──────────────┬──────────────────────────┘
+               │
+    ┌──────────┴──────────┐
+    │                     │
+┌───▼──────────┐   ┌──────▼──────────┐
+│ AppManager    │   │ WindowManager   │
+│ - App registry│   │ - Window state  │
+│ - Lifecycle   │   │ - Z-ordering    │
+└───┬───────────┘   └──────┬──────────┘
+    │                     │
+    │              ┌──────▼──────────┐
+    │              │ ProcessManager  │
+    │              │ - Process state │
+    │              │ - IPC           │
+    │              └─────────────────┘
+    │
+┌───▼──────────┐
+│ App Classes  │
+│ - TerminalApp│
+│ - Calculator │
+│ - ...        │
+└──────────────┘
 ```
 
-### Mode Switching
+## Component Structure
 
-The system supports two modes:
+### App Class
 
-- **Desktop Mode**: XY window positioning, taskbar at bottom/top, floating windows
-- **Mobile Mode**: Full-screen cards, app switcher replaces taskbar, desktop grid = home screen
+```typescript
+abstract class App {
+  // Identity
+  abstract readonly id: string;
+  abstract readonly name: string;
+  abstract readonly version: string;
+  
+  // Window creation
+  abstract initialWindow(config?: Record<string, any>): Window;
+  abstract createComponent(window: Window, config?: Record<string, any>): React.ComponentType<any>;
+  
+  // Lifecycle
+  onLaunch?(window: Window, config?: Record<string, any>): void | Promise<void>;
+  onClose?(window: Window): void | Promise<void>;
+  onWindowCreated?(window: Window): void;
+  onWindowDestroyed?(window: Window): void;
+  
+  // Process management
+  protected initialize(): void;
+  protected cleanup(): void;
+  getPid(): Pid | undefined;
+}
+```
+
+### Window Class
+
+```typescript
+class Window {
+  readonly id: string;
+  readonly appId: string;
+  
+  // Properties (read-only via getters)
+  get title(): string;
+  get state(): WindowState;
+  get bounds(): WindowBounds;
+  get workspaceId(): string;
+  get z(): number;
+  get payload(): Record<string, any> | undefined;
+  
+  // Mutators (with source tracking)
+  setTitle(title: string, source: 'app' | 'os'): void;
+  setState(state: WindowState, source: 'app' | 'os'): void;
+  setBounds(bounds: Partial<WindowBounds>, source: 'app' | 'os'): void;
+  minimize(source: 'app' | 'os'): void;
+  maximize(source: 'app' | 'os'): void;
+  restore(source: 'app' | 'os'): void;
+  moveTo(x: number, y: number, source: 'app' | 'os'): void;
+  resizeTo(w: number, h: number, source: 'app' | 'os'): void;
+}
+```
+
+### AppManager
+
+```typescript
+class AppManager {
+  registerApp(app: App): void;
+  registerApps(apps: App[]): void;
+  getApp(appId: string): App | undefined;
+  launchApp(appId: string, config?: Record<string, any>): Window;
+  closeWindow(windowId: string): void;
+  closeApp(appId: string): void;
+}
+```
+
+## Data Flow
+
+### App Launch Flow
+
+```
+1. User clicks icon → OS.launchApp('terminal')
+2. AppManager.getApp('terminal') → TerminalApp instance
+3. TerminalApp.initialWindow() → Window instance
+4. WindowManager.registerWindow(window) → Window registered
+5. TerminalApp.registerWindow(window) → App tracks window
+6. TerminalApp.onLaunch(window) → Process spawned
+7. TerminalApp.createComponent(window) → React component
+8. AppRenderer renders component → UI displayed
+```
+
+### Window Modification Flow
+
+```
+1. User drags window → WindowView calls onMove
+2. WindowView calls window.moveTo(x, y, 'os')
+3. Window updates internal state
+4. Window emits 'window' event via eventBus
+5. WindowManager and App both receive event
+6. UI re-renders based on new state
+```
+
+## Process Management
+
+Every app spawns a process:
+
+```typescript
+class MyApp extends App {
+  async onLaunch(window: Window): Promise<void> {
+    // Process automatically spawned
+    this.initialize(); // Calls processManager.spawnApp(this.id)
+    
+    // Access process
+    const pid = this.getPid();
+    const proc = this.processManager.getProcess(pid);
+  }
+  
+  onClose(window: Window): void {
+    // Process automatically killed
+    this.cleanup(); // Calls processManager.kill(this.pid)
+  }
+}
+```
+
+## Event System
+
+All system events flow through the event bus:
+
+```typescript
+import { eventBus } from '@browser-os/core';
+
+// Window events
+eventBus.on('window', (event) => {
+  // event.type: 'open' | 'close' | 'focus' | 'move' | 'resize' | ...
+});
+
+// Process events
+eventBus.on('proc', (event) => {
+  // event.type: 'spawn' | 'kill' | 'suspend' | 'resume' | 'crash'
+});
+
+// Filesystem events
+eventBus.on('fs', (event) => {
+  // event.type: 'mount' | 'unmount' | 'write' | 'delete' | 'rename'
+});
+```
 
 ## Package Structure
 
 ### Core Packages
 
-- **@browser-os/core**: Event bus, ID generation, Zod contracts
-- **@browser-os/ui**: Primitive React components
-- **@browser-os/theme**: Theme tokens and skin presets
+- **@browser-os/core**: Event bus, ID generation, schemas
+- **@browser-os/process**: Process management, IPC, command execution
+- **@browser-os/windowing**: Window class, WindowManager, WindowView
+- **@browser-os/app-sdk**: App base class, AppManager, OS class
+- **@browser-os/fs**: Virtual filesystem
+- **@browser-os/shell**: Shell initialization and state
 
-### Windowing System
+### System Apps
 
-- **@browser-os/windowing**: Window management, z-order, snap system
-- **@browser-os/workspace**: Multi-desktop, save/restore layouts
-- **@browser-os/taskbar**: Taskbar and app switcher components
-- **@browser-os/desktop**: Wallpaper, desktop icons, context menus
+- **@system-apps/terminal**: TerminalApp class with ShellProcess
+- **@system-apps/calculator**: CalculatorApp class
 
-### System Services
+## Best Practices
 
-- **@browser-os/process**: Process lifecycle, scheduler, IPC
-- **@browser-os/fs**: Virtual filesystem with multiple drivers
-- **@browser-os/shell**: Desktop/mobile shell composition
+1. **Apps Own Windows**: Always create windows in `initialWindow()`
+2. **Separate Logic from UI**: Keep business logic in App class, UI in View components
+3. **Use Lifecycle Hooks**: Initialize resources in `onLaunch()`, cleanup in `onClose()`
+4. **Process Management**: Use `initialize()` and `cleanup()` for process lifecycle
+5. **Shared Control**: Use appropriate source ('app' or 'os') when modifying windows
+6. **Event-Driven**: Listen to events for reactive updates, don't poll
+7. **Type Safety**: Use TypeScript types throughout
 
-### App System
+## Migration Guide
 
-- **@browser-os/app-sdk**: App manifest, capabilities, lifecycle API
-- **@browser-os/app-host**: Sandboxing, capability guards
+### From Component-Based to Class-Based
 
-### Additional Services
-
-- **@browser-os/cursor**: Cursor presence, optional Yjs integration
-- **@browser-os/net**: Network abstraction (fetch, WS, SSE, RTC)
-- **@browser-os/notif**: Notifications and toasts
-- **@browser-os/settings**: User/workspace/system preferences
-- **@browser-os/telemetry**: Performance metrics and logging
-- **@browser-os/dialogs**: System file dialogs (open/save)
-
-## Data Flow
-
-### Event Bus
-
-All system events flow through a typed event bus:
-
+**Before:**
 ```typescript
-eventBus.on('window', (event) => { /* ... */ });
-eventBus.on('proc', (event) => { /* ... */ });
-eventBus.on('fs', (event) => { /* ... */ });
+export const MyApp: React.FC = () => {
+  // All logic in component
+  const [state, setState] = useState();
+  return <div>...</div>;
+};
 ```
 
-### State Management
-
-- **Zustand**: For reactive state stores
-- **TanStack Query**: For async resource management
-- **XState**: For process lifecycles
-
-## Window Management
-
-### Window States
-
-- `floating`: Normal window that can be moved/resized
-- `docked`: Window docked to editor layout
-- `minimized`: Window minimized to taskbar
-- `maximized`: Window fills screen
-- `fullscreen`: Window in fullscreen mode
-
-### Z-Order
-
-Windows are automatically ordered by focus. The most recently focused window has the highest z-index.
-
-### Snap System
-
-Windows snap to:
-- Grid positions (8px default)
-- Screen edges
-- Neighboring windows
-
-### Window Arrangement
-
-Windows can be arranged in preset patterns:
-- **grid-2x2**: Arrange windows in a 2x2 grid layout
-- **stack-right**: Main window on left (70%), remaining windows stacked on right (30%)
-- **monocle**: All windows maximized, stacked by z-order
-
-## Process Management
-
-### Lifecycle
-
-```
-starting → running → (suspended | stopped | crashed)
-```
-
-- **starting**: Process initialization
-- **running**: Active execution
-- **suspended**: Paused (minimized/inactive)
-- **stopped**: Normal termination
-- **crashed**: Error termination
-
-### IPC
-
-Topic-based pub/sub system:
-
+**After:**
 ```typescript
-send(pid, 'topic', message);
-process.channels['topic'] = (msg) => { /* ... */ };
-```
-
-## Virtual Filesystem
-
-### URI Scheme
-
-All files use `vfs://` URIs:
-
-```
-vfs://<mount-point>/<path>
-```
-
-### Drivers
-
-- **mem**: In-memory filesystem
-- **idb**: IndexedDB persistent storage
-- **opfs**: Origin Private File System
-- **localStorage**: Fallback storage
-
-### Mount System
-
-Drivers are mounted at mount points:
-
-```typescript
-vfs.mount({
-  mountPoint: '/home',
-  driver: idbDriver(),
-});
-```
-
-## App System
-
-### App Registry
-
-The `AppRegistry` class manages app manifests and dynamic loading:
-
-```typescript
-const registry = new AppRegistry();
-registry.register(manifest);
-registry.registerMany([manifest1, manifest2]);
-const app = await registry.loadApp('app-id');
-```
-
-### Manifest
-
-Apps define their capabilities and entry point:
-
-```typescript
-{
-  id: 'app-id',
-  name: 'App Name',
-  version: '1.0.0',
-  entry: string | (() => Promise<React.ComponentType>),
-  permissions: ['fs.read', 'fs.write'],
-  defaultWindow?: { w: number; h: number; resizable?: boolean },
-  intents?: string[],
+class MyApp extends App {
+  // Logic in class
+  createComponent(window: Window): React.ComponentType {
+    return () => <MyAppView window={window} />;
+  }
 }
 ```
 
-### Sandboxing
-
-Untrusted apps run in iframes with:
-- Restricted postMessage IPC
-- CSP enforcement
-- Capability guards
-
-### Capabilities
-
-Apps request permissions:
-- `fs.read`, `fs.write`
-- `net.fetch`, `net.ws`
-- `clipboard`, `notifications`
-- `camera`, `mic`, `rtc`
-- `proc.spawn`, `proc.ipc`
-
-## Theme System
-
-### Tokens
-
-CSS variables define theme tokens:
-
-```css
---os-bg: #c0c0c0;
---os-fg: #000000;
---os-accent: #000080;
---os-radius: 0px;
-```
-
-### Skins
-
-- **win95**: Pixel borders, titlebar gradients
-- **macos**: Translucent, rounded, traffic lights
-- **monaco**: Editor-serious, VS Code tabs
-- **glass**: Glassmorphism effects
-
-## Mobile Mode
-
-### Adaptations
-
-- Windows become full-screen cards
-- Taskbar → App switcher grid
-- Desktop icons → Home screen pages
-- Gesture support (swipe up, left/right)
-
-## Security Model
-
-### Capabilities
-
-Apps request permissions; system shows consent sheet.
-
-### Sandboxing
-
-Untrusted apps run in iframes with:
-- Restricted IPC
-- CSP enforcement
-- Rate limiting
-
-### Crash Isolation
-
-App errors bubble to process manager with restart option.
-
-## Performance
-
-### Targets
-
-- Drag operations: 60fps
-- Window open: < 200ms
-- Shell TTI: < 2s
-
-### Optimization
-
-- React.memo for expensive components
-- Virtual scrolling for long lists
-- Lazy loading for app components
-- rAF-based rendering budget
-
-## Accessibility
-
-- Tab order for keyboard navigation
-- Focus rings on interactive elements
-- Reduced motion support
-- Screen reader labels
-- Semantic HTML
-
-## Applications
-
-### Web Shell (`apps/web-shell`)
-
-Main OS interface running in the browser:
-- Desktop/mobile shell composition
-- App rendering and lifecycle
-- Command palette
-- Global shortcuts
-- Mobile gesture support
-
-### Electron Shell (`apps/electron-shell`)
-
-Electron wrapper for desktop deployment:
-- Native window management
-- System integration
-- Auto-updater support
-
-### Showcase (`apps/showcase`)
-
-Component gallery demonstrating:
-- UI components
-- Theme variations
-- Window management features
-
-## System Apps
-
-Built-in applications included with browser-os:
-
-- **Files**: File manager with mount point navigation, file operations, drag & drop
-- **Terminal**: xterm.js terminal emulator with shell command execution
-- **Editor**: Monaco-based code editor
-- **Browser**: Web browser with tab management and iframe sandboxing
-- **Notes**: Note-taking application
-- **Calendar**: Calendar application
-- **Settings**: System settings panel
-- **Store**: App store for installing/updating apps
-- **Monitor**: Process monitor and system metrics
-- **Calculator**: Calculator application
-- **Word Processor**: Document editor with formatting
-
 ## Examples
 
-Example applications demonstrating browser-os features:
-
-- **basic-windowing**: Window management basics
-- **theme-switching**: Theme system usage
-- **custom-app**: Building custom apps
-- **win95**: Win95 theme showcase
-
-## Testing
-
-### E2E Tests
-
-Playwright tests for:
-- Windowing operations
-- Mobile switcher
-- App installation
-- Process management
-
-### Property Tests
-
-Serialization round-trip tests for:
-- Window layouts
-- Workspace configurations
-- App manifests
-
+See:
+- `examples/basic-windowing`: Window class usage
+- `system-apps/terminal`: Full app implementation with process logic
+- `system-apps/calculator`: Simple app implementation
