@@ -112,19 +112,38 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
 
   const handleIconClick = (icon: { id: string; label: string; icon?: string; appId?: string; x: number; y: number }) => {
     if (icon.appId) {
-      if (icon.appId === 'os.word-processor') {
-        // Create new document for word processor
-        const docId = createId();
-        openWindow({
-          appId: icon.appId,
-          title: 'Untitled',
-          payload: { documentId: docId },
-        });
+      if (state.os) {
+        // Use OS to launch app
+        if (icon.appId === 'os.word-processor') {
+          // Create new document for word processor
+          const docId = createId();
+          state.os.launchApp(icon.appId, { documentId: docId });
+        } else {
+          state.os.launchApp(icon.appId, { title: icon.label });
+        }
+      } else if (state.appManager) {
+        // Use AppManager to launch app
+        if (icon.appId === 'os.word-processor') {
+          const docId = createId();
+          state.appManager.launchApp(icon.appId, { documentId: docId });
+        } else {
+          state.appManager.launchApp(icon.appId, { title: icon.label });
+        }
       } else {
-        openWindow({
-          appId: icon.appId,
-          title: icon.label,
-        });
+        // Fallback to legacy
+        if (icon.appId === 'os.word-processor') {
+          const docId = createId();
+          openWindow({
+            appId: icon.appId,
+            title: 'Untitled',
+            payload: { documentId: docId },
+          });
+        } else {
+          openWindow({
+            appId: icon.appId,
+            title: icon.label,
+          });
+        }
       }
     }
   };
@@ -140,7 +159,13 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
   };
 
   const handleWindowClose = (winId: string) => {
-    closeWindow(winId);
+    if (state.os) {
+      state.os.closeWindow(winId);
+    } else if (state.appManager) {
+      state.appManager.closeWindow(winId);
+    } else {
+      closeWindow(winId);
+    }
   };
 
   const handleWindowMove = (winId: string, x: number, y: number) => {
@@ -184,10 +209,8 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
               />
             ) : (
               <AppRenderer
-                appId={focusedWindow.appId}
-                windowId={focusedWindow.id}
-                payload={focusedWindow.payload}
-                appRegistry={state.appRegistry}
+                window={focusedWindow}
+                appManager={state.appManager}
               />
             )}
             {/* Back button */}
@@ -376,7 +399,7 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
             onMaximize={handleWindowMaximize}
             onRestore={handleWindowRestore}
           >
-            <AppRenderer appId={win.appId} windowId={win.id} payload={win.payload} appRegistry={state.appRegistry} />
+            <AppRenderer window={win} appManager={state.appManager} />
           </WindowView>
         );
       })}

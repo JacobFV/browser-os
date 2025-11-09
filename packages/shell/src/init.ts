@@ -6,7 +6,7 @@ import { appHost } from '@browser-os/app-host';
 import { settingsStore } from '@browser-os/settings';
 import { applyTheme, ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
-import { AppRegistry } from '@browser-os/app-sdk';
+import { AppRegistry, OS, App } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
 import type { FilesystemInitOptions } from '@browser-os/fs';
 import { initFilesystem } from '@browser-os/fs';
@@ -16,6 +16,7 @@ export interface DesktopShellInitOptions {
   vfs?: FilesystemInitOptions;
   apps?: {
     manifests?: AppManifest[];
+    appInstances?: App[]; // New: App instances
     registerDefaults?: boolean;
   };
   desktop?: {
@@ -40,7 +41,7 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
   const themeAccent = options?.theme?.accent;
   applyTheme(themeSkin, themeAccent);
 
-  // Initialize app registry
+  // Initialize app registry (legacy)
   const appRegistry = new AppRegistry();
   if (options?.apps?.registerDefaults !== false) {
     // Register default apps if needed
@@ -48,6 +49,11 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
       appRegistry.registerMany(options.apps.manifests);
     }
   }
+
+  // Create OS with app instances
+  const os = new OS({
+    apps: options?.apps?.appInstances,
+  });
 
   // Get desktop icons
   const desktopIcons = options?.desktop?.icons || [];
@@ -64,6 +70,8 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
     initialTheme: themeSkin,
     wallpaper: options?.desktop?.wallpaper,
     appRegistry,
+    appManager: os.getAppManager(),
+    os,
   };
 
   return state;

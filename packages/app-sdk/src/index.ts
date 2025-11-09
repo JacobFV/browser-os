@@ -1,4 +1,7 @@
 export * from './registry';
+export * from './App';
+export * from './AppManager';
+export * from './OS';
 
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;

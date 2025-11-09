@@ -1,16 +1,9 @@
 import { WindowState, WindowBounds, createId } from '@browser-os/core';
 import { eventBus } from '@browser-os/core';
+import { Window } from './Window';
 
-export interface Window {
-  id: string;
-  appId: string;
-  title: string;
-  state: WindowState;
-  z: number;
-  bounds: WindowBounds;
-  workspaceId: string;
-  payload?: Record<string, any>;
-}
+// Re-export Window class
+export { Window };
 
 export interface WindowManager {
   windows: Map<string, Window>;
@@ -30,24 +23,32 @@ class WindowManagerImpl implements WindowManager {
     workspaceId?: string;
     payload?: Record<string, any>;
   }): Window {
-    const id = createId();
-    const window: Window = {
-      id,
-      appId: options.appId,
-      title: options.title,
-      state: 'floating',
-      z: this.nextZ++,
-      bounds: options.bounds || { x: 100, y: 100, w: 800, h: 600 },
-      workspaceId: options.workspaceId || 'default',
-      payload: options.payload,
-    };
-
-    this.windows.set(id, window);
-    this.focusWindow(id);
+    // Create Window instance (apps will create their own, but this is for backward compat)
+    const window = new Window(
+      options.appId,
+      options.title,
+      options.bounds || { x: 100, y: 100, w: 800, h: 600 },
+      options.workspaceId || 'default',
+      options.payload
+    );
     
-    eventBus.emit('window', { type: 'open', winId: id, appId: options.appId });
+    window.setZ(this.nextZ++, 'os');
+    this.windows.set(window.id, window);
+    this.focusWindow(window.id);
+    
+    eventBus.emit('window', { type: 'open', winId: window.id, appId: options.appId });
     
     return window;
+  }
+  
+  /**
+   * Register a window created by an app
+   */
+  registerWindow(window: Window): void {
+    window.setZ(this.nextZ++, 'os');
+    this.windows.set(window.id, window);
+    this.focusWindow(window.id);
+    eventBus.emit('window', { type: 'open', winId: window.id, appId: window.appId });
   }
 
   closeWindow(winId: string): void {
@@ -69,7 +70,7 @@ class WindowManagerImpl implements WindowManager {
           eventBus.emit('window', { type: 'blur', winId: this.focusedWindowId });
         }
         this.focusedWindowId = winId;
-        window.z = this.nextZ++;
+        window.setZ(this.nextZ++, 'os');
         eventBus.emit('window', { type: 'focus', winId });
       }
     }
@@ -77,67 +78,50 @@ class WindowManagerImpl implements WindowManager {
 
   moveWindow(winId: string, x: number, y: number): void {
     const window = this.windows.get(winId);
-    if (window && window.state !== 'maximized' && window.state !== 'fullscreen') {
-      window.bounds.x = x;
-      window.bounds.y = y;
-      eventBus.emit('window', { type: 'move', winId, x, y });
+    if (window) {
+      window.moveTo(x, y, 'os');
     }
   }
 
   resizeWindow(winId: string, w: number, h: number): void {
     const window = this.windows.get(winId);
-    if (window && window.state !== 'maximized' && window.state !== 'fullscreen') {
-      window.bounds.w = w;
-      window.bounds.h = h;
-      eventBus.emit('window', { type: 'resize', winId, w, h });
+    if (window) {
+      window.resizeTo(w, h, 'os');
     }
   }
 
   minimizeWindow(winId: string): void {
-    this.setWindowState(winId, 'minimized');
+    const window = this.windows.get(winId);
+    if (window) {
+      window.minimize('os');
+    }
   }
 
   maximizeWindow(winId: string): void {
     const window = this.windows.get(winId);
-    if (window && window.state !== 'maximized') {
-      // Store original bounds before maximizing
-      (window as any).originalBounds = { ...window.bounds };
-      window.state = 'maximized';
-      window.bounds.x = 0;
-      window.bounds.y = 0;
-      window.bounds.w = globalThis.innerWidth || 1920;
-      window.bounds.h = (globalThis.innerHeight || 1080) - 40; // Account for taskbar
-      this.setWindowState(winId, 'maximized');
+    if (window) {
+      window.maximize('os');
     }
   }
 
   restoreWindow(winId: string): void {
     const window = this.windows.get(winId);
     if (window) {
-      if (window.state === 'maximized' && (window as any).originalBounds) {
-        window.bounds = { ...(window as any).originalBounds };
-        delete (window as any).originalBounds;
-      }
-      this.setWindowState(winId, 'floating');
+      window.restore('os');
     }
   }
 
   setWindowState(winId: string, state: WindowState): void {
     const window = this.windows.get(winId);
     if (window) {
-      window.state = state;
-      const eventType = state === 'minimized' ? 'minimize' :
-                       state === 'maximized' ? 'maximize' :
-                       state === 'fullscreen' ? 'maximize' : 'restore';
-      eventBus.emit('window', { type: eventType as any, winId });
+      window.setState(state, 'os');
     }
   }
 
   updateWindowTitle(winId: string, title: string): void {
     const window = this.windows.get(winId);
-    if (window && window.title !== title) {
-      window.title = title;
-      eventBus.emit('window', { type: 'update', winId });
+    if (window) {
+      window.setTitle(title, 'os');
     }
   }
 
@@ -145,6 +129,13 @@ class WindowManagerImpl implements WindowManager {
     return Array.from(this.windows.values())
       .filter(w => w.workspaceId === workspaceId)
       .sort((a, b) => b.z - a.z);
+  }
+  
+  /**
+   * Get window by ID
+   */
+  getWindow(winId: string): Window | undefined {
+    return this.windows.get(winId);
   }
 }
 

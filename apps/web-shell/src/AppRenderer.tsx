@@ -1,100 +1,61 @@
 import React from 'react';
-import { FilesApp } from '@system-apps/files/App';
-import { TerminalApp } from '@system-apps/terminal/App';
-import { NotesApp } from '@system-apps/notes/App';
-import { CalculatorApp } from '@system-apps/calculator/App';
-import { MonitorApp } from '@system-apps/monitor/App';
-import { SettingsApp } from '@system-apps/settings/App';
+import { AppManager } from '@browser-os/app-sdk';
+import { Window } from '@browser-os/windowing';
 import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow';
-import { AppRegistry } from '@browser-os/app-sdk';
-import { loadAppFromManifest, getAppManifest } from './app-manifest';
 
 interface AppRendererProps {
-  appId: string;
-  windowId: string;
-  payload?: Record<string, any>;
-  appRegistry?: AppRegistry;
+  window: Window;
+  appManager?: AppManager;
 }
 
-export const AppRenderer: React.FC<AppRendererProps> = ({ appId, windowId, payload, appRegistry }) => {
+export const AppRenderer: React.FC<AppRendererProps> = ({ window, appManager }) => {
   const [AppComponent, setAppComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [loading, setLoading] = React.useState(true);
   
   React.useEffect(() => {
-    // Use appRegistry if provided, otherwise fall back to legacy app-manifest
-    if (appRegistry) {
-      const manifest = appRegistry.get(appId);
-      if (manifest) {
-        appRegistry.loadApp(appId).then((component: React.ComponentType<any> | null) => {
-          if (component) {
-            setAppComponent(() => component);
-          }
-          setLoading(false);
-        }).catch(() => {
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
-    } else {
-      // Legacy: Check if app has a manifest
-      const manifest = getAppManifest(appId);
-      if (manifest) {
-        // Load from manifest
-        loadAppFromManifest(appId).then(component => {
-          setAppComponent(() => component);
-          setLoading(false);
-        }).catch(() => {
-          setLoading(false);
-        });
-      } else {
-        // Use hardcoded apps
-        setLoading(false);
-      }
+    if (!appManager) {
+      setLoading(false);
+      return;
     }
-  }, [appId, appRegistry]);
+    
+    // Get app instance
+    const app = appManager.getApp(window.appId);
+    if (app) {
+      // Get component from app
+      const component = app.createComponent(window, window.payload);
+      setAppComponent(() => component);
+      setLoading(false);
+    } else {
+      // Fallback for legacy apps
+      setLoading(false);
+    }
+  }, [window.id, window.appId, appManager]);
   
   if (loading) {
     return <div style={{ padding: '20px' }}>Loading app...</div>;
   }
   
-  // If loaded from manifest, use that component
+  // If we have a component from app, render it
   if (AppComponent) {
-    return <AppComponent windowId={windowId} payload={payload} />;
+    return <AppComponent />;
   }
   
-  // Fallback to hardcoded apps
-  switch (appId) {
-    case 'files':
-      return <FilesApp />;
-    case 'terminal':
-      return <TerminalApp />;
-    case 'notes':
-      return <NotesApp />;
-    case 'calculator':
-      return <CalculatorApp />;
-    case 'monitor':
-      return <MonitorApp />;
-    case 'settings':
-      return <SettingsApp />;
-    case 'os.word-processor':
-      if (payload?.documentId) {
-        return (
-          <DocumentWindow
-            documentId={payload.documentId}
-            windowId={windowId}
-            initialFileUri={payload.fileUri}
-          />
-        );
-      }
-      return null;
-    default:
-      return (
-        <div style={{ padding: '20px' }}>
-          <h2>App: {appId}</h2>
-          <p>App component not found</p>
-        </div>
-      );
+  // Fallback for legacy apps (word processor)
+  if (window.appId === 'os.word-processor' && window.payload?.documentId) {
+    return (
+      <DocumentWindow
+        documentId={window.payload.documentId}
+        windowId={window.id}
+        initialFileUri={window.payload.fileUri}
+      />
+    );
   }
+  
+  return (
+    <div style={{ padding: '20px' }}>
+      <h2>App: {window.appId}</h2>
+      <p>App component not found</p>
+    </div>
+  );
 };
 

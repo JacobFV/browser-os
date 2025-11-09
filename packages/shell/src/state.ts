@@ -6,7 +6,7 @@ import { appHost } from '@browser-os/app-host';
 import { settingsStore } from '@browser-os/settings';
 import { ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
-import { AppRegistry } from '@browser-os/app-sdk';
+import { AppRegistry, AppManager, OS } from '@browser-os/app-sdk';
 
 export interface DesktopShellState {
   // Core systems (singletons, but initialized)
@@ -22,8 +22,12 @@ export interface DesktopShellState {
   initialTheme: ThemeSkin;
   wallpaper?: string;
   
-  // App registry
+  // App registry (legacy)
   appRegistry: AppRegistry;
+  
+  // New app system
+  appManager?: AppManager;
+  os?: OS;
   
   // Optional services
   cursor?: any; // CursorService - type when implemented

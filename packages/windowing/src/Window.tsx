@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Window as WindowType } from './window-manager';
+import { Window } from './Window';
 import interact from 'interactjs';
 
 export interface WindowViewProps {
-  window: WindowType;
+  window: Window;
   onClose: (winId: string) => void;
   onFocus: (winId: string) => void;
   onMove?: (winId: string, x: number, y: number) => void;
@@ -55,12 +55,17 @@ export const WindowView: React.FC<WindowViewProps> = ({
           end(event) {
             isInteractingRef.current = false;
             setIsDragging(false);
-            // Reset transform and update position via callback
+            // Reset transform and update position
             event.target.style.transform = '';
-            if (dragStartPosRef.current && onMove) {
+            if (dragStartPosRef.current) {
               const x = dragStartPosRef.current.x + event.dx;
               const y = dragStartPosRef.current.y + event.dy;
-              onMove(window.id, x, y);
+              // Update window position directly (shared control)
+              window.moveTo(x, y, 'os');
+              // Also call callback if provided (for backward compat)
+              if (onMove) {
+                onMove(window.id, x, y);
+              }
             }
             dragStartPosRef.current = null;
           },
@@ -90,8 +95,11 @@ export const WindowView: React.FC<WindowViewProps> = ({
           },
           end(event) {
             isInteractingRef.current = false;
-            // Update size via callback after resize completes
+            // Update size after resize completes
             const { width, height } = event.rect;
+            // Update window size directly (shared control)
+            window.resizeTo(width, height, 'os');
+            // Also call callback if provided (for backward compat)
             if (onResize) {
               onResize(window.id, width, height);
             }
