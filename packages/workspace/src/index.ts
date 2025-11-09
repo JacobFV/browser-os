@@ -1,6 +1,7 @@
 import { WindowManager } from '@browser-os/windowing';
 import { Window } from '@browser-os/windowing';
 import { SettingsStoreImpl } from '@browser-os/settings';
+import { AppManager } from '@browser-os/app-sdk';
 
 export interface Workspace {
   id: string;
@@ -18,10 +19,12 @@ export class WorkspaceManager {
   private currentWorkspaceId: string = 'default';
   private windowManager: WindowManager;
   private settingsStore: SettingsStoreImpl;
+  private appManager: AppManager;
   
-  constructor(windowManager: WindowManager, settingsStore: SettingsStoreImpl) {
+  constructor(windowManager: WindowManager, settingsStore: SettingsStoreImpl, appManager: AppManager) {
     this.windowManager = windowManager;
     this.settingsStore = settingsStore;
+    this.appManager = appManager;
   }
   
   async saveWorkspace(name?: string): Promise<string> {
@@ -56,33 +59,25 @@ export class WorkspaceManager {
     const currentWindows = Array.from(this.windowManager.windows.keys());
     currentWindows.forEach(winId => this.windowManager.closeWindow(winId));
     
-    // Restore windows
-    workspace.windows.forEach((winData: {
-      appId: string;
-      title: string;
-      bounds: { x: number; y: number; w: number; h: number };
-      state: string;
-      payload?: Record<string, any>;
-    }) => {
-      this.windowManager.openWindow({
-        appId: winData.appId,
-        title: winData.title,
-        bounds: winData.bounds,
-        payload: winData.payload,
-      });
-      
-      // Restore window state
-      const restoredWin = Array.from(this.windowManager.windows.values())
-        .find(w => w.appId === winData.appId && w.title === winData.title);
-      
-      if (restoredWin) {
+    // Restore windows using AppManager
+    for (const winData of workspace.windows) {
+      try {
+        const restoredWin = await this.appManager.launchApp(winData.appId, {
+          title: winData.title,
+          bounds: winData.bounds,
+          payload: winData.payload,
+        });
+        
+        // Restore window state
         if (winData.state === 'maximized') {
           this.windowManager.maximizeWindow(restoredWin.id);
         } else if (winData.state === 'minimized') {
           this.windowManager.minimizeWindow(restoredWin.id);
         }
+      } catch (error) {
+        console.error(`Failed to restore window for app ${winData.appId}:`, error);
       }
-    });
+    }
     
     this.currentWorkspaceId = workspaceId;
   }

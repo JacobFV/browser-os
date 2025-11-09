@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { vfs, Entry } from '@browser-os/fs';
+import { VfsImpl, Entry } from '@browser-os/fs';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
 import { Toolbar, Button, ButtonGroup, Dialog, DialogActions, Input, Separator } from '@browser-os/ui';
+import { Window } from '@browser-os/windowing';
 import '@browser-os/ui/dist/ui.css';
 import './Files.css';
 
-export const FilesApp: React.FC = () => {
-  const [currentPath, setCurrentPath] = useState<string>('vfs://documents/');
+interface FilesViewProps {
+  window: Window;
+  vfs: VfsImpl;
+  initialPath?: string;
+}
+
+export const FilesView: React.FC<FilesViewProps> = ({ window, vfs, initialPath = 'vfs://documents/' }) => {
+  const [currentPath, setCurrentPath] = useState<string>(initialPath);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
@@ -29,7 +36,7 @@ export const FilesApp: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [vfs]);
 
   useEffect(() => {
     loadDirectory(currentPath);
@@ -243,3 +250,4 @@ export const FilesApp: React.FC = () => {
     </div>
   );
 };
+

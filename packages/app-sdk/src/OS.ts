@@ -60,12 +60,6 @@ export class OS {
     // Create settings store
     this.settingsStore = config.settingsStore || new SettingsStoreImpl();
     
-    // Create workspace manager
-    this.workspaceManager = config.workspaceManager || new WorkspaceManager(
-      this.windowManager,
-      this.settingsStore
-    );
-    
     // Create VFS
     this.vfs = config.vfs || new VfsImpl(this.eventBus);
     
@@ -83,6 +77,13 @@ export class OS {
       this.windowManager,
       this.processManager,
       this.eventBus
+    );
+    
+    // Create workspace manager (depends on app manager)
+    this.workspaceManager = config.workspaceManager || new WorkspaceManager(
+      this.windowManager,
+      this.settingsStore,
+      this.appManager
     );
     
     // Register apps if provided
@@ -178,8 +179,8 @@ export class OS {
   /**
    * Launch an app
    */
-  launchApp(appId: string, config?: Record<string, any>): import('@browser-os/windowing').Window {
-    return this.appManager.launchApp(appId, config);
+  async launchApp(appId: string, config?: Record<string, any>): Promise<import('@browser-os/windowing').Window> {
+    return await this.appManager.launchApp(appId, config);
   }
 
   /**

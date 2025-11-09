@@ -18,17 +18,11 @@ export const AppRenderer: React.FC<AppRendererProps> = ({ window, appManager }) 
       return;
     }
     
-    // Get app instance
-    const app = appManager.getApp(window.appId);
-    if (app) {
-      // Get component from app
-      const component = app.createComponent(window, window.payload);
-      setAppComponent(() => component);
+    // Get app component (works with both App instances and manifest-based apps)
+    appManager.getAppComponent(window.id).then((component) => {
+      setAppComponent(() => component || null);
       setLoading(false);
-    } else {
-      // Fallback for legacy apps
-      setLoading(false);
-    }
+    });
   }, [window.id, window.appId, appManager]);
   
   if (loading) {

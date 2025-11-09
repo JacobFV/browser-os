@@ -120,9 +120,9 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
       if (icon.appId === 'os.word-processor') {
         // Create new document for word processor
         const docId = createId();
-        os.launchApp(icon.appId, { documentId: docId });
+        os.launchApp(icon.appId, { documentId: docId }).catch(console.error);
       } else {
-        os.launchApp(icon.appId, { title: icon.label });
+        os.launchApp(icon.appId, { title: icon.label }).catch(console.error);
       }
     }
   };

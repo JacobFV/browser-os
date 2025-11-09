@@ -20,35 +20,10 @@ export class WindowManagerImpl implements WindowManager {
   constructor(eventBus: EventBus) {
     this.eventBus = eventBus;
   }
-
-  openWindow(options: {
-    appId: string;
-    title: string;
-    bounds?: WindowBounds;
-    workspaceId?: string;
-    payload?: Record<string, any>;
-  }): Window {
-    // Create Window instance (apps will create their own, but this is for backward compat)
-    const window = new Window(
-      options.appId,
-      options.title,
-      options.bounds || { x: 100, y: 100, w: 800, h: 600 },
-      options.workspaceId || 'default',
-      options.payload,
-      this.eventBus
-    );
-    
-    window.setZ(this.nextZ++, 'os');
-    this.windows.set(window.id, window);
-    this.focusWindow(window.id);
-    
-    this.eventBus.emit('window', { type: 'open', winId: window.id, appId: options.appId });
-    
-    return window;
-  }
   
   /**
    * Register a window created by an app
+   * This is the only way windows should be registered - use AppManager.launchApp() to create windows
    */
   registerWindow(window: Window): void {
     window.setZ(this.nextZ++, 'os');

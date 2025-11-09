@@ -6,7 +6,7 @@ import { VfsImpl } from '@browser-os/fs';
 import { ProcessManager } from '@browser-os/process';
 import { ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
-import { AppRegistry, AppManager, OS } from '@browser-os/app-sdk';
+import { AppManager, OS } from '@browser-os/app-sdk';
 import { CursorManager } from '@browser-os/cursor';
 import { TelemetryManager } from '@browser-os/telemetry';
 
@@ -23,9 +23,6 @@ export interface DesktopShellState {
   desktopIcons: DesktopIcon[];
   initialTheme: ThemeSkin;
   wallpaper?: string;
-  
-  // App registry (legacy)
-  appRegistry: AppRegistry;
   
   // New app system
   appManager?: AppManager;

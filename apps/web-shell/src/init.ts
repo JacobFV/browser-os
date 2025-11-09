@@ -2,6 +2,7 @@ import { initDesktopShell, DesktopShellInitOptions, DesktopShellState } from '@b
 import { defaultDesktopIcons } from './defaults';
 import { TerminalApp } from '@system-apps/terminal';
 import { CalculatorApp } from '@system-apps/calculator';
+import { FilesApp } from '@system-apps/files';
 
 export interface WebShellInitOptions extends DesktopShellInitOptions {
   // Web-shell specific options can go here
@@ -37,9 +38,14 @@ export async function initWebShell(options?: WebShellInitOptions): Promise<Deskt
       state.os.getProcessManager(),
       state.os.getEventBus()
     );
+    const filesApp = new FilesApp(
+      state.os.getProcessManager(),
+      state.os.getEventBus(),
+      state.os.getVFS()
+    );
     
     // Register apps
-    state.os.registerApps([terminalApp, calculatorApp]);
+    state.os.registerApps([terminalApp, calculatorApp, filesApp]);
   }
 
   return state;

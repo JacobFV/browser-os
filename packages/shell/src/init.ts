@@ -1,6 +1,6 @@
 import { applyTheme, ThemeSkin } from '@browser-os/theme';
 import { DesktopIcon } from '@browser-os/desktop';
-import { AppRegistry, OS, App } from '@browser-os/app-sdk';
+import { OS, App } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
 import type { FilesystemInitOptions } from '@browser-os/fs';
 import { initFilesystem, VfsImpl } from '@browser-os/fs';
@@ -32,6 +32,11 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
     apps: options?.apps?.appInstances,
   });
 
+  // Register manifests with AppManager (for legacy apps)
+  if (options?.apps?.manifests) {
+    os.getAppManager().registerManifests(options.apps.manifests);
+  }
+
   // Initialize filesystem using OS VFS instance
   initFilesystem(os.getVFS(), options?.vfs);
 
@@ -39,15 +44,6 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
   const themeSkin = options?.theme?.skin || 'win95';
   const themeAccent = options?.theme?.accent;
   applyTheme(themeSkin, themeAccent);
-
-  // Initialize app registry (legacy)
-  const appRegistry = new AppRegistry();
-  if (options?.apps?.registerDefaults !== false) {
-    // Register default apps if needed
-    if (options?.apps?.manifests) {
-      appRegistry.registerMany(options.apps.manifests);
-    }
-  }
 
   // Get desktop icons
   const desktopIcons = options?.desktop?.icons || [];
@@ -63,7 +59,6 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
     desktopIcons,
     initialTheme: themeSkin,
     wallpaper: options?.desktop?.wallpaper,
-    appRegistry,
     appManager: os.getAppManager(),
     os,
     cursor: os.getCursorManager(),
