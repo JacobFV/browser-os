@@ -6,6 +6,24 @@ export interface ProcessStreams {
   stderr: WritableStream<string>; // Commands write to stderr
 }
 
+export interface Process {
+  pid: Pid;
+  appId?: string; // For app processes
+  command?: string; // For command processes
+  args?: string[]; // Command arguments
+  state: import('@browser-os/core').ProcessState;
+  startedAt: number;
+  exitCode?: number;
+  cpu?: number;
+  mem?: number;
+  channels: Record<string, (msg: any) => void>;
+  cwd?: string; // Working directory
+  env?: Record<string, string>; // Environment variables
+  parentPid?: Pid; // Parent process
+  children: Set<Pid>; // Child processes
+  streams?: ProcessStreams; // STDIN/STDOUT/STDERR
+}
+
 export interface CommandHandler {
   name: string;
   description?: string;

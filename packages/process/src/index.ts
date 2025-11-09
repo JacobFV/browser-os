@@ -1,9 +1,8 @@
 import { createId } from '@browser-os/core';
 import { eventBus, ProcessEvent, ProcessState } from '@browser-os/core';
 import { builtInCommands } from './commands';
+import type { Pid, ProcessStreams, Process, CommandHandler } from './types';
 export * from './types';
-
-export type Pid = string;
 
 /**
  * Create paired streams for stdout/stderr
@@ -37,23 +36,7 @@ export function createPairedStreams(): {
   return { writable, readable };
 }
 
-export interface Process {
-  pid: Pid;
-  appId?: string; // For app processes
-  command?: string; // For command processes
-  args?: string[]; // Command arguments
-  state: ProcessState;
-  startedAt: number;
-  exitCode?: number;
-  cpu?: number;
-  mem?: number;
-  channels: Record<string, (msg: any) => void>;
-  cwd?: string; // Working directory
-  env?: Record<string, string>; // Environment variables
-  parentPid?: Pid; // Parent process
-  children: Set<Pid>; // Child processes
-  streams?: ProcessStreams; // STDIN/STDOUT/STDERR
-}
+// Process interface is exported from types.ts
 
 class ProcessManager {
   private processes: Map<Pid, Process> = new Map();

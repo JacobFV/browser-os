@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal as XTerm } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
-import { spawnApp, getProcess, executeCommand, getCommand, getAllCommands, createPairedStreams, ProcessStreams } from '@browser-os/process';
+import { spawnApp, getProcess, executeCommand, getCommand, getAllCommands, createPairedStreams } from '@browser-os/process';
+import type { ProcessStreams } from '@browser-os/process';
 import { vfs } from '@browser-os/fs';
 import './Terminal.css';
 
