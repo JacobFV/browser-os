@@ -1,0 +1,129 @@
+.monitor-app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  padding: 16px;
+}
+
+.monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.monitor-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.monitor-header button {
+  padding: 6px 12px;
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.monitor-header button:hover {
+  background: #d4d0c8;
+}
+
+.monitor-table {
+  flex: 1;
+  overflow: auto;
+  border: 2px inset #c0c0c0;
+}
+
+.monitor-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.monitor-table th {
+  background: #000080;
+  color: #fff;
+  padding: 8px;
+  text-align: left;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.monitor-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.monitor-table tr:hover {
+  background: #e0e0ff;
+}
+
+.monitor-table tr.selected {
+  background: #000080;
+  color: #fff;
+}
+
+.state-running {
+  color: #00aa00;
+  font-weight: bold;
+}
+
+.state-stopped {
+  color: #666;
+}
+
+.state-crashed {
+  color: #aa0000;
+  font-weight: bold;
+}
+
+.state-suspended {
+  color: #ffaa00;
+}
+
+.monitor-table button {
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.monitor-table button:hover {
+  background: #d4d0c8;
+}
+
+.monitor-table button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.monitor-empty {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+.monitor-details {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f5f5f5;
+  border: 2px inset #c0c0c0;
+}
+
+.monitor-details h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.monitor-details pre {
+  margin: 0;
+  font-size: 11px;
+  overflow: auto;
+  max-height: 200px;
+}
+

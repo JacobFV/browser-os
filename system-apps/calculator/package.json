@@ -1,19 +1,16 @@
 {
-  "name": "@browser-os/app-files",
+  "name": "@browser-os/app-calculator",
   "version": "0.1.0",
   "private": true,
-  "description": "File manager app for browser-os",
+  "description": "Calculator app for browser-os",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build"
   },
   "dependencies": {
     "@browser-os/core": "workspace:*",
     "@browser-os/app-sdk": "workspace:*",
-    "@browser-os/fs": "workspace:*",
-    "@browser-os/dialogs": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -6,6 +6,7 @@ import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
 import { eventBus, createId } from '@browser-os/core';
 import { vfs, createMemDriver } from '@browser-os/fs';
 import { DocumentWindow } from '../../system-apps/word-processor/src/DocumentWindow';
+import { AppRenderer } from './AppRenderer';
 
 export const WebShell: React.FC = () => {
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
@@ -14,6 +15,10 @@ export const WebShell: React.FC = () => {
     { id: '1', label: 'Files', icon: '📁', appId: 'files', x: 50, y: 50 },
     { id: '2', label: 'Terminal', icon: '💻', appId: 'terminal', x: 50, y: 150 },
     { id: '3', label: 'Word Processor', icon: '📝', appId: 'os.word-processor', x: 50, y: 250 },
+    { id: '4', label: 'Notepad', icon: '📄', appId: 'notes', x: 50, y: 350 },
+    { id: '5', label: 'Calculator', icon: '🔢', appId: 'calculator', x: 50, y: 450 },
+    { id: '6', label: 'Monitor', icon: '📊', appId: 'monitor', x: 50, y: 550 },
+    { id: '7', label: 'Settings', icon: '⚙️', appId: 'settings', x: 50, y: 650 },
   ]);
 
   // Initialize VFS with documents mount
@@ -168,7 +173,7 @@ export const WebShell: React.FC = () => {
           );
         }
         
-        // Default window view for other apps
+        // Render other apps
         return (
           <WindowView
             key={win.id}
@@ -180,7 +185,9 @@ export const WebShell: React.FC = () => {
             onMinimize={handleWindowMinimize}
             onMaximize={handleWindowMaximize}
             onRestore={handleWindowRestore}
-          />
+          >
+            <AppRenderer appId={win.appId} windowId={win.id} payload={win.payload} />
+          </WindowView>
         );
       })}
     </div>

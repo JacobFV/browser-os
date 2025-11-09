@@ -11,7 +11,7 @@
   "dependencies": {
     "@browser-os/core": "workspace:*",
     "@browser-os/app-sdk": "workspace:*",
-    "@browser-os/settings": "workspace:*",
+    "@browser-os/theme": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -91,10 +91,32 @@ export function createMemDriver(): FsDriver {
     id: 'mem',
     scheme: 'mem:',
     async stat(path: string): Promise<Stat> {
+      // Check for directory marker
+      const dirMarker = path.endsWith('/') ? path + '.dir' : path + '/.dir';
+      if (files.has(dirMarker)) {
+        return {
+          type: 'directory',
+          size: 0,
+          mtime: Date.now(),
+        };
+      }
+      
       const data = files.get(path);
+      if (data === undefined) {
+        // Check if it's a directory by looking for children
+        const hasChildren = Array.from(files.keys()).some(fp => 
+          fp.startsWith(path + '/') && fp !== dirMarker
+        );
+        return {
+          type: hasChildren ? 'directory' : 'file',
+          size: 0,
+          mtime: Date.now(),
+        };
+      }
+      
       return {
-        type: data === undefined ? 'directory' : 'file',
-        size: data ? (typeof data === 'string' ? data.length : data.length) : 0,
+        type: 'file',
+        size: typeof data === 'string' ? data.length : data.length,
         mtime: Date.now(),
       };
     },
@@ -107,19 +129,58 @@ export function createMemDriver(): FsDriver {
       files.set(path, data);
     },
     async rm(path: string, opts?: { recursive?: boolean }): Promise<void> {
-      files.delete(path);
+      if (opts?.recursive) {
+        // Delete all files/dirs that start with this path
+        const toDelete: string[] = [];
+        for (const filePath of files.keys()) {
+          if (filePath.startsWith(path + '/') || filePath === path) {
+            toDelete.push(filePath);
+          }
+        }
+        toDelete.forEach(fp => files.delete(fp));
+      } else {
+        files.delete(path);
+        // Also delete directory marker if it exists
+        const dirMarker = path.endsWith('/') ? path + '.dir' : path + '/.dir';
+        files.delete(dirMarker);
+      }
     },
     async readdir(path: string): Promise<Entry[]> {
       const entries: Entry[] = [];
+      const seenDirs = new Set<string>();
+      
       for (const [filePath] of files) {
-        if (filePath.startsWith(path + '/')) {
-          entries.push({
-            name: filePath.split('/').pop() || '',
-            path: filePath,
-            stat: await this.stat(filePath),
-          });
+        if (filePath.startsWith(path + '/') || filePath === path + '/.dir') {
+          const relativePath = filePath.slice(path.length + 1);
+          const parts = relativePath.split('/');
+          const name = parts[0];
+          
+          // Skip directory markers
+          if (name === '.dir') continue;
+          
+          // If it's a direct child, add it
+          if (parts.length === 1) {
+            entries.push({
+              name,
+              path: filePath,
+              stat: await this.stat(filePath),
+            });
+          } else {
+            // It's in a subdirectory, add the subdirectory if not already added
+            const dirName = name;
+            const dirPath = path.endsWith('/') ? path + dirName : path + '/' + dirName;
+            if (!seenDirs.has(dirPath)) {
+              seenDirs.add(dirPath);
+              entries.push({
+                name: dirName,
+                path: dirPath,
+                stat: { type: 'directory', size: 0, mtime: Date.now() },
+              });
+            }
+          }
         }
       }
+      
       return entries;
     },
   };
