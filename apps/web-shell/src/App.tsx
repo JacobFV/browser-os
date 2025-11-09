@@ -5,7 +5,7 @@ import { windowManager } from '@browser-os/windowing';
 import { openWindow, closeWindow, WindowView } from '@browser-os/windowing';
 import { eventBus, createId } from '@browser-os/core';
 import { vfs, createMemDriver } from '@browser-os/fs';
-import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow.tsx';
+import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow';
 import { AppRenderer } from './AppRenderer';
 
 export const WebShell: React.FC = () => {

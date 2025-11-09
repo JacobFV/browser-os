@@ -1,6 +1,6 @@
 import { createId } from '@browser-os/core';
 import { eventBus, ProcessEvent, ProcessState } from '@browser-os/core';
-import './commands'; // Register built-in commands
+import { builtInCommands } from './commands'; // Import built-in commands
 
 export type Pid = string;
 
@@ -351,6 +351,9 @@ class ProcessManager {
 }
 
 export const processManager = new ProcessManager();
+
+// Register built-in commands
+builtInCommands.forEach(cmd => processManager.registerCommand(cmd));
 
 export function spawn(appId: string, parentPid?: Pid): Pid {
   return processManager.spawnApp(appId, parentPid);
