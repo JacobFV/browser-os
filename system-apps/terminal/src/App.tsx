@@ -359,14 +359,17 @@ export const TerminalApp: React.FC = () => {
       }
 
       if (command === 'help') {
+        console.log('Help command detected');
         xterm.writeln('Available commands:');
         const commands = getAllCommands();
+        console.log('Found commands:', commands.length);
         commands.forEach((cmd: { name: string; description?: string }) => {
           xterm.writeln(`  ${cmd.name.padEnd(12)} - ${cmd.description || ''}`);
         });
         xterm.writeln('  cd <dir>      - Change directory');
         xterm.writeln('  help          - Show this help');
         xterm.writeln('  exit          - Exit terminal');
+        console.log('Help command completed');
         return;
       }
 

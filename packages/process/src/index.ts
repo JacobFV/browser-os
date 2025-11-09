@@ -59,7 +59,7 @@ class ProcessManager {
     return Array.from(this.commands.values());
   }
 
-  spawnApp(appId: string, parentPid?: Pid): Pid {
+  spawnApp(appId: string, parentPid?: Pid, windowId?: string): Pid {
     const pid = createId();
     const proc: Process = {
       pid,
@@ -70,6 +70,7 @@ class ProcessManager {
       children: new Set(),
       parentPid,
       env: {},
+      windowId,
     };
 
     if (parentPid) {
@@ -304,6 +305,14 @@ class ProcessManager {
     return Array.from(this.processes.values());
   }
 
+  getProcessByWindowId(windowId: string): Process | undefined {
+    return Array.from(this.processes.values()).find(proc => proc.windowId === windowId);
+  }
+
+  getProcessByAppId(appId: string): Process[] {
+    return Array.from(this.processes.values()).filter(proc => proc.appId === appId);
+  }
+
   send(pid: Pid, topic: string, msg: any): void {
     const proc = this.processes.get(pid);
     if (proc && proc.channels[topic]) {
@@ -364,6 +373,14 @@ export function getProcess(pid: Pid): Process | undefined {
   return processManager.getProcess(pid);
 }
 
-export function spawnApp(appId: string, parentPid?: Pid): Pid {
-  return processManager.spawnApp(appId, parentPid);
+export function spawnApp(appId: string, parentPid?: Pid, windowId?: string): Pid {
+  return processManager.spawnApp(appId, parentPid, windowId);
+}
+
+export function getProcessByWindowId(windowId: string): Process | undefined {
+  return processManager.getProcessByWindowId(windowId);
+}
+
+export function getProcessByAppId(appId: string): Process[] {
+  return processManager.getProcessByAppId(appId);
 }

@@ -9,6 +9,7 @@ export interface AppSDK {
   windowId: string;
   manifest: any;
   lifecycle: AppLifecycle;
+  pid?: string;
   
   // IPC methods
   sendToHost: (action: string, data?: any) => void;
@@ -16,17 +17,22 @@ export interface AppSDK {
   
   // Capability requests
   requestCapability: (capability: string) => Promise<boolean>;
+  
+  // Process management
+  exit: (exitCode?: number) => void;
+  getPid: () => string | null;
 }
 
 let appSDK: AppSDK | null = null;
 
-export function initializeAppSDK(windowId: string, manifest: any): AppSDK {
+export function initializeAppSDK(windowId: string, manifest: any, pid?: string): AppSDK {
   const lifecycle: AppLifecycle = {};
   
   const sdk: AppSDK = {
     windowId,
     manifest,
     lifecycle,
+    pid,
     
     sendToHost(action: string, data?: any) {
       if (window.parent) {
@@ -42,6 +48,10 @@ export function initializeAppSDK(windowId: string, manifest: any): AppSDK {
     onHostMessage(handler: (message: any) => void) {
       const messageHandler = (event: MessageEvent) => {
         if (event.data && event.data.type === 'host-init') {
+          // Update PID if provided in host-init message
+          if (event.data.pid) {
+            sdk.pid = event.data.pid;
+          }
           handler(event.data);
         }
       };
@@ -71,6 +81,14 @@ export function initializeAppSDK(windowId: string, manifest: any): AppSDK {
           resolve(false);
         }, 5000);
       });
+    },
+    
+    exit(exitCode: number = 0) {
+      sdk.sendToHost('exit', { exitCode });
+    },
+    
+    getPid(): string | null {
+      return sdk.pid || null;
     },
   };
   

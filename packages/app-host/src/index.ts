@@ -1,5 +1,6 @@
 import { Window } from '@browser-os/windowing';
 import { AppManifest } from '@browser-os/core';
+import { spawnApp, kill, getProcessByWindowId } from '@browser-os/process';
 
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;
@@ -14,6 +15,8 @@ export interface SandboxedApp {
   iframe: HTMLIFrameElement;
   lifecycle: AppLifecycle;
   state: 'mounted' | 'suspended' | 'unmounted';
+  pid?: string;
+  windowId?: string;
 }
 
 class AppHost {
@@ -29,12 +32,17 @@ class AppHost {
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
     iframe.src = manifest.entry;
     
+    // Spawn process for this app
+    const pid = spawnApp(manifest.id, undefined, windowId);
+    
     const app: SandboxedApp = {
       id: manifest.id,
       manifest,
       iframe,
       lifecycle: {},
       state: 'unmounted',
+      pid,
+      windowId,
     };
     
     // Set up IPC communication
@@ -59,6 +67,7 @@ class AppHost {
         appId: app.id,
         windowId,
         manifest: app.manifest,
+        pid: app.pid,
       }, '*');
     };
   }
@@ -71,6 +80,18 @@ class AppHost {
         break;
       case 'request-capability':
         // Handle capability requests
+        break;
+      case 'exit':
+        // Handle app self-termination
+        if (app.pid) {
+          kill(app.pid);
+        } else if (app.windowId) {
+          // Fallback: try to find process by windowId
+          const proc = getProcessByWindowId(app.windowId);
+          if (proc) {
+            kill(proc.pid);
+          }
+        }
         break;
       default:
         console.log('Unknown app message:', message);

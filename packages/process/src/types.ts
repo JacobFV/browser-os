@@ -22,6 +22,7 @@ export interface Process {
   parentPid?: Pid; // Parent process
   children: Set<Pid>; // Child processes
   streams?: ProcessStreams; // STDIN/STDOUT/STDERR
+  windowId?: string; // Window ID for app processes
 }
 
 export interface CommandHandler {

@@ -993,6 +993,9 @@ importers:
       vite:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.24)
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)
 
   system-apps/word-processor:
     dependencies:
