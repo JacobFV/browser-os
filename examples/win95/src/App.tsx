@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Window, Taskbar, StartMenu } from '@browser-os/windows';
+// TODO: Update to use new @browser-os packages
+// import { Window, Taskbar, StartMenu } from '@browser-os/windowing';
 
 // Generate random position within allowable bounds
 const getRandomPosition = (windowWidth: number, windowHeight: number) => {
