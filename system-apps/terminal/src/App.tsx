@@ -268,7 +268,16 @@ export const TerminalApp: React.FC = () => {
     // Store xterm reference for stdin input
     (xterm as any).stdinWriter = null;
     
+    // Ensure xterm is focusable
+    xterm.options.cursorBlink = true;
+    xterm.options.cursorStyle = 'block';
+    
     prompt(xterm);
+    
+    // Focus the terminal after a short delay to ensure it's ready
+    setTimeout(() => {
+      xterm.focus();
+    }, 100);
 
     return () => {
       window.removeEventListener('resize', handleResize);
