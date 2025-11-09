@@ -1,0 +1,44 @@
+:root[data-theme="win95"] {
+  --os-bg: #c0c0c0;
+  --os-fg: #000000;
+  --os-muted: #808080;
+  --os-accent: #000080;
+  --os-border: #000000;
+  --os-radius: 0px;
+  --os-elevation: inset;
+  --os-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+}
+
+:root[data-theme="macos"] {
+  --os-bg: #f5f5f7;
+  --os-fg: #1d1d1f;
+  --os-muted: #86868b;
+  --os-accent: #0071e3;
+  --os-border: rgba(0,0,0,0.1);
+  --os-radius: 10px;
+  --os-elevation: blur;
+  --os-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+:root[data-theme="monaco"] {
+  --os-bg: #1e1e1e;
+  --os-fg: #cccccc;
+  --os-muted: #858585;
+  --os-accent: #007acc;
+  --os-border: #3e3e3e;
+  --os-radius: 0px;
+  --os-elevation: flat;
+  --os-shadow: none;
+}
+
+:root[data-theme="glass"] {
+  --os-bg: rgba(255,255,255,0.1);
+  --os-fg: #ffffff;
+  --os-muted: rgba(255,255,255,0.6);
+  --os-accent: #00d4ff;
+  --os-border: rgba(255,255,255,0.2);
+  --os-radius: 16px;
+  --os-elevation: backdrop-blur;
+  --os-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+

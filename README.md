@@ -1,122 +1,192 @@
 # browser-os
 
-A monorepo for browser-based operating system UI components built with React.
+A comprehensive browser-based operating system monorepo built with React, TypeScript, and Turbo.
 
 ## Overview
 
-browser-os provides a collection of React component libraries that recreate classic operating system interfaces in the browser. Each package represents a different OS theme and UI paradigm.
+browser-os provides a complete OS-in-a-tab experience - a fully functional operating system that runs entirely in the browser. It features desktop and mobile modes, window management, a virtual filesystem, process management, and a complete app ecosystem.
+
+### Key Features
+
+- **Desktop & Mobile Shells**: Seamlessly switch between desktop and mobile modes
+- **Advanced Windowing**: Floating windows with snap-to-grid, drag/resize, and multi-workspace support
+- **Virtual Filesystem**: Multiple backend drivers (IndexedDB, OPFS, Memory, localStorage)
+- **Process Management**: Full process lifecycle with IPC and monitoring
+- **App System**: Sandboxed apps with capability-based permissions
+- **Theme System**: Multiple skins (Win95, macOS, Monaco, Glass) with runtime switching
+- **Built-in Apps**: Files, Terminal, Editor, Browser, Notes, Calendar, Settings, Store, Monitor
+- **Real-time Collaboration**: Optional cursor presence and multi-user support via Yjs
 
 ## Prerequisites
 
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
 
-This project uses [pnpm](https://pnpm.io/) workspaces for monorepo management. Install pnpm globally if you haven't already:
-
-```bash
-npm install -g pnpm
-```
-
-## Packages
-
-- **[windows](./packages/windows)** - Windows-style UI components
-
-## Examples
-
-- **[win95](./examples/win95)** - Windows 95 demonstration application
-
-## Getting Started
-
-### Installation
-
-Install all dependencies for the monorepo:
+## Installation
 
 ```bash
 pnpm install
 ```
 
-This will install dependencies for all packages and examples in the workspace.
-
-### Development
-
-Build all packages:
-
-```bash
-pnpm build
-```
-
-Run development mode for all packages:
-
-```bash
-pnpm dev
-```
-
-### Working with Individual Packages
-
-Each package can be developed independently. Use pnpm's filter flag to run commands for specific packages:
-
-```bash
-# Build a specific package
-pnpm --filter @browser-os/windows build
-
-# Run dev mode for a specific package
-pnpm --filter @browser-os/windows dev
-```
-
-Or navigate to the package directory and use its specific scripts:
-
-```bash
-cd packages/windows
-pnpm dev
-```
-
-### Running Examples
-
-Examples demonstrate how to use the component libraries. Run the win95 example:
-
-```bash
-# From the root directory
-pnpm --filter @browser-os/example-win95 dev
-
-# Or navigate to the example directory
-cd examples/win95
-pnpm dev
-```
-
-The example will be available at `http://localhost:3000`.
-
-## Project Structure
+## Structure
 
 ```
 browser-os/
+├── apps/
+│   ├── web-shell/          # React OS shell (web)
+│   ├── electron-shell/     # Electron wrapper
+│   └── showcase/           # Component gallery
 ├── packages/
-│   └── windows/          # Windows UI components
-├── examples/
-│   └── win95/            # Windows 95 example application
-├── package.json          # Root package.json with workspace scripts
-├── pnpm-workspace.yaml   # pnpm workspace configuration
-└── README.md            # This file
+│   ├── core/               # Event bus, IDs, Zod contracts
+│   ├── ui/                 # Primitive components
+│   ├── theme/              # Theme tokens and skins
+│   ├── windowing/          # Window management
+│   ├── workspace/          # Workspace management
+│   ├── taskbar/            # Taskbar and app switcher
+│   ├── desktop/            # Desktop and icons
+│   ├── process/            # Process management
+│   ├── fs/                 # Virtual filesystem
+│   ├── shell/              # Desktop/mobile shell
+│   ├── app-sdk/            # App SDK
+│   ├── app-host/           # App sandboxing
+│   ├── cursor/             # Cursor and presence
+│   ├── net/                # Network abstraction
+│   ├── notif/              # Notifications
+│   ├── settings/            # Settings store
+│   └── telemetry/          # Metrics and logging
+├── system-apps/
+│   ├── files/              # File manager
+│   ├── terminal/           # Terminal
+│   ├── editor/             # Monaco editor
+│   ├── browser/            # Web browser
+│   ├── notes/             # Notes app
+│   ├── calendar/          # Calendar
+│   ├── settings/          # Settings panel
+│   ├── store/             # App store
+│   └── monitor/           # Process monitor
+└── examples/
+    ├── basic-windowing/   # Windowing example
+    ├── theme-switching/   # Theme example
+    └── custom-app/        # Custom app example
 ```
 
-## Monorepo Setup
+## Quick Start
 
-This project uses pnpm workspaces. The workspace configuration is defined in `pnpm-workspace.yaml`. Local packages are referenced using the `workspace:*` protocol in `package.json` dependencies.
-
-### Building Packages
-
-Before using a package in an example, ensure it's built:
+### Installation
 
 ```bash
-pnpm --filter @browser-os/windows build
-```
+# Install dependencies
+pnpm install
 
-Or build all packages:
-
-```bash
+# Build all packages
 pnpm build
+
+# Start development mode
+pnpm dev
 ```
+
+### Running Applications
+
+```bash
+# Web shell (main OS interface)
+pnpm --filter @browser-os/web-shell dev
+
+# Showcase (component gallery)
+pnpm --filter @browser-os/showcase dev
+
+# Electron shell
+pnpm --filter @browser-os/electron-shell dev
+```
+
+### Working with Packages
+
+```bash
+# Build a specific package
+pnpm --filter @browser-os/core build
+
+# Watch mode for a package
+pnpm --filter @browser-os/windowing dev
+
+# Run tests
+pnpm test
+```
+
+## Features
+
+### Windowing System
+- Floating windows with drag/resize
+- Snap-to-grid and snap-to-edges
+- Window arrangement patterns (grid, stack, monocle)
+- Z-order management
+- Multi-workspace support
+
+### Process Management
+- Process lifecycle (starting → running → suspended → stopped)
+- IPC system
+- Process monitoring
+- Crash isolation
+
+### Virtual Filesystem
+- Multiple drivers: mem, idb, opfs, localStorage
+- Mount system
+- File watching
+- Quota management
+
+### Themes
+- Win95 skin
+- macOS skin
+- Monaco skin
+- Glass skin
+- Runtime theme switching
+
+### Mobile Mode
+- Fullscreen app cards
+- App switcher
+- Home screen grid
+- Gesture support
+
+## Architecture
+
+### Core Concepts
+
+**Desktop Shell**: Composed of windowing + desktop + taskbar + workspaces + app host + process manager + fs + cursor + theme.
+
+**Apps**: Packages exposing a manifest + React entry point. Installable & updatable via the app store.
+
+**Modes**:
+- **Desktop Mode**: XY window positioning, taskbar at bottom/top
+- **Mobile Mode**: Full-screen cards, app switcher replaces taskbar, desktop grid = home screen
+
+### Package Dependencies
+
+```
+core → windowing → workspace, taskbar, desktop
+core → process → app-sdk → app-host
+core → fs, cursor, net, notif, settings, telemetry
+shell → windowing + taskbar + desktop
+```
+
+## Documentation
+
+- [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture
+- [App Development Guide](./docs/APP_DEVELOPMENT.md) - Building apps for browser-os
+- [Contributing Guide](./docs/CONTRIBUTING.md) - Contributing to the project
+
+## Package Documentation
+
+- [@browser-os/core](./packages/core/README.md) - Core utilities and event bus
+- [@browser-os/windowing](./packages/windowing/README.md) - Window management system
+- [@browser-os/fs](./packages/fs/README.md) - Virtual filesystem
+- [@browser-os/process](./packages/process/README.md) - Process management
+- [@browser-os/app-sdk](./packages/app-sdk/README.md) - App SDK and manifest
+
+## Examples
+
+Check out the [examples](./examples/) directory for:
+- Basic windowing examples
+- Theme switching demos
+- Custom app development
 
 ## License
 
 MIT
-

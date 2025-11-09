@@ -1,0 +1,27 @@
+{
+  "name": "@browser-os/app-files",
+  "version": "0.1.0",
+  "private": true,
+  "description": "File manager app for browser-os",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@browser-os/core": "workspace:*",
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/app-sdk": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  }
+}
+
