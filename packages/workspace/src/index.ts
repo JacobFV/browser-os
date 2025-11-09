@@ -1,77 +1,122 @@
-import { createId } from '@browser-os/core';
+import { windowManager } from '@browser-os/windowing';
 import { Window } from '@browser-os/windowing';
-import { ThemeSkin } from '@browser-os/theme';
+import { settingsStore } from '@browser-os/settings';
 
 export interface Workspace {
   id: string;
   name: string;
-  layout: {
-    dockview: unknown;
-    windows: Window[];
-  };
-  mode: 'desktop' | 'mobile';
-  theme: {
-    skin: ThemeSkin;
-    accent?: string;
-  };
+  windows: Array<{
+    appId: string;
+    title: string;
+    bounds: { x: number; y: number; w: number; h: number };
+    state: string;
+    payload?: Record<string, any>;
+  }>;
 }
 
 class WorkspaceManager {
-  private workspaces: Map<string, Workspace> = new Map();
   private currentWorkspaceId: string = 'default';
-
-  createWorkspace(name: string, mode: 'desktop' | 'mobile' = 'desktop'): Workspace {
-    const id = createId();
+  
+  async saveWorkspace(name?: string): Promise<string> {
+    const workspaceId = name || `workspace-${Date.now()}`;
+    const windows = Array.from(windowManager.windows.values());
+    
     const workspace: Workspace = {
-      id,
-      name,
-      layout: { dockview: null, windows: [] },
-      mode,
-      theme: { skin: 'win95' },
+      id: workspaceId,
+      name: name || workspaceId,
+      windows: windows.map(win => ({
+        appId: win.appId,
+        title: win.title,
+        bounds: win.bounds,
+        state: win.state,
+        payload: win.payload,
+      })),
     };
-    this.workspaces.set(id, workspace);
-    return workspace;
+    
+    await settingsStore.set(`workspace:${workspaceId}`, workspace);
+    await this.addToWorkspaceList(workspaceId);
+    
+    return workspaceId;
   }
-
-  getWorkspace(id: string): Workspace | undefined {
-    return this.workspaces.get(id);
+  
+  async loadWorkspace(workspaceId: string): Promise<void> {
+    const workspace = await settingsStore.get<Workspace>(`workspace:${workspaceId}`);
+    if (!workspace) {
+      throw new Error(`Workspace not found: ${workspaceId}`);
+    }
+    
+    // Close all current windows
+    const currentWindows = Array.from(windowManager.windows.keys());
+    currentWindows.forEach(winId => windowManager.closeWindow(winId));
+    
+    // Restore windows
+    workspace.windows.forEach(winData => {
+      windowManager.openWindow({
+        appId: winData.appId,
+        title: winData.title,
+        bounds: winData.bounds,
+        payload: winData.payload,
+      });
+      
+      // Restore window state
+      const restoredWin = Array.from(windowManager.windows.values())
+        .find(w => w.appId === winData.appId && w.title === winData.title);
+      
+      if (restoredWin) {
+        if (winData.state === 'maximized') {
+          windowManager.maximizeWindow(restoredWin.id);
+        } else if (winData.state === 'minimized') {
+          windowManager.minimizeWindow(restoredWin.id);
+        }
+      }
+    });
+    
+    this.currentWorkspaceId = workspaceId;
   }
-
-  getCurrentWorkspace(): Workspace {
-    return this.workspaces.get(this.currentWorkspaceId) || this.createWorkspace('Default');
+  
+  async listWorkspaces(): Promise<string[]> {
+    const list = await settingsStore.get<string[]>('workspace:list') || [];
+    return list;
   }
-
-  setCurrentWorkspace(id: string): void {
-    this.currentWorkspaceId = id;
+  
+  private async addToWorkspaceList(workspaceId: string): Promise<void> {
+    const list = await this.listWorkspaces();
+    if (!list.includes(workspaceId)) {
+      list.push(workspaceId);
+      await settingsStore.set('workspace:list', list);
+    }
   }
-
-  saveWorkspace(workspace: Workspace): void {
-    this.workspaces.set(workspace.id, workspace);
+  
+  async deleteWorkspace(workspaceId: string): Promise<void> {
+    await settingsStore.delete(`workspace:${workspaceId}`);
+    const list = await this.listWorkspaces();
+    const filtered = list.filter(id => id !== workspaceId);
+    await settingsStore.set('workspace:list', filtered);
   }
-
-  loadWorkspace(id: string): Workspace | undefined {
-    return this.workspaces.get(id);
-  }
-
-  getAllWorkspaces(): Workspace[] {
-    return Array.from(this.workspaces.values());
+  
+  getCurrentWorkspaceId(): string {
+    return this.currentWorkspaceId;
   }
 }
 
 export const workspaceManager = new WorkspaceManager();
 
-export function saveWorkspace(name: string): Promise<void> {
-  const current = workspaceManager.getCurrentWorkspace();
-  current.name = name;
-  workspaceManager.saveWorkspace(current);
-  return Promise.resolve();
+export async function saveWorkspace(name?: string): Promise<string> {
+  return workspaceManager.saveWorkspace(name);
 }
 
-export function loadWorkspace(id: string): Promise<void> {
-  const workspace = workspaceManager.loadWorkspace(id);
-  if (workspace) {
-    workspaceManager.setCurrentWorkspace(id);
-  }
-  return Promise.resolve();
+export async function loadWorkspace(workspaceId: string): Promise<void> {
+  return workspaceManager.loadWorkspace(workspaceId);
 }
 
+export async function listWorkspaces(): Promise<string[]> {
+  return workspaceManager.listWorkspaces();
+}
+
+export async function deleteWorkspace(workspaceId: string): Promise<void> {
+  return workspaceManager.deleteWorkspace(workspaceId);
+}
+
+export function getCurrentWorkspaceId(): string {
+  return workspaceManager.getCurrentWorkspaceId();
+}

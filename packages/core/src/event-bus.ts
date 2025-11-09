@@ -19,7 +19,8 @@ export type WindowEvent =
   | { type: 'resize'; winId: string; w: number; h: number }
   | { type: 'minimize'; winId: string }
   | { type: 'maximize'; winId: string }
-  | { type: 'restore'; winId: string };
+  | { type: 'restore'; winId: string }
+  | { type: 'update'; winId: string };
 
 export type ProcessEvent =
   | { type: 'spawn'; pid: string; appId: string }

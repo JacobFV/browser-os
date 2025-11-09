@@ -1,100 +1,95 @@
-export interface FetchOptions extends RequestInit {
-  timeout?: number;
+import { Capability } from '@browser-os/core';
+
+export interface NetworkRequest {
+  url: string;
+  method?: string;
+  headers?: Record<string, string>;
+  body?: BodyInit;
 }
 
-export async function fetch(url: string, options: FetchOptions = {}): Promise<Response> {
-  const controller = new AbortController();
-  const timeout = options.timeout || 30000;
-  
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await window.fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
+export interface NetworkResponse {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  headers: Headers;
+  body: ReadableStream<Uint8Array> | null;
+  json(): Promise<any>;
+  text(): Promise<string>;
+  arrayBuffer(): Promise<ArrayBuffer>;
 }
 
-export class WebSocketClient {
-  private ws: WebSocket | null = null;
-  private url: string;
-  private handlers: Map<string, (data: any) => void> = new Map();
-
-  constructor(url: string) {
-    this.url = url;
+class NetworkManager {
+  private permissions: Map<string, Set<Capability>> = new Map();
+  
+  grantCapability(appId: string, capability: Capability): void {
+    if (!this.permissions.has(appId)) {
+      this.permissions.set(appId, new Set());
+    }
+    this.permissions.get(appId)!.add(capability);
   }
-
-  connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ws = new WebSocket(this.url);
-      this.ws.onopen = () => resolve();
-      this.ws.onerror = (error) => reject(error);
-      this.ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          const handler = this.handlers.get(data.type);
-          if (handler) {
-            handler(data.payload);
-          }
-        } catch (error) {
-          console.error('WebSocket message error:', error);
-        }
-      };
-    });
-  }
-
-  send(type: string, payload: any): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type, payload }));
+  
+  revokeCapability(appId: string, capability: Capability): void {
+    const perms = this.permissions.get(appId);
+    if (perms) {
+      perms.delete(capability);
     }
   }
-
-  on(type: string, handler: (data: any) => void): void {
-    this.handlers.set(type, handler);
+  
+  hasCapability(appId: string, capability: Capability): boolean {
+    const perms = this.permissions.get(appId);
+    return perms ? perms.has(capability) : false;
   }
-
-  close(): void {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+  
+  async fetch(appId: string, request: NetworkRequest): Promise<NetworkResponse> {
+    if (!this.hasCapability(appId, 'net.fetch')) {
+      throw new Error(`App ${appId} does not have net.fetch capability`);
     }
-  }
-}
-
-export class SSEClient {
-  private eventSource: EventSource | null = null;
-  private handlers: Map<string, (data: any) => void> = new Map();
-
-  connect(url: string): void {
-    this.eventSource = new EventSource(url);
-    this.eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const handler = this.handlers.get(data.type);
-        if (handler) {
-          handler(data.payload);
-        }
-      } catch (error) {
-        console.error('SSE message error:', error);
-      }
+    
+    const response = await globalThis.fetch(request.url, {
+      method: request.method || 'GET',
+      headers: request.headers,
+      body: request.body,
+    });
+    
+    return {
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      body: response.body,
+      json: () => response.json(),
+      text: () => response.text(),
+      arrayBuffer: () => response.arrayBuffer(),
     };
   }
-
-  on(type: string, handler: (data: any) => void): void {
-    this.handlers.set(type, handler);
-  }
-
-  close(): void {
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
+  
+  createWebSocket(appId: string, url: string): WebSocket {
+    if (!this.hasCapability(appId, 'net.ws')) {
+      throw new Error(`App ${appId} does not have net.ws capability`);
     }
+    
+    return new WebSocket(url);
   }
 }
 
+export const networkManager = new NetworkManager();
+
+export function grantNetworkCapability(appId: string, capability: Capability): void {
+  networkManager.grantCapability(appId, capability);
+}
+
+export function revokeNetworkCapability(appId: string, capability: Capability): void {
+  networkManager.revokeCapability(appId, capability);
+}
+
+export function hasNetworkCapability(appId: string, capability: Capability): boolean {
+  return networkManager.hasCapability(appId, capability);
+}
+
+export async function networkFetch(appId: string, request: NetworkRequest): Promise<NetworkResponse> {
+  return networkManager.fetch(appId, request);
+}
+
+export function createNetworkWebSocket(appId: string, url: string): WebSocket {
+  return networkManager.createWebSocket(appId, url);
+}

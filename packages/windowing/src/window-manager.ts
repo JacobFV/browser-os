@@ -133,6 +133,14 @@ class WindowManagerImpl implements WindowManager {
     }
   }
 
+  updateWindowTitle(winId: string, title: string): void {
+    const window = this.windows.get(winId);
+    if (window && window.title !== title) {
+      window.title = title;
+      eventBus.emit('window', { type: 'update', winId });
+    }
+  }
+
   getWindowsForWorkspace(workspaceId: string): Window[] {
     return Array.from(this.windows.values())
       .filter(w => w.workspaceId === workspaceId)
@@ -158,6 +166,10 @@ export function closeWindow(winId: string): void {
 
 export function focusWindow(winId: string): void {
   windowManager.focusWindow(winId);
+}
+
+export function updateWindowTitle(winId: string, title: string): void {
+  windowManager.updateWindowTitle(winId, title);
 }
 
 export function arrangeWindows(pattern: 'grid-2x2' | 'stack-right' | 'monocle'): void {

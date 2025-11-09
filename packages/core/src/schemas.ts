@@ -48,8 +48,8 @@ export const AppManifestSchema = z.object({
   name: z.string(),
   version: z.string(),
   icon: z.string(),
-  entry: z.function(),
-  background: z.function().optional(),
+  entry: z.string(), // Path to entry file instead of function
+  background: z.string().optional(), // Path to background script
   defaultWindow: z
     .object({
       w: z.number().positive(),

@@ -1,81 +1,127 @@
-export interface UserPreferences {
-  theme?: string;
-  language?: string;
-  [key: string]: any;
+import { createIdbDriver } from '@browser-os/fs';
+
+const SETTINGS_DB_NAME = 'browser-os-settings';
+const SETTINGS_STORE_NAME = 'settings';
+
+interface SettingsStore {
+  get<T = any>(key: string): Promise<T | undefined>;
+  set<T = any>(key: string, value: T): Promise<void>;
+  delete(key: string): Promise<void>;
+  getAll(): Promise<Record<string, any>>;
+  clear(): Promise<void>;
 }
 
-export interface WorkspaceSettings {
-  name: string;
-  layout?: unknown;
-  [key: string]: any;
+class SettingsStoreImpl implements SettingsStore {
+  private dbPromise: Promise<IDBDatabase> | null = null;
+  
+  private getDb(): Promise<IDBDatabase> {
+    if (this.dbPromise) return this.dbPromise;
+    
+    this.dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(SETTINGS_DB_NAME, 1);
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+      
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(SETTINGS_STORE_NAME)) {
+          db.createObjectStore(SETTINGS_STORE_NAME, { keyPath: 'key' });
+        }
+      };
+    });
+    
+    return this.dbPromise;
+  }
+  
+  async get<T = any>(key: string): Promise<T | undefined> {
+    const db = await this.getDb();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE_NAME], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE_NAME);
+      const request = store.get(key);
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result ? result.value : undefined);
+      };
+    });
+  }
+  
+  async set<T = any>(key: string, value: T): Promise<void> {
+    const db = await this.getDb();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE_NAME);
+      const request = store.put({ key, value });
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+    });
+  }
+  
+  async delete(key: string): Promise<void> {
+    const db = await this.getDb();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE_NAME);
+      const request = store.delete(key);
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+    });
+  }
+  
+  async getAll(): Promise<Record<string, any>> {
+    const db = await this.getDb();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE_NAME], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE_NAME);
+      const request = store.getAll();
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const result: Record<string, any> = {};
+        request.result.forEach((item: any) => {
+          result[item.key] = item.value;
+        });
+        resolve(result);
+      };
+    });
+  }
+  
+  async clear(): Promise<void> {
+    const db = await this.getDb();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE_NAME);
+      const request = store.clear();
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+    });
+  }
 }
 
-export interface SystemPreferences {
-  [key: string]: any;
+export const settingsStore = new SettingsStoreImpl();
+
+export async function getSetting<T = any>(key: string): Promise<T | undefined> {
+  return settingsStore.get<T>(key);
 }
 
-class SettingsStore {
-  private userPrefs: UserPreferences = {};
-  private workspaceSettings: Map<string, WorkspaceSettings> = new Map();
-  private systemPrefs: SystemPreferences = {};
-
-  getUserPreferences(): UserPreferences {
-    return { ...this.userPrefs };
-  }
-
-  setUserPreference(key: string, value: any): void {
-    this.userPrefs[key] = value;
-    this.persist();
-  }
-
-  getWorkspaceSettings(workspaceId: string): WorkspaceSettings | undefined {
-    return this.workspaceSettings.get(workspaceId);
-  }
-
-  setWorkspaceSettings(workspaceId: string, settings: WorkspaceSettings): void {
-    this.workspaceSettings.set(workspaceId, settings);
-    this.persist();
-  }
-
-  getSystemPreferences(): SystemPreferences {
-    return { ...this.systemPrefs };
-  }
-
-  setSystemPreference(key: string, value: any): void {
-    this.systemPrefs[key] = value;
-    this.persist();
-  }
-
-  private persist(): void {
-    try {
-      localStorage.setItem('browser-os-user-prefs', JSON.stringify(this.userPrefs));
-      localStorage.setItem('browser-os-workspace-settings', JSON.stringify(Array.from(this.workspaceSettings.entries())));
-      localStorage.setItem('browser-os-system-prefs', JSON.stringify(this.systemPrefs));
-    } catch (error) {
-      console.error('Failed to persist settings:', error);
-    }
-  }
-
-  load(): void {
-    try {
-      const userPrefs = localStorage.getItem('browser-os-user-prefs');
-      if (userPrefs) {
-        this.userPrefs = JSON.parse(userPrefs);
-      }
-      const workspaceSettings = localStorage.getItem('browser-os-workspace-settings');
-      if (workspaceSettings) {
-        this.workspaceSettings = new Map(JSON.parse(workspaceSettings));
-      }
-      const systemPrefs = localStorage.getItem('browser-os-system-prefs');
-      if (systemPrefs) {
-        this.systemPrefs = JSON.parse(systemPrefs);
-      }
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
-  }
+export async function setSetting<T = any>(key: string, value: T): Promise<void> {
+  return settingsStore.set(key, value);
 }
 
-export const settingsStore = new SettingsStore();
-settingsStore.load();
+export async function deleteSetting(key: string): Promise<void> {
+  return settingsStore.delete(key);
+}
 
+export async function getAllSettings(): Promise<Record<string, any>> {
+  return settingsStore.getAll();
+}
+
+export async function clearSettings(): Promise<void> {
+  return settingsStore.clear();
+}

@@ -6,8 +6,40 @@ export type Pid = string;
 
 export interface ProcessStreams {
   stdin: WritableStream<string>;
-  stdout: ReadableStream<string>;
-  stderr: ReadableStream<string>;
+  stdout: WritableStream<string>; // Commands write to stdout
+  stderr: WritableStream<string>; // Commands write to stderr
+}
+
+/**
+ * Create paired streams for stdout/stderr
+ * Returns both the writable side (for commands) and readable side (for terminal)
+ */
+export function createPairedStreams(): {
+  writable: WritableStream<string>;
+  readable: ReadableStream<string>;
+} {
+  let controller: ReadableStreamDefaultController<string> | null = null;
+  
+  const readable = new ReadableStream<string>({
+    start(c) {
+      controller = c;
+    },
+  });
+  
+  const writable = new WritableStream<string>({
+    write(chunk) {
+      controller?.enqueue(chunk);
+      return Promise.resolve();
+    },
+    close() {
+      controller?.close();
+    },
+    abort(reason) {
+      controller?.error(reason);
+    },
+  });
+  
+  return { writable, readable };
 }
 
 export interface Process {
@@ -98,6 +130,7 @@ class ProcessManager {
       env?: Record<string, string>;
       parentPid?: Pid;
       stdin?: ReadableStream<string>;
+      timeout?: number; // Timeout in milliseconds
     }
   ): Promise<Pid> {
     const pid = createId();
@@ -107,29 +140,26 @@ class ProcessManager {
       throw new Error(`Command not found: ${command}`);
     }
 
-    // Create streams
-    const stdoutChunks: string[] = [];
-    const stderrChunks: string[] = [];
+    // Create proper streams with backpressure handling
+    // Commands write to stdout/stderr, so they need WritableStreams
+    // Terminal reads from them, so we create paired streams
+    const stdoutPair = createPairedStreams();
+    const stderrPair = createPairedStreams();
     
-    const stdout = new ReadableStream<string>({
-      start(controller) {
-        // Stream will be populated by command execution
-      },
-    });
-
-    const stderr = new ReadableStream<string>({
-      start(controller) {
-        // Stream will be populated by command execution
-      },
-    });
-
     const stdin = new WritableStream<string>({
       write(chunk) {
-        // Handle stdin input
+        // Handle stdin input - will be connected by terminal
+        return Promise.resolve();
       },
     });
+    
+    const stdinWriter = stdin.getWriter();
 
-    const streams: ProcessStreams = { stdin, stdout, stderr };
+    const streams: ProcessStreams = { 
+      stdin, 
+      stdout: stdoutPair.writable, 
+      stderr: stderrPair.writable 
+    };
 
     const proc: Process = {
       pid,
@@ -144,6 +174,10 @@ class ProcessManager {
       env: { ...options?.env },
       streams,
     };
+    
+    // Store readable sides for terminal to read from
+    (proc as any).stdoutReadable = stdoutPair.readable;
+    (proc as any).stderrReadable = stderrPair.readable;
 
     if (options?.parentPid) {
       const parent = this.processes.get(options.parentPid);
@@ -159,23 +193,103 @@ class ProcessManager {
     (async () => {
       try {
         proc.state = 'running';
+        const startTime = performance.now();
+        const startMemory = (performance as any).memory?.usedJSHeapSize || 0;
+        
+        // Pipe stdin if provided
+        if (options?.stdin) {
+          const reader = options.stdin.getReader();
+          (async () => {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                await stdinWriter.write(value);
+              }
+            } catch (e) {
+              // Stream closed
+            } finally {
+              reader.releaseLock();
+            }
+          })();
+        }
+        
+        // Set up timeout if specified
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+        if (options?.timeout) {
+          timeoutId = setTimeout(() => {
+            if (proc.state === 'running') {
+              this.kill(pid);
+              eventBus.emit('proc', { type: 'kill', pid });
+            }
+          }, options.timeout);
+        }
+        
         const exitCode = await handler.execute(
           args || [],
           streams,
           proc.cwd!,
           proc.env || {}
         );
+        
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        
+        // Calculate metrics
+        const endTime = performance.now();
+        const endMemory = (performance as any).memory?.usedJSHeapSize || 0;
+        proc.cpu = endTime - startTime; // Execution time in ms
+        proc.mem = Math.max(0, endMemory - startMemory); // Memory delta in bytes
+        
+        // Close streams - close writable side which will close readable side
+        stdoutPair.writable.close();
+        stderrPair.writable.close();
+        stdinWriter.close();
+        
         proc.exitCode = exitCode;
         proc.state = exitCode === 0 ? 'stopped' : 'crashed';
         eventBus.emit('proc', { type: 'kill', pid });
       } catch (error: any) {
+        stdoutPair.writable.abort(error);
+        stderrPair.writable.abort(error);
+        stdinWriter.abort();
         proc.exitCode = 1;
         proc.state = 'crashed';
         eventBus.emit('proc', { type: 'crash', pid, error: error.message });
+      } finally {
+        stdinWriter.releaseLock();
       }
     })();
 
     return pid;
+  }
+  
+  /**
+   * Create streams that can be written to and read from
+   * Used for piping between commands
+   */
+  createStreams(): {
+    stdout: { writable: WritableStream<string>; readable: ReadableStream<string> };
+    stderr: { writable: WritableStream<string>; readable: ReadableStream<string> };
+    stdin: { stream: WritableStream<string>; writer: WritableStreamDefaultWriter<string> };
+  } {
+    const stdoutPair = createPairedStreams();
+    const stderrPair = createPairedStreams();
+    
+    const stdin = new WritableStream<string>({
+      write(chunk) {
+        return Promise.resolve();
+      },
+    });
+    
+    const stdinWriter = stdin.getWriter();
+
+    return {
+      stdout: stdoutPair,
+      stderr: stderrPair,
+      stdin: { stream: stdin, writer: stdinWriter },
+    };
   }
 
   kill(pid: Pid): void {
@@ -249,10 +363,14 @@ export function executeCommand(
     cwd?: string;
     env?: Record<string, string>;
     parentPid?: Pid;
+    stdin?: ReadableStream<string>;
+    timeout?: number;
   }
 ): Promise<Pid> {
   return processManager.executeCommand(command, args, options);
 }
+
+export { createPairedStreams };
 
 export function kill(pid: Pid): void {
   processManager.kill(pid);

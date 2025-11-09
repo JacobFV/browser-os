@@ -1,66 +1,99 @@
-import { CursorEvent, createId } from '@browser-os/core';
-import { eventBus } from '@browser-os/core';
+import { eventBus, CursorEvent, createId } from '@browser-os/core';
 
-export interface CursorPresence {
+export interface Cursor {
   id: string;
-  name?: string;
-  color: string;
-  pos?: { x: number; y: number };
-  winId?: string;
-  selection?: any;
-  agent?: boolean;
+  userId?: string;
+  x: number;
+  y: number;
+  color?: string;
 }
 
 class CursorManager {
-  private presences: Map<string, CursorPresence> = new Map();
-  private localId: string = createId();
-
-  join(options: { workspaceId: string; user?: { name?: string } }): string {
-    const presence: CursorPresence = {
-      id: this.localId,
-      name: options.user?.name,
-      color: this.generateColor(this.localId),
-      agent: false,
-    };
-    this.presences.set(this.localId, presence);
-    return this.localId;
+  private cursors: Map<string, Cursor> = new Map();
+  private localCursorId: string;
+  
+  constructor() {
+    this.localCursorId = createId();
+    this.cursors.set(this.localCursorId, {
+      id: this.localCursorId,
+      x: 0,
+      y: 0,
+    });
   }
-
-  update(id: string, updates: Partial<CursorPresence>): void {
-    const presence = this.presences.get(id);
-    if (presence) {
-      Object.assign(presence, updates);
-      if (updates.pos) {
-        eventBus.emit('cursor', { type: 'move', id, x: updates.pos.x, y: updates.pos.y });
-      }
+  
+  updateLocalCursor(x: number, y: number): void {
+    const cursor = this.cursors.get(this.localCursorId);
+    if (cursor) {
+      cursor.x = x;
+      cursor.y = y;
+      eventBus.emit('cursor', { type: 'move', id: this.localCursorId, x, y });
     }
   }
-
-  getPresence(id: string): CursorPresence | undefined {
-    return this.presences.get(id);
+  
+  addRemoteCursor(id: string, userId?: string, color?: string): void {
+    this.cursors.set(id, {
+      id,
+      userId,
+      x: 0,
+      y: 0,
+      color,
+    });
+    eventBus.emit('cursor', { type: 'enter', id });
   }
-
-  getAllPresences(): CursorPresence[] {
-    return Array.from(this.presences.values());
+  
+  removeRemoteCursor(id: string): void {
+    this.cursors.delete(id);
+    eventBus.emit('cursor', { type: 'leave', id });
   }
-
-  private generateColor(id: string): string {
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-      hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  
+  updateRemoteCursor(id: string, x: number, y: number): void {
+    const cursor = this.cursors.get(id);
+    if (cursor) {
+      cursor.x = x;
+      cursor.y = y;
+      eventBus.emit('cursor', { type: 'move', id, x, y });
     }
-    const hue = hash % 360;
-    return `hsl(${hue}, 70%, 50%)`;
+  }
+  
+  getAllCursors(): Cursor[] {
+    return Array.from(this.cursors.values());
+  }
+  
+  getLocalCursor(): Cursor | undefined {
+    return this.cursors.get(this.localCursorId);
+  }
+  
+  getRemoteCursors(): Cursor[] {
+    return Array.from(this.cursors.values()).filter(c => c.id !== this.localCursorId);
   }
 }
 
 export const cursorManager = new CursorManager();
 
-export function joinPresence(options: { workspaceId: string; user?: { name?: string } }): string {
-  return cursorManager.join(options);
+export function updateLocalCursor(x: number, y: number): void {
+  cursorManager.updateLocalCursor(x, y);
 }
 
-export function updatePresence(id: string, updates: Partial<CursorPresence>): void {
-  cursorManager.update(id, updates);
+export function addRemoteCursor(id: string, userId?: string, color?: string): void {
+  cursorManager.addRemoteCursor(id, userId, color);
 }
 
+export function removeRemoteCursor(id: string): void {
+  cursorManager.removeRemoteCursor(id);
+}
+
+export function updateRemoteCursor(id: string, x: number, y: number): void {
+  cursorManager.updateRemoteCursor(id, x, y);
+}
+
+export function getAllCursors(): Cursor[] {
+  return cursorManager.getAllCursors();
+}
+
+export function getLocalCursor(): Cursor | undefined {
+  return cursorManager.getLocalCursor();
+}
+
+export function getRemoteCursors(): Cursor[] {
+  return cursorManager.getRemoteCursors();
+}

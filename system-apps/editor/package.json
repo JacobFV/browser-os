@@ -11,6 +11,9 @@
   "dependencies": {
     "@browser-os/core": "workspace:*",
     "@browser-os/app-sdk": "workspace:*",
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/dialogs": "workspace:*",
+    "monaco-editor": "^0.45.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

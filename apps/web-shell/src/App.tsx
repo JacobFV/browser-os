@@ -11,6 +11,8 @@ import { AppRenderer } from './AppRenderer';
 export const WebShell: React.FC = () => {
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
   const [windowUpdateTrigger, setWindowUpdateTrigger] = useState(0);
+  const [mode, setMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [showAppSwitcher, setShowAppSwitcher] = useState(false);
   const [desktopIcons] = useState([
     { id: '1', label: 'Files', icon: '📁', appId: 'files', x: 50, y: 50 },
     { id: '2', label: 'Terminal', icon: '💻', appId: 'terminal', x: 50, y: 150 },
@@ -28,6 +30,18 @@ export const WebShell: React.FC = () => {
       mountPoint: '/documents',
       driver: memDriver,
     });
+  }, []);
+
+  // Detect mobile mode
+  useEffect(() => {
+    const checkMode = () => {
+      const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && window.innerWidth < 1024);
+      setMode(isMobile ? 'mobile' : 'desktop');
+    };
+    
+    checkMode();
+    window.addEventListener('resize', checkMode);
+    return () => window.removeEventListener('resize', checkMode);
   }, []);
 
   React.useEffect(() => {
@@ -53,9 +67,22 @@ export const WebShell: React.FC = () => {
         }
       } else if (event.type === 'close') {
         setWindows(prev => prev.filter(w => w.id !== event.winId));
-      } else if (event.type === 'minimize' || event.type === 'restore') {
-        // Sync windows list to reflect state changes
-        syncWindows();
+      } else if (event.type === 'minimize') {
+        // Remove minimized windows from visible list
+        setWindows(prev => prev.filter(w => w.id !== event.winId));
+      } else if (event.type === 'restore') {
+        // Add restored window back to list
+        const win = windowManager.windows.get(event.winId);
+        if (win) {
+          setWindows(prev => {
+            const exists = prev.find(w => w.id === win.id);
+            if (!exists) {
+              return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+            }
+            return prev;
+          });
+          setWindowUpdateTrigger(prev => prev + 1);
+        }
       } else if (event.type === 'maximize') {
         // Trigger re-render for maximize
         syncWindows();
@@ -63,18 +90,23 @@ export const WebShell: React.FC = () => {
       } else if (event.type === 'focus' || event.type === 'update') {
         // Ensure window is in list when focused/updated and trigger re-render
         const win = windowManager.windows.get(event.winId);
-        if (win && win.state !== 'minimized') {
-          setWindows(prev => {
-            const exists = prev.find(w => w.id === win.id);
-            if (!exists) {
-              return [...prev, { id: win.id, title: win.title, appId: win.appId }];
-            } else {
-              // Update title if changed
-              return prev.map(w => w.id === win.id ? { ...w, title: win.title } : w);
-            }
-          });
-          // Trigger re-render to update z-index and title
-          setWindowUpdateTrigger(prev => prev + 1);
+        if (win) {
+          if (win.state === 'minimized') {
+            // Remove minimized windows
+            setWindows(prev => prev.filter(w => w.id !== win.id));
+          } else {
+            setWindows(prev => {
+              const exists = prev.find(w => w.id === win.id);
+              if (!exists) {
+                return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+              } else {
+                // Update title if changed
+                return prev.map(w => w.id === win.id ? { ...w, title: win.title } : w);
+              }
+            });
+            // Trigger re-render to update z-index and title
+            setWindowUpdateTrigger(prev => prev + 1);
+          }
         }
       }
     });
@@ -139,9 +171,170 @@ export const WebShell: React.FC = () => {
   const allWindows = Array.from(windowManager.windows.values())
     .filter(w => w.state !== 'minimized')
     .sort((a, b) => b.z - a.z);
+  
+  const focusedWindow = allWindows.find(w => w.id === windowManager.focusedWindowId) || allWindows[0];
 
+  // Mobile mode: show full-screen app cards
+  if (mode === 'mobile') {
+    return (
+      <div className="web-shell mobile" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#008080' }}>
+        {focusedWindow ? (
+          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            {focusedWindow.appId === 'os.word-processor' && focusedWindow.payload?.documentId ? (
+              <DocumentWindow
+                documentId={focusedWindow.payload.documentId}
+                windowId={focusedWindow.id}
+                initialFileUri={focusedWindow.payload.fileUri}
+              />
+            ) : (
+              <AppRenderer
+                appId={focusedWindow.appId}
+                windowId={focusedWindow.id}
+                payload={focusedWindow.payload}
+              />
+            )}
+            {/* Back button */}
+            <button
+              onClick={() => {
+                windowManager.minimizeWindow(focusedWindow.id);
+              }}
+              style={{
+                position: 'fixed',
+                top: '10px',
+                left: '10px',
+                zIndex: 10001,
+                padding: '8px 16px',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              ← Home
+            </button>
+          </div>
+        ) : (
+          <div style={{ width: '100%', height: '100%', padding: '20px', overflowY: 'auto' }}>
+            <h1 style={{ color: 'white', marginBottom: '20px', fontSize: '24px' }}>Apps</h1>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                gap: '20px',
+              }}
+            >
+              {desktopIcons.map(icon => (
+                <div
+                  key={icon.id}
+                  onClick={() => handleIconClick(icon)}
+                  style={{
+                    background: 'white',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    transition: 'transform 0.2s',
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.95)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  <div style={{ fontSize: '48px', marginBottom: '8px' }}>{icon.icon}</div>
+                  <div style={{ fontSize: '12px', fontWeight: '500' }}>{icon.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* App Switcher */}
+        {showAppSwitcher && (
+          <div 
+            className="app-switcher"
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: 'rgba(0, 0, 0, 0.95)',
+              padding: '20px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+              gap: '16px',
+              zIndex: 10000,
+              maxHeight: '50vh',
+              overflowY: 'auto',
+            }}
+            onClick={() => setShowAppSwitcher(false)}
+          >
+            {windows.map(win => {
+              const icon = desktopIcons.find(i => i.appId === win.appId);
+              return (
+                <div
+                  key={win.id}
+                  className="app-switcher-card"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWindowClick(win.id);
+                    setShowAppSwitcher(false);
+                  }}
+                  style={{
+                    background: 'white',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ fontSize: '32px' }}>{icon?.icon || '📱'}</div>
+                  <div style={{ fontSize: '12px', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{win.title}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        
+        {/* Swipe up gesture area */}
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '40px',
+            background: 'transparent',
+            zIndex: 9999,
+          }}
+          onTouchStart={(e) => {
+            const startY = e.touches[0].clientY;
+            const handleTouchMove = (moveEvent: TouchEvent) => {
+              const currentY = moveEvent.touches[0].clientY;
+              if (startY - currentY > 50) {
+                setShowAppSwitcher(true);
+                document.removeEventListener('touchmove', handleTouchMove);
+              }
+            };
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', () => {
+              document.removeEventListener('touchmove', handleTouchMove);
+            }, { once: true });
+          }}
+        />
+      </div>
+    );
+  }
+
+  // Desktop mode
   return (
-    <div className="web-shell" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
+    <div className="web-shell desktop" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Shell
         mode="desktop"
         windows={windows}

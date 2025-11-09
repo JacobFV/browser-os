@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { windowManager, openWindow } from '@browser-os/windowing';
+import { windowManager, openWindow, updateWindowTitle } from '@browser-os/windowing';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
 import { createId } from '@browser-os/core';
 import { useDocument } from './useDocument';
@@ -85,10 +85,7 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
 
   useEffect(() => {
     if (window && window.title !== windowTitle) {
-      window.title = windowTitle;
-      // Trigger window update event to refresh title in UI
-      const { eventBus } = require('@browser-os/core');
-      eventBus.emit('window', { type: 'update', winId: windowId });
+      updateWindowTitle(windowId, windowTitle);
     }
   }, [window, windowTitle, windowId]);
 

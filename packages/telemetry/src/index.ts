@@ -1,89 +1,82 @@
 import { eventBus } from '@browser-os/core';
 
-export interface Metric {
-  name: string;
-  value: number;
+export interface TelemetryEvent {
+  type: string;
   timestamp: number;
-  tags?: Record<string, string>;
+  data?: Record<string, any>;
 }
 
-export interface LogEntry {
-  level: 'info' | 'warn' | 'error';
-  message: string;
-  timestamp: number;
-  context?: Record<string, any>;
+export interface SystemMetrics {
+  cpu: number;
+  memory: number;
+  processes: number;
+  windows: number;
 }
 
 class TelemetryManager {
-  private metrics: Metric[] = [];
-  private logs: LogEntry[] = [];
-  private enabled: boolean = true;
-  private maxMetrics: number = 1000;
-  private maxLogs: number = 1000;
-
-  recordMetric(name: string, value: number, tags?: Record<string, string>): void {
-    if (!this.enabled) return;
-    
-    const metric: Metric = {
-      name,
-      value,
+  private events: TelemetryEvent[] = [];
+  private maxEvents = 1000;
+  
+  record(event: Omit<TelemetryEvent, 'timestamp'>): void {
+    const telemetryEvent: TelemetryEvent = {
+      ...event,
       timestamp: Date.now(),
-      tags,
     };
     
-    this.metrics.push(metric);
-    if (this.metrics.length > this.maxMetrics) {
-      this.metrics.shift();
-    }
-  }
-
-  log(level: 'info' | 'warn' | 'error', message: string, context?: Record<string, any>): void {
-    const entry: LogEntry = {
-      level,
-      message,
-      timestamp: Date.now(),
-      context,
-    };
+    this.events.push(telemetryEvent);
     
-    this.logs.push(entry);
-    if (this.logs.length > this.maxLogs) {
-      this.logs.shift();
+    // Keep only last maxEvents
+    if (this.events.length > this.maxEvents) {
+      this.events.shift();
     }
     
-    console[level](`[${level.toUpperCase()}]`, message, context || '');
+    // Emit event for listeners
+    eventBus.emit('telemetry', telemetryEvent);
   }
-
-  getMetrics(name?: string): Metric[] {
-    if (name) {
-      return this.metrics.filter(m => m.name === name);
+  
+  getEvents(type?: string): TelemetryEvent[] {
+    if (type) {
+      return this.events.filter(e => e.type === type);
     }
-    return [...this.metrics];
+    return [...this.events];
   }
-
-  getLogs(level?: 'info' | 'warn' | 'error'): LogEntry[] {
-    if (level) {
-      return this.logs.filter(l => l.level === level);
-    }
-    return [...this.logs];
-  }
-
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled;
-  }
-
+  
   clear(): void {
-    this.metrics = [];
-    this.logs = [];
+    this.events = [];
+  }
+  
+  getSystemMetrics(): SystemMetrics {
+    const memory = (performance as any).memory?.usedJSHeapSize || 0;
+    const cpu = performance.now();
+    
+    // Get process and window counts from event bus or managers
+    // This is a simplified version - in reality you'd query the managers
+    const processes = 0; // Would query processManager
+    const windows = 0; // Would query windowManager
+    
+    return {
+      cpu,
+      memory,
+      processes,
+      windows,
+    };
   }
 }
 
-export const telemetry = new TelemetryManager();
+export const telemetryManager = new TelemetryManager();
 
-export function recordMetric(name: string, value: number, tags?: Record<string, string>): void {
-  telemetry.recordMetric(name, value, tags);
+export function recordTelemetry(event: Omit<TelemetryEvent, 'timestamp'>): void {
+  telemetryManager.record(event);
 }
 
-export function log(level: 'info' | 'warn' | 'error', message: string, context?: Record<string, any>): void {
-  telemetry.log(level, message, context);
+export function getTelemetryEvents(type?: string): TelemetryEvent[] {
+  return telemetryManager.getEvents(type);
 }
 
+export function clearTelemetry(): void {
+  telemetryManager.clear();
+}
+
+export function getSystemMetrics(): SystemMetrics {
+  return telemetryManager.getSystemMetrics();
+}
