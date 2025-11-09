@@ -77,7 +77,7 @@ class WindowManagerImpl implements WindowManager {
 
   moveWindow(winId: string, x: number, y: number): void {
     const window = this.windows.get(winId);
-    if (window) {
+    if (window && window.state !== 'maximized' && window.state !== 'fullscreen') {
       window.bounds.x = x;
       window.bounds.y = y;
       eventBus.emit('window', { type: 'move', winId, x, y });
@@ -86,7 +86,7 @@ class WindowManagerImpl implements WindowManager {
 
   resizeWindow(winId: string, w: number, h: number): void {
     const window = this.windows.get(winId);
-    if (window) {
+    if (window && window.state !== 'maximized' && window.state !== 'fullscreen') {
       window.bounds.w = w;
       window.bounds.h = h;
       eventBus.emit('window', { type: 'resize', winId, w, h });
