@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Windows 95 example application using @browser-os/windows",
+  "description": "Windows 95 example application using @browser-os/windowing",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

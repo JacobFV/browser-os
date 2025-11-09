@@ -1,6 +1,6 @@
 # @browser-os/app-host
 
-App host and sandboxing system for browser-os.
+App sandboxing system for browser-os.
 
 ## Installation
 
@@ -40,7 +40,6 @@ const trustedContainer = appHost.createSandbox('trusted-app', {
 ```typescript
 import { appHost } from '@browser-os/app-host';
 
-// Check if app has capability
 if (appHost.checkCapability('my-app', 'fs.write')) {
   // Allow write operation
 } else {
@@ -48,32 +47,10 @@ if (appHost.checkCapability('my-app', 'fs.write')) {
 }
 ```
 
-## Sandbox Options
-
-```typescript
-interface SandboxOptions {
-  iframe?: boolean;           // Use iframe sandbox
-  capabilities?: Capability[]; // Allowed capabilities
-  csp?: string;              // Content Security Policy
-}
-```
-
 ## Security Model
 
-### Untrusted Apps
-
-Untrusted apps run in iframes with:
-- Restricted postMessage IPC
-- CSP enforcement
-- Capability guards
-- Rate limiting
-
-### Trusted Apps
-
-Trusted apps can run in regular divs:
-- Direct DOM access
-- Full IPC access
-- No CSP restrictions
+- **Untrusted Apps**: Run in iframes with restricted postMessage IPC, CSP enforcement, capability guards, rate limiting
+- **Trusted Apps**: Run in regular divs with direct DOM access, full IPC access, no CSP restrictions
 
 ## IPC Bridge
 
@@ -90,35 +67,12 @@ window.parent.postMessage({
 // In host
 window.addEventListener('message', (event) => {
   if (event.data.type === 'ipc') {
-    // Handle IPC message
     if (appHost.checkCapability(appId, event.data.topic)) {
       // Process request
     }
   }
 });
 ```
-
-## Capability Guards
-
-Capabilities are checked before operations:
-
-```typescript
-function writeFile(appId: string, path: string, data: string) {
-  if (!appHost.checkCapability(appId, 'fs.write')) {
-    throw new Error('Permission denied: fs.write');
-  }
-  
-  // Perform write operation
-  vfs.write(path, data);
-}
-```
-
-## Rate Limiting
-
-Apps are rate-limited to prevent abuse:
-- IPC message limits
-- File operation limits
-- Network request limits
 
 ## API Reference
 

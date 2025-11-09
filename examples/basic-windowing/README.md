@@ -1,29 +1,20 @@
 # Basic Windowing Example
 
-Example demonstrating the new object-oriented windowing system in browser-os.
-
-## Overview
-
-This example shows how to:
-- Create Window instances using the Window class
-- Register windows with WindowManager
-- Control windows programmatically
-- Handle window events
-- Use shared control between apps and OS
-
-## Architecture
-
-This example demonstrates the new architecture where:
-- Windows are instances of the `Window` class
-- Windows can be controlled by both apps and the OS
-- Changes are synchronized via the event bus
+Example demonstrating the object-oriented windowing system in browser-os.
 
 ## Usage
 
 ```bash
-# Run example
 pnpm --filter @browser-os/example-basic-windowing dev
 ```
+
+## Features Demonstrated
+
+- Creating Window instances using the Window class
+- Registering windows with WindowManager
+- Controlling windows programmatically
+- Handling window events
+- Shared control between apps and OS
 
 ## Code Example
 
@@ -47,13 +38,3 @@ window.setTitle('New Title', 'app');
 window.moveTo(200, 200, 'os');
 window.maximize('os');
 ```
-
-## Features Demonstrated
-
-- Creating Window instances
-- Registering windows with WindowManager
-- Window focus management
-- Window state changes (minimize, maximize, restore)
-- Window movement and resizing
-- Event-driven updates
-- Shared control (app vs OS)

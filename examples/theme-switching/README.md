@@ -2,9 +2,6 @@
 
 Example demonstrating theme switching in browser-os.
 
-## Overview
-
-This example shows how to:
 - Switch between themes
 - Apply custom accent colors
 - Persist theme preferences
@@ -13,7 +10,6 @@ This example shows how to:
 ## Usage
 
 ```bash
-# Run example
 pnpm --filter @browser-os/example-theme-switching dev
 ```
 
@@ -24,11 +20,5 @@ pnpm --filter @browser-os/example-theme-switching dev
 - Theme persistence
 - Theme change events
 
-## Code Examples
-
-See `src/App.tsx` for complete examples of:
-- Applying themes
-- Getting current theme
-- Saving theme preferences
-- Theme change listeners
+See `src/App.tsx` for complete examples.
 

@@ -75,8 +75,6 @@ browser-os/
 
 ## Quick Start
 
-### Installation
-
 ```bash
 # Install dependencies
 pnpm install
@@ -84,69 +82,20 @@ pnpm install
 # Build all packages
 pnpm build
 
-# Start development mode
-pnpm dev
-```
-
-### Running Applications
-
-```bash
-# Web shell (main OS interface)
+# Start web shell (main OS interface)
 pnpm --filter @browser-os/web-shell dev
-
-# Showcase (component gallery)
-pnpm --filter @browser-os/showcase dev
-
-# Electron shell
-pnpm --filter @browser-os/electron-shell dev
-```
-
-### Working with Packages
-
-```bash
-# Build a specific package
-pnpm --filter @browser-os/core build
-
-# Watch mode for a package
-pnpm --filter @browser-os/windowing dev
 
 # Run tests
 pnpm test
 ```
 
-## Features
+## Key Features
 
-### Windowing System
-- Floating windows with drag/resize
-- Snap-to-grid and snap-to-edges
-- Window arrangement patterns (grid, stack, monocle)
-- Z-order management
-- Multi-workspace support
-
-### Process Management
-- Process lifecycle (starting → running → suspended → stopped)
-- IPC system
-- Process monitoring
-- Crash isolation
-
-### Virtual Filesystem
-- Multiple drivers: mem, idb, opfs, localStorage
-- Mount system
-- File watching
-- Quota management
-
-### Themes
-- Win95 skin
-- macOS skin
-- Monaco skin
-- Glass skin
-- Runtime theme switching
-
-### Mobile Mode
-- Fullscreen app cards
-- App switcher
-- Home screen grid
-- Gesture support
+- **Windowing**: Floating windows with drag/resize, snap-to-grid, multi-workspace
+- **Process Management**: Lifecycle, IPC, monitoring, crash isolation
+- **Virtual Filesystem**: Multiple drivers (mem, idb, opfs, localStorage), mount system, file watching
+- **Themes**: Win95, macOS, Monaco, Glass with runtime switching
+- **Mobile Mode**: Fullscreen app cards, app switcher, gesture support
 
 ## Architecture
 
@@ -169,6 +118,8 @@ core → fs, cursor, net, notif, settings, telemetry
 shell → windowing + taskbar + desktop
 ```
 
+See individual package READMEs for detailed API documentation.
+
 ## Documentation
 
 - [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture and OOP design
@@ -176,20 +127,12 @@ shell → windowing + taskbar + desktop
 - [App Development Guide](./docs/DEVELOPMENT.md) - Building apps for browser-os
 - [Contributing Guide](./docs/CONTRIBUTING.md) - Contributing to the project
 
-## Package Documentation
-
-- [@browser-os/core](./packages/core/README.md) - Core utilities and event bus
-- [@browser-os/windowing](./packages/windowing/README.md) - Window class and WindowManager
-- [@browser-os/app-sdk](./packages/app-sdk/README.md) - App base class, AppManager, and OS
-- [@browser-os/fs](./packages/fs/README.md) - Virtual filesystem
-- [@browser-os/process](./packages/process/README.md) - Process management
-
 ## Examples
 
-Check out the [examples](./examples/) directory for:
-- Basic windowing examples
-- Theme switching demos
-- Custom app development
+- [basic-windowing](./examples/basic-windowing/) - Window class usage
+- [theme-switching](./examples/theme-switching/) - Theme system demo
+- [custom-app](./examples/custom-app/) - Building custom apps
+- [win95](./examples/win95/) - Windows 95 aesthetic demo
 
 ## License
 

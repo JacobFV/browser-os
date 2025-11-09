@@ -17,8 +17,6 @@ pnpm add @browser-os/notif
 
 ## Usage
 
-### Showing Notifications
-
 ```typescript
 import { showNotification, dismissNotification } from '@browser-os/notif';
 
@@ -30,31 +28,10 @@ const id = showNotification('Hello!', {
 
 // Dismiss notification
 dismissNotification(id);
-```
-
-### Getting All Notifications
-
-```typescript
-import { notificationManager } from '@browser-os/notif';
 
 // Get all notifications
+import { notificationManager } from '@browser-os/notif';
 const notifications = notificationManager.getAll();
-
-notifications.forEach(notif => {
-  console.log(notif.title, notif.body);
-});
-```
-
-## Notification Interface
-
-```typescript
-interface Notification {
-  id: string;
-  title: string;
-  body?: string;
-  icon?: string;
-  timestamp: number;
-}
 ```
 
 ## Events
@@ -72,9 +49,6 @@ eventBus.on('notif', (event) => {
     case 'dismiss':
       console.log('Notification dismissed:', event.id);
       break;
-    case 'click':
-      console.log('Notification clicked:', event.id);
-      break;
   }
 });
 ```
@@ -86,42 +60,9 @@ Apps need `notifications` capability:
 ```typescript
 import { appHost } from '@browser-os/app-host';
 
-function showAppNotification(appId: string, title: string) {
-  if (!appHost.checkCapability(appId, 'notifications')) {
-    throw new Error('Permission denied: notifications');
-  }
-  
-  return showNotification(title);
+if (!appHost.checkCapability(appId, 'notifications')) {
+  throw new Error('Permission denied: notifications');
 }
-```
-
-## Toast Notifications
-
-For temporary notifications:
-
-```typescript
-import { showNotification } from '@browser-os/notif';
-
-// Show toast (auto-dismisses after 3 seconds)
-const id = showNotification('Saved!', {
-  body: 'Your changes have been saved',
-});
-
-setTimeout(() => {
-  dismissNotification(id);
-}, 3000);
-```
-
-## Notification Manager
-
-```typescript
-import { notificationManager } from '@browser-os/notif';
-
-// Get all notifications
-const all = notificationManager.getAll();
-
-// Get notifications sorted by timestamp (newest first)
-const recent = all.sort((a, b) => b.timestamp - a.timestamp);
 ```
 
 ## API Reference

@@ -1,6 +1,6 @@
 # Windows 95 Example
 
-A demonstration application showcasing the `@browser-os/windows` component library.
+A demonstration application showcasing the `@browser-os/windowing` component library.
 
 ## Features
 
@@ -24,10 +24,10 @@ First, ensure dependencies are installed from the root of the monorepo:
 pnpm install
 ```
 
-Make sure the `@browser-os/windows` package is built:
+Make sure the `@browser-os/windowing` package is built:
 
 ```bash
-pnpm --filter @browser-os/windows build
+pnpm --filter @browser-os/windowing build
 ```
 
 ## Running the Example
@@ -77,5 +77,5 @@ pnpm preview
 
 ## Note
 
-This example uses the local `@browser-os/windows` package via pnpm workspace protocol (`workspace:*`). When developing, ensure the windows package is built so changes are reflected in the example.
+This example uses the local `@browser-os/windowing` package via pnpm workspace protocol (`workspace:*`). When developing, ensure the windowing package is built so changes are reflected in the example.
 
