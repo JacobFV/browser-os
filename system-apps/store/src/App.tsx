@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllAppManifests, loadAppManifest, registerAppManifest } from '../../../apps/web-shell/src/app-manifest';
+import { getAllAppManifests, loadAppManifest, registerAppManifest } from '@apps/web-shell/app-manifest';
 import { openWindow } from '@browser-os/windowing';
 import './Store.css';
 

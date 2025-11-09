@@ -1,11 +1,11 @@
 import React from 'react';
-import { FilesApp } from '../../system-apps/files/src/App';
-import { TerminalApp } from '../../system-apps/terminal/src/App';
-import { NotesApp } from '../../system-apps/notes/src/App';
-import { CalculatorApp } from '../../system-apps/calculator/src/App';
-import { MonitorApp } from '../../system-apps/monitor/src/App';
-import { SettingsApp } from '../../system-apps/settings/src/App';
-import { DocumentWindow } from '../../system-apps/word-processor/src/DocumentWindow';
+import { FilesApp } from '@system-apps/files/App.tsx';
+import { TerminalApp } from '@system-apps/terminal/App.tsx';
+import { NotesApp } from '@system-apps/notes/App.tsx';
+import { CalculatorApp } from '@system-apps/calculator/App.tsx';
+import { MonitorApp } from '@system-apps/monitor/App.tsx';
+import { SettingsApp } from '@system-apps/settings/App.tsx';
+import { DocumentWindow } from '@system-apps/word-processor/DocumentWindow.tsx';
 import { loadAppFromManifest, getAppManifest } from './app-manifest';
 
 interface AppRendererProps {
