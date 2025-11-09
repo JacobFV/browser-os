@@ -1,9 +1,8 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
+import { Container } from '@browser-os/core';
 import { VfsImpl } from '@browser-os/fs';
-import { EventBus } from '@browser-os/core';
 import { FilesView } from './FilesView';
 
 /**
@@ -14,13 +13,16 @@ export class FilesApp extends App {
   readonly name = 'Files';
   readonly version = '1.0.0';
   
+  private vfs: VfsImpl;
+  private initialPath: string;
+  
   constructor(
-    processManager: ProcessManager,
-    eventBus: EventBus,
-    private vfs: VfsImpl,
-    private initialPath: string = 'vfs://documents/'
+    container: Container,
+    initialPath: string = 'vfs://documents/'
   ) {
-    super(processManager, eventBus);
+    super(container);
+    this.vfs = container.resolve('vfs');
+    this.initialPath = initialPath;
   }
   
   initialWindow(config?: Record<string, any>): Window {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
+import { Container } from '@browser-os/core';
 import { VfsImpl } from '@browser-os/fs';
-import { EventBus } from '@browser-os/core';
 import { EditorView } from './EditorView';
 
 /**
@@ -14,12 +13,11 @@ export class EditorApp extends App {
   readonly name = 'Editor';
   readonly version = '1.0.0';
   
-  constructor(
-    processManager: ProcessManager,
-    eventBus: EventBus,
-    private vfs: VfsImpl
-  ) {
-    super(processManager, eventBus);
+  private vfs: VfsImpl;
+  
+  constructor(container: Container) {
+    super(container);
+    this.vfs = container.resolve('vfs');
   }
   
   initialWindow(config?: Record<string, any>): Window {

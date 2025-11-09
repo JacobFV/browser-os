@@ -36,51 +36,18 @@ export async function initWebShell(options?: WebShellInitOptions): Promise<Deskt
 
   // Create app instances with dependencies from OS
   if (state.os) {
-    const terminalApp = new TerminalApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus(),
-      state.os.getVFS()
-    );
-    const calculatorApp = new CalculatorApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus()
-    );
-    const filesApp = new FilesApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus(),
-      state.os.getVFS()
-    );
-    const notesApp = new NotesApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus(),
-      state.os.getVFS()
-    );
-    const monitorApp = new MonitorApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus()
-    );
-    const settingsApp = new SettingsApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus()
-    );
-    const editorApp = new EditorApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus(),
-      state.os.getVFS()
-    );
-    const browserApp = new BrowserApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus()
-    );
-    const calendarApp = new CalendarApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus()
-    );
-    const storeApp = new StoreApp(
-      state.os.getProcessManager(),
-      state.os.getEventBus(),
-      state.os.getAppManager()
-    );
+    const container = state.os.getContainer();
+    
+    const terminalApp = new TerminalApp(container);
+    const calculatorApp = new CalculatorApp(container);
+    const filesApp = new FilesApp(container);
+    const notesApp = new NotesApp(container);
+    const monitorApp = new MonitorApp(container);
+    const settingsApp = new SettingsApp(container);
+    const editorApp = new EditorApp(container);
+    const browserApp = new BrowserApp(container);
+    const calendarApp = new CalendarApp(container);
+    const storeApp = new StoreApp(container, state.os.getAppManager());
     
     // Register apps
     state.os.registerApps([

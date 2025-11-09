@@ -1,8 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
-import { EventBus } from '@browser-os/core';
+import { Container } from '@browser-os/core';
 import { AppManager } from '@browser-os/app-sdk';
 import { StoreView } from './StoreView';
 
@@ -14,12 +13,14 @@ export class StoreApp extends App {
   readonly name = 'Store';
   readonly version = '1.0.0';
   
+  private appManager: AppManager;
+  
   constructor(
-    processManager: ProcessManager,
-    eventBus: EventBus,
-    private appManager: AppManager
+    container: Container,
+    appManager: AppManager
   ) {
-    super(processManager, eventBus);
+    super(container);
+    this.appManager = appManager;
   }
   
   initialWindow(config?: Record<string, any>): Window {

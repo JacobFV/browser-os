@@ -4,7 +4,7 @@ import { AppManager } from './AppManager';
 import { WindowManager, WindowManagerImpl } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
 import { WorkspaceManager } from '@browser-os/workspace';
-import { EventBus } from '@browser-os/core';
+import { EventBus, Container } from '@browser-os/core';
 import { VfsImpl } from '@browser-os/fs';
 import { SettingsStoreImpl } from '@browser-os/settings';
 import { AppHost } from '@browser-os/app-host';
@@ -15,7 +15,9 @@ import { TelemetryManager } from '@browser-os/telemetry';
 
 export interface OSConfig {
   apps?: App[];
-  // Optional overrides for testing
+  // Optional container override for testing
+  container?: Container;
+  // Optional overrides for testing (deprecated - use container instead)
   eventBus?: EventBus;
   windowManager?: WindowManager;
   processManager?: ProcessManager;
@@ -34,6 +36,7 @@ export interface OSConfig {
  * This is the main entry point for browser-os
  */
 export class OS {
+  private container: Container;
   private appManager: AppManager;
   private windowManager: WindowManager;
   private processManager: ProcessManager;
@@ -48,48 +51,95 @@ export class OS {
   private telemetryManager: TelemetryManager;
   
   constructor(config: OSConfig = {}) {
-    // Create core event bus first (all other services depend on it)
-    this.eventBus = config.eventBus || new EventBus();
+    // Use provided container or create new one
+    this.container = config.container || new Container();
     
-    // Create process manager (depends on event bus)
-    this.processManager = config.processManager || new ProcessManager(this.eventBus);
-    
-    // Create window manager
-    this.windowManager = config.windowManager || new WindowManagerImpl(this.eventBus);
-    
-    // Create settings store
-    this.settingsStore = config.settingsStore || new SettingsStoreImpl();
-    
-    // Create VFS
-    this.vfs = config.vfs || new VfsImpl(this.eventBus);
-    
-    // Create app host
-    this.appHost = config.appHost || new AppHost(this.processManager);
-    
-    // Create system services
-    this.cursorManager = config.cursorManager || new CursorManager(this.eventBus);
-    this.networkManager = config.networkManager || new NetworkManager();
-    this.notificationManager = config.notificationManager || new NotificationManager(this.eventBus);
-    this.telemetryManager = config.telemetryManager || new TelemetryManager(this.eventBus);
-    
-    // Create app manager (depends on window manager, process manager, and event bus)
-    this.appManager = new AppManager(
-      this.windowManager,
-      this.processManager,
-      this.eventBus
-    );
-    
-    // Create workspace manager (depends on app manager)
-    this.workspaceManager = config.workspaceManager || new WorkspaceManager(
-      this.windowManager,
-      this.settingsStore,
-      this.appManager
-    );
+    // Initialize container with dependencies if not already populated
+    if (!config.container) {
+      // Create core event bus first (all other services depend on it)
+      this.eventBus = config.eventBus || new EventBus();
+      this.container.register('eventBus', this.eventBus);
+      
+      // Create process manager (depends on event bus)
+      this.processManager = config.processManager || new ProcessManager(this.eventBus);
+      this.container.register('processManager', this.processManager);
+      
+      // Create window manager
+      this.windowManager = config.windowManager || new WindowManagerImpl(this.eventBus);
+      this.container.register('windowManager', this.windowManager);
+      
+      // Create settings store
+      this.settingsStore = config.settingsStore || new SettingsStoreImpl();
+      this.container.register('settingsStore', this.settingsStore);
+      
+      // Create VFS
+      this.vfs = config.vfs || new VfsImpl(this.eventBus);
+      this.container.register('vfs', this.vfs);
+      
+      // Create app host
+      this.appHost = config.appHost || new AppHost(this.processManager);
+      this.container.register('appHost', this.appHost);
+      
+      // Create system services
+      this.cursorManager = config.cursorManager || new CursorManager(this.eventBus);
+      this.container.register('cursorManager', this.cursorManager);
+      
+      this.networkManager = config.networkManager || new NetworkManager();
+      this.container.register('networkManager', this.networkManager);
+      
+      this.notificationManager = config.notificationManager || new NotificationManager(this.eventBus);
+      this.container.register('notificationManager', this.notificationManager);
+      
+      this.telemetryManager = config.telemetryManager || new TelemetryManager(this.eventBus);
+      this.container.register('telemetryManager', this.telemetryManager);
+      
+      // Create app manager (depends on window manager, process manager, and event bus)
+      this.appManager = new AppManager(
+        this.windowManager,
+        this.processManager,
+        this.eventBus
+      );
+      
+      // Create workspace manager (depends on app manager)
+      this.workspaceManager = config.workspaceManager || new WorkspaceManager(
+        this.windowManager,
+        this.settingsStore,
+        this.appManager
+      );
+      this.container.register('workspaceManager', this.workspaceManager);
+    } else {
+      // Resolve all dependencies from container
+      this.eventBus = this.container.resolve('eventBus');
+      this.processManager = this.container.resolve('processManager');
+      this.windowManager = this.container.resolve('windowManager');
+      this.settingsStore = this.container.resolve('settingsStore');
+      this.vfs = this.container.resolve('vfs');
+      this.appHost = this.container.resolve('appHost');
+      this.cursorManager = this.container.resolve('cursorManager');
+      this.networkManager = this.container.resolve('networkManager');
+      this.notificationManager = this.container.resolve('notificationManager');
+      this.telemetryManager = this.container.resolve('telemetryManager');
+      this.workspaceManager = this.container.resolve('workspaceManager');
+      
+      // Create app manager (not in container, created here)
+      this.appManager = new AppManager(
+        this.windowManager,
+        this.processManager,
+        this.eventBus
+      );
+    }
     
     // Register apps if provided
     if (config.apps) {
       this.appManager.registerApps(config.apps);
     }
+  }
+  
+  /**
+   * Get the dependency injection container
+   */
+  getContainer(): Container {
+    return this.container;
   }
   
   /**

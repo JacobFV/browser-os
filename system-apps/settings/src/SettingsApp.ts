@@ -1,8 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
-import { EventBus } from '@browser-os/core';
+import { Container } from '@browser-os/core';
 import { SettingsView } from './SettingsView';
 
 /**
@@ -13,8 +12,8 @@ export class SettingsApp extends App {
   readonly name = 'Settings';
   readonly version = '1.0.0';
   
-  constructor(processManager: ProcessManager, eventBus: EventBus) {
-    super(processManager, eventBus);
+  constructor(container: Container) {
+    super(container);
   }
   
   initialWindow(config?: Record<string, any>): Window {
