@@ -39,6 +39,10 @@ export const WebShell: React.FC = () => {
       } else if (event.type === 'minimize' || event.type === 'restore') {
         // Sync windows list to reflect state changes
         syncWindows();
+      } else if (event.type === 'maximize') {
+        // Trigger re-render for maximize
+        syncWindows();
+        setWindowUpdateTrigger(prev => prev + 1);
       } else if (event.type === 'focus') {
         // Ensure window is in list when focused and trigger re-render
         const win = windowManager.windows.get(event.winId);
