@@ -113,9 +113,11 @@ class WindowManagerImpl implements WindowManager {
 
   restoreWindow(winId: string): void {
     const window = this.windows.get(winId);
-    if (window && window.state === 'maximized' && (window as any).originalBounds) {
-      window.bounds = { ...(window as any).originalBounds };
-      delete (window as any).originalBounds;
+    if (window) {
+      if (window.state === 'maximized' && (window as any).originalBounds) {
+        window.bounds = { ...(window as any).originalBounds };
+        delete (window as any).originalBounds;
+      }
       this.setWindowState(winId, 'floating');
     }
   }
