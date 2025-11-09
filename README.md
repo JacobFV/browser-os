@@ -169,7 +169,7 @@ shell → windowing + taskbar + desktop
 ## Documentation
 
 - [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture
-- [App Development Guide](./docs/APP_DEVELOPMENT.md) - Building apps for browser-os
+- [App Development Guide](./docs/DEVELOPMENT.md) - Building apps for browser-os
 - [Contributing Guide](./docs/CONTRIBUTING.md) - Contributing to the project
 
 ## Package Documentation

@@ -54,6 +54,7 @@ The system supports two modes:
 - **@browser-os/notif**: Notifications and toasts
 - **@browser-os/settings**: User/workspace/system preferences
 - **@browser-os/telemetry**: Performance metrics and logging
+- **@browser-os/dialogs**: System file dialogs (open/save)
 
 ## Data Flow
 
@@ -93,6 +94,13 @@ Windows snap to:
 - Grid positions (8px default)
 - Screen edges
 - Neighboring windows
+
+### Window Arrangement
+
+Windows can be arranged in preset patterns:
+- **grid-2x2**: Arrange windows in a 2x2 grid layout
+- **stack-right**: Main window on left (70%), remaining windows stacked on right (30%)
+- **monocle**: All windows maximized, stacked by z-order
 
 ## Process Management
 
@@ -147,6 +155,17 @@ vfs.mount({
 
 ## App System
 
+### App Registry
+
+The `AppRegistry` class manages app manifests and dynamic loading:
+
+```typescript
+const registry = new AppRegistry();
+registry.register(manifest);
+registry.registerMany([manifest1, manifest2]);
+const app = await registry.loadApp('app-id');
+```
+
 ### Manifest
 
 Apps define their capabilities and entry point:
@@ -156,8 +175,10 @@ Apps define their capabilities and entry point:
   id: 'app-id',
   name: 'App Name',
   version: '1.0.0',
-  entry: () => import('./App'),
+  entry: string | (() => Promise<React.ComponentType>),
   permissions: ['fs.read', 'fs.write'],
+  defaultWindow?: { w: number; h: number; resizable?: boolean },
+  intents?: string[],
 }
 ```
 
@@ -245,6 +266,56 @@ App errors bubble to process manager with restart option.
 - Reduced motion support
 - Screen reader labels
 - Semantic HTML
+
+## Applications
+
+### Web Shell (`apps/web-shell`)
+
+Main OS interface running in the browser:
+- Desktop/mobile shell composition
+- App rendering and lifecycle
+- Command palette
+- Global shortcuts
+- Mobile gesture support
+
+### Electron Shell (`apps/electron-shell`)
+
+Electron wrapper for desktop deployment:
+- Native window management
+- System integration
+- Auto-updater support
+
+### Showcase (`apps/showcase`)
+
+Component gallery demonstrating:
+- UI components
+- Theme variations
+- Window management features
+
+## System Apps
+
+Built-in applications included with browser-os:
+
+- **Files**: File manager with mount point navigation, file operations, drag & drop
+- **Terminal**: xterm.js terminal emulator with shell command execution
+- **Editor**: Monaco-based code editor
+- **Browser**: Web browser with tab management and iframe sandboxing
+- **Notes**: Note-taking application
+- **Calendar**: Calendar application
+- **Settings**: System settings panel
+- **Store**: App store for installing/updating apps
+- **Monitor**: Process monitor and system metrics
+- **Calculator**: Calculator application
+- **Word Processor**: Document editor with formatting
+
+## Examples
+
+Example applications demonstrating browser-os features:
+
+- **basic-windowing**: Window management basics
+- **theme-switching**: Theme system usage
+- **custom-app**: Building custom apps
+- **win95**: Win95 theme showcase
 
 ## Testing
 
