@@ -27,6 +27,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
 }) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (!windowRef.current) return;
@@ -39,17 +40,21 @@ export const WindowView: React.FC<WindowViewProps> = ({
         listeners: {
           start() {
             setIsDragging(true);
+            dragStartPosRef.current = { x: window.bounds.x, y: window.bounds.y };
             onFocus(window.id);
           },
           move(event) {
-            const x = window.bounds.x + event.dx;
-            const y = window.bounds.y + event.dy;
-            if (onMove) {
-              onMove(window.id, x, y);
+            if (dragStartPosRef.current) {
+              const x = dragStartPosRef.current.x + event.dx;
+              const y = dragStartPosRef.current.y + event.dy;
+              if (onMove) {
+                onMove(window.id, x, y);
+              }
             }
           },
           end() {
             setIsDragging(false);
+            dragStartPosRef.current = null;
           },
         },
         modifiers: [
@@ -82,7 +87,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
     return () => {
       interact(element).unset();
     };
-  }, [window.id, window.bounds, onFocus, onMove, onResize]);
+  }, [window.id, window.bounds.w, window.bounds.h, onFocus, onMove, onResize]);
 
   if (window.state === 'minimized') {
     return null;
