@@ -41,6 +41,7 @@ export const AppRenderer: React.FC<AppRendererProps> = ({ window, appManager }) 
         documentId={window.payload.documentId}
         windowId={window.id}
         initialFileUri={window.payload.fileUri}
+        window={window}
       />
     );
   }

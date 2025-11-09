@@ -51,8 +51,8 @@ export class OS {
     // Create core event bus first (all other services depend on it)
     this.eventBus = config.eventBus || new EventBus();
     
-    // Create process manager
-    this.processManager = config.processManager || new ProcessManager();
+    // Create process manager (depends on event bus)
+    this.processManager = config.processManager || new ProcessManager(this.eventBus);
     
     // Create window manager
     this.windowManager = config.windowManager || new WindowManagerImpl(this.eventBus);

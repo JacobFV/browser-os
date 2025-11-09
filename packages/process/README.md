@@ -21,10 +21,15 @@ pnpm add @browser-os/process
 ### Spawning Processes
 
 ```typescript
-import { spawn, kill, processManager } from '@browser-os/process';
+import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
+
+// Create instances via dependency injection
+const eventBus = new EventBus();
+const processManager = new ProcessManager(eventBus);
 
 // Spawn a process
-const pid = spawn('my-app');
+const pid = processManager.spawnApp('my-app');
 
 // Get process info
 const process = processManager.getProcess(pid);
@@ -33,15 +38,21 @@ console.log(process.appId);
 console.log(process.startedAt);
 
 // Kill a process
-kill(pid);
+processManager.kill(pid);
 ```
+
+**Note**: ProcessManager is a class - create instances via dependency injection. Do not use singleton patterns.
 
 ### Process States
 
 ```typescript
-import { processManager } from '@browser-os/process';
+import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
 
-const pid = spawn('my-app');
+const eventBus = new EventBus();
+const processManager = new ProcessManager(eventBus);
+
+const pid = processManager.spawnApp('my-app');
 
 // Suspend process (freeze timers/render)
 processManager.suspend(pid);
@@ -57,9 +68,13 @@ console.log(proc.state); // 'suspended' or 'running'
 ### Inter-Process Communication (IPC)
 
 ```typescript
-import { spawn, send, processManager } from '@browser-os/process';
+import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
 
-const pid = spawn('my-app');
+const eventBus = new EventBus();
+const processManager = new ProcessManager(eventBus);
+
+const pid = processManager.spawnApp('my-app');
 
 // Register IPC handler
 const proc = processManager.getProcess(pid);
@@ -68,13 +83,17 @@ proc.channels['custom-topic'] = (msg) => {
 };
 
 // Send message to process
-send(pid, 'custom-topic', { data: 'hello' });
+processManager.send(pid, 'custom-topic', { data: 'hello' });
 ```
 
 ### Process Monitoring
 
 ```typescript
-import { processManager } from '@browser-os/process';
+import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
+const processManager = new ProcessManager(eventBus);
 
 // Get all processes
 const processes = processManager.getAllProcesses();
@@ -106,7 +125,9 @@ starting → running → (suspended | stopped | crashed)
 Process events are emitted via the event bus:
 
 ```typescript
-import { eventBus } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
 
 eventBus.on('proc', (event) => {
   switch (event.type) {

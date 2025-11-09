@@ -217,8 +217,17 @@ arrangeWindows('monocle');
 Windows belong to workspaces:
 
 ```typescript
-// Create window in specific workspace
-const window = new Window('my-app', 'Title', bounds, 'workspace-1');
+import { OS } from '@browser-os/app-sdk';
+
+const os = new OS();
+const windowManager = os.getWindowManager();
+
+// Create window in specific workspace (via AppManager.launchApp)
+const window = await os.launchApp('my-app', {
+  title: 'Title',
+  bounds: { x: 100, y: 100, w: 800, h: 600 },
+  workspaceId: 'workspace-1'
+});
 
 // Get windows for workspace
 const workspaceWindows = windowManager.getWindowsForWorkspace('workspace-1');
@@ -263,7 +272,6 @@ class WindowManager {
   focusedWindowId: string | null;
   nextZ: number;
   
-  openWindow(options: WindowOptions): Window;
   registerWindow(window: Window): void;
   closeWindow(winId: string): void;
   focusWindow(winId: string): void;
@@ -278,6 +286,8 @@ class WindowManager {
   getWindow(winId: string): Window | undefined;
 }
 ```
+
+**Note**: `openWindow()` has been removed. Use `AppManager.launchApp()` to create windows.
 
 ## Migration from Legacy Interface
 

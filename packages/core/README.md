@@ -20,7 +20,10 @@ pnpm add @browser-os/core
 ### Event Bus
 
 ```typescript
-import { eventBus } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
+
+// Create an event bus instance
+const eventBus = new EventBus();
 
 // Subscribe to window events
 const unsubscribe = eventBus.on('window', (event) => {
@@ -35,6 +38,8 @@ eventBus.emit('window', { type: 'open', winId: 'win-123', appId: 'app-files' });
 // Cleanup
 unsubscribe();
 ```
+
+**Note**: EventBus is a class - create instances via dependency injection. Do not use singleton patterns.
 
 ### ID Generation
 

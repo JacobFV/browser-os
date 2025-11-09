@@ -1,4 +1,5 @@
-import { eventBus, FsEvent } from '@browser-os/core';
+import { FsEvent } from '@browser-os/core';
+import type { EventBus } from '@browser-os/core';
 
 export interface Stat {
   type: 'file' | 'directory';

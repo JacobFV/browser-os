@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { windowManager, openWindow, updateWindowTitle } from '@browser-os/windowing';
+import { Window } from '@browser-os/windowing';
 import { FileDialog, FileDialogResult } from '@browser-os/dialogs';
 import { createId } from '@browser-os/core';
 import { useDocument } from './useDocument';
@@ -14,12 +14,14 @@ interface DocumentWindowProps {
   documentId: string;
   windowId: string;
   initialFileUri?: string;
+  window?: Window; // Window instance passed from AppRenderer
 }
 
 export const DocumentWindow: React.FC<DocumentWindowProps> = ({
   documentId,
   windowId,
   initialFileUri,
+  window: windowInstance,
 }) => {
   const [showOpenDialog, setShowOpenDialog] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -69,38 +71,28 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
   }, []);
 
   useKeyboardShortcuts(handleSave, handleOpen, () => {
-    const docId = createId();
-    openWindow({
-      appId: 'os.word-processor',
-      title: 'Untitled',
-      bounds: { x: 120, y: 120, w: 1000, h: 700 },
-      payload: { documentId: docId },
-    });
+    // Note: Opening new windows should be done via OS.launchApp()
+    // This is legacy code that will be removed when word-processor is migrated
+    console.warn('Opening new document windows should use OS.launchApp()');
   }, handleFormat);
 
-  const window = windowManager.windows.get(windowId);
   const windowTitle = document.fileUri
     ? document.fileUri.split('/').pop() + (document.modified ? ' *' : '')
     : 'Untitled' + (document.modified ? ' *' : '');
 
   useEffect(() => {
-    if (window && window.title !== windowTitle) {
-      updateWindowTitle(windowId, windowTitle);
+    if (windowInstance && windowInstance.title !== windowTitle) {
+      windowInstance.setTitle(windowTitle, 'app');
     }
-  }, [window, windowTitle, windowId]);
+  }, [windowInstance, windowTitle]);
 
   return (
     <div className="document-window">
       <MenuBar
         onNew={() => {
-          // Open new document window
-          const docId = createId();
-          openWindow({
-            appId: 'os.word-processor',
-            title: 'Untitled',
-            bounds: { x: 120, y: 120, w: 1000, h: 700 },
-            payload: { documentId: docId },
-          });
+          // Opening new windows should be done via OS.launchApp()
+          // This functionality will be restored when word-processor is migrated to App class
+          console.warn('Opening new document windows requires OS.launchApp() - word-processor needs migration');
         }}
         onOpen={handleOpen}
         onSave={handleSave}
@@ -108,10 +100,9 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
         onClose={() => {
           if (document.modified) {
             if (confirm('Document has unsaved changes. Close anyway?')) {
-              windowManager.closeWindow(windowId);
+              // Window closing is handled by OS/AppManager
+              // This is legacy code - word-processor should be migrated to App class
             }
-          } else {
-            windowManager.closeWindow(windowId);
           }
         }}
       />

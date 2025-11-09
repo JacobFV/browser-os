@@ -21,7 +21,12 @@ pnpm add @browser-os/fs
 ### Mounting a Driver
 
 ```typescript
-import { vfs, createMemDriver, createIdbDriver } from '@browser-os/fs';
+import { VfsImpl, createMemDriver, createIdbDriver } from '@browser-os/fs';
+import { EventBus } from '@browser-os/core';
+
+// Create VFS instance via dependency injection
+const eventBus = new EventBus();
+const vfs = new VfsImpl(eventBus);
 
 // Mount memory driver
 const memDriver = createMemDriver();
@@ -38,10 +43,16 @@ vfs.mount({
 });
 ```
 
+**Note**: VfsImpl is a class - create instances via dependency injection. Do not use singleton patterns.
+
 ### Reading and Writing Files
 
 ```typescript
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
+const vfs = new VfsImpl(eventBus);
 
 // Write a file
 await vfs.write('vfs://home/documents/readme.txt', 'Hello, World!');
@@ -56,7 +67,11 @@ const binary = await vfs.read('vfs://home/images/photo.png', { binary: true });
 ### File Operations
 
 ```typescript
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
+const vfs = new VfsImpl(eventBus);
 
 // Get file stats
 const stat = await vfs.stat('vfs://home/documents/readme.txt');
@@ -80,7 +95,11 @@ await vfs.rm('vfs://home/documents', { recursive: true });
 ### File Watching
 
 ```typescript
-import { vfs } from '@browser-os/fs';
+import { VfsImpl } from '@browser-os/fs';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
+const vfs = new VfsImpl(eventBus);
 
 // Watch a file or directory
 const unwatch = vfs.watch('vfs://home/documents', (event) => {
@@ -170,12 +189,16 @@ const customDriver: FsDriver = {
 vfs.mount({ mountPoint: '/custom', driver: customDriver });
 ```
 
+**Note**: Replace `vfs` with your VfsImpl instance created via dependency injection.
+
 ## Events
 
 Filesystem events are emitted via the event bus:
 
 ```typescript
-import { eventBus } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
+
+const eventBus = new EventBus();
 
 eventBus.on('fs', (event) => {
   switch (event.type) {

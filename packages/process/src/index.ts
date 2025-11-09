@@ -1,5 +1,5 @@
 import { createId } from '@browser-os/core';
-import { eventBus, ProcessEvent, ProcessState } from '@browser-os/core';
+import { EventBus, ProcessEvent, ProcessState } from '@browser-os/core';
 import { builtInCommands } from './commands';
 import type { Pid, ProcessStreams, Process, CommandHandler } from './types';
 export * from './types';
@@ -42,8 +42,10 @@ export class ProcessManager {
   private processes: Map<Pid, Process> = new Map();
   private commands: Map<string, CommandHandler> = new Map();
   private nextPidCounter = 1;
+  private eventBus: EventBus;
 
-  constructor() {
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
     // Register built-in commands
     builtInCommands.forEach(cmd => this.registerCommand(cmd));
   }
@@ -82,7 +84,7 @@ export class ProcessManager {
     }
 
     this.processes.set(pid, proc);
-    eventBus.emit('proc', { type: 'spawn', pid, appId });
+    this.eventBus.emit('proc', { type: 'spawn', pid, appId });
     
     setTimeout(() => {
       proc.state = 'running';
@@ -156,7 +158,7 @@ export class ProcessManager {
     }
 
     this.processes.set(pid, proc);
-    eventBus.emit('proc', { type: 'spawn', pid, appId: command });
+    this.eventBus.emit('proc', { type: 'spawn', pid, appId: command });
 
     // Execute command asynchronously
     (async () => {
@@ -189,7 +191,7 @@ export class ProcessManager {
           timeoutId = setTimeout(() => {
             if (proc.state === 'running') {
               this.kill(pid);
-              eventBus.emit('proc', { type: 'kill', pid });
+              this.eventBus.emit('proc', { type: 'kill', pid });
             }
           }, options.timeout);
         }
@@ -218,14 +220,14 @@ export class ProcessManager {
         
         proc.exitCode = exitCode;
         proc.state = exitCode === 0 ? 'stopped' : 'crashed';
-        eventBus.emit('proc', { type: 'kill', pid });
+        this.eventBus.emit('proc', { type: 'kill', pid });
       } catch (error: any) {
         stdoutPair.writable.abort(error);
         stderrPair.writable.abort(error);
         stdinWriter.abort();
         proc.exitCode = 1;
         proc.state = 'crashed';
-        eventBus.emit('proc', { type: 'crash', pid, error: error.message });
+        this.eventBus.emit('proc', { type: 'crash', pid, error: error.message });
       } finally {
         stdinWriter.releaseLock();
       }
@@ -278,7 +280,7 @@ export class ProcessManager {
         }
       }
       
-      eventBus.emit('proc', { type: 'kill', pid });
+      this.eventBus.emit('proc', { type: 'kill', pid });
     }
   }
 
@@ -286,7 +288,7 @@ export class ProcessManager {
     const proc = this.processes.get(pid);
     if (proc && proc.state === 'running') {
       proc.state = 'suspended';
-      eventBus.emit('proc', { type: 'suspend', pid });
+      this.eventBus.emit('proc', { type: 'suspend', pid });
     }
   }
 
@@ -294,7 +296,7 @@ export class ProcessManager {
     const proc = this.processes.get(pid);
     if (proc && proc.state === 'suspended') {
       proc.state = 'running';
-      eventBus.emit('proc', { type: 'resume', pid });
+      this.eventBus.emit('proc', { type: 'resume', pid });
     }
   }
 
