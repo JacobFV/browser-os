@@ -4,7 +4,7 @@ import { vfs, Entry } from '@browser-os/fs';
 import { FileDialogOptions, FileDialogResult } from './FileDialog.types';
 import './FileDialog.css';
 
-interface FileDialogProps extends FileDialogOptions {
+export interface FileDialogProps extends FileDialogOptions {
   open: boolean;
   onClose: () => void;
   onConfirm: (result: FileDialogResult) => void;
@@ -221,15 +221,15 @@ export const FileDialog: React.FC<FileDialogProps> = ({
 
         <div className="file-dialog-footer">
           {mode === 'save' && (
-            <div className="file-dialog-filename">
-              <Input
-                label="File name:"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter file name"
-                autoFocus
-              />
-            </div>
+          <div className="file-dialog-filename">
+            <Input
+              label="File name:"
+              value={fileName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFileName(e.target.value)}
+              placeholder="Enter file name"
+              autoFocus
+            />
+          </div>
           )}
           {filters.length > 0 && (
             <div className="file-dialog-filters">
