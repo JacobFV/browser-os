@@ -7,6 +7,7 @@ import { eventBus } from '@browser-os/core';
 
 export const WebShell: React.FC = () => {
   const [windows, setWindows] = useState<Array<{ id: string; title: string; appId: string }>>([]);
+  const [windowUpdateTrigger, setWindowUpdateTrigger] = useState(0);
   const [desktopIcons] = useState([
     { id: '1', label: 'Files', icon: '📁', appId: 'files', x: 50, y: 50 },
     { id: '2', label: 'Terminal', icon: '💻', appId: 'terminal', x: 50, y: 150 },
@@ -39,13 +40,18 @@ export const WebShell: React.FC = () => {
         // Sync windows list to reflect state changes
         syncWindows();
       } else if (event.type === 'focus') {
-        // Ensure window is in list when focused
+        // Ensure window is in list when focused and trigger re-render
         const win = windowManager.windows.get(event.winId);
         if (win && win.state !== 'minimized') {
           setWindows(prev => {
-            if (prev.find(w => w.id === win.id)) return prev;
-            return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+            const exists = prev.find(w => w.id === win.id);
+            if (!exists) {
+              return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+            }
+            return prev;
           });
+          // Trigger re-render to update z-index
+          setWindowUpdateTrigger(prev => prev + 1);
         }
       }
     });
