@@ -148,16 +148,22 @@ export const TerminalApp: React.FC = () => {
         xterm.writeln('');
         const command = currentCommandRef.current.trim();
         
+        console.log('Command entered:', command);
+        
         if (command) {
           setHistory(prev => [...prev, command]);
           setHistoryIndex(-1);
           
           try {
+            console.log('Executing command:', command);
             await executeCommandLine(command, xterm);
+            console.log('Command execution completed');
           } catch (error: any) {
             xterm.writeln(`Error: ${error.message}`);
             console.error('Command execution error:', error);
           }
+        } else {
+          console.log('Empty command, just showing prompt');
         }
         
         prompt(xterm);
@@ -260,6 +266,7 @@ export const TerminalApp: React.FC = () => {
         // Regular character
         currentCommandRef.current += data;
         xterm.write(data);
+        console.log('Character typed:', data, 'Current command:', currentCommandRef.current);
       }
     };
 
