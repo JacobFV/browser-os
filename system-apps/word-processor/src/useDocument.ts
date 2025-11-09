@@ -14,12 +14,20 @@ export interface DocumentState {
 
 const documents = new Map<string, DocumentState>();
 
+function stripHtml(html: string): string {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
 function getWordCount(text: string): number {
-  return text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+  const plainText = stripHtml(text);
+  return plainText.trim().split(/\s+/).filter((w) => w.length > 0).length;
 }
 
 function getCharCount(text: string): number {
-  return text.length;
+  const plainText = stripHtml(text);
+  return plainText.length;
 }
 
 export function useDocument(docId: string, initialFileUri?: string) {
@@ -96,7 +104,8 @@ export function useDocument(docId: string, initialFileUri?: string) {
   }, [state.fileUri, state.content, updateState]);
 
   const execCommand = useCallback((command: string, value?: string) => {
-    document.execCommand(command, false, value);
+    // This will be called on the editor element, not global document
+    // The actual execution happens in the Editor component
   }, []);
 
   return {

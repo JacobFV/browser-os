@@ -41,26 +41,26 @@ export function useKeyboardShortcuts(
           case 'z':
             e.preventDefault();
             if (e.shiftKey) {
-              document.execCommand('redo');
+              document.execCommand('redo', false);
             } else {
-              document.execCommand('undo');
+              document.execCommand('undo', false);
             }
             break;
           case 'y':
             e.preventDefault();
-            document.execCommand('redo');
+            document.execCommand('redo', false);
             break;
           case 'x':
             e.preventDefault();
-            document.execCommand('cut');
+            document.execCommand('cut', false);
             break;
           case 'c':
             e.preventDefault();
-            document.execCommand('copy');
+            document.execCommand('copy', false);
             break;
           case 'v':
             e.preventDefault();
-            document.execCommand('paste');
+            document.execCommand('paste', false);
             break;
         }
       }

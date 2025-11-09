@@ -21,9 +21,12 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
         editorRef.current?.focus();
       },
       execCommand: (command: string, value?: string) => {
-        document.execCommand(command, false, value);
         if (editorRef.current) {
-          onChange(editorRef.current.innerHTML);
+          editorRef.current.focus();
+          const success = document.execCommand(command, false, value);
+          if (success && editorRef.current) {
+            onChange(editorRef.current.innerHTML);
+          }
         }
       },
     }));

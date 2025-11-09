@@ -68,10 +68,19 @@ export const FileDialog: React.FC<FileDialogProps> = ({
   }, [mode, filters]);
 
   useEffect(() => {
-    if (open && currentPath) {
-      loadDirectory(currentPath);
+    if (open) {
+      if (defaultPath && currentPath !== defaultPath) {
+        setCurrentPath(defaultPath);
+      }
+      if (currentPath) {
+        loadDirectory(currentPath);
+      }
+      // Reset state when dialog opens
+      setSelectedFiles([]);
+      setFileName('');
+      setError(null);
     }
-  }, [open, currentPath, loadDirectory]);
+  }, [open, defaultPath, currentPath, loadDirectory]);
 
   const handleEntryClick = (entry: Entry) => {
     if (entry.stat.type === 'directory') {
@@ -108,8 +117,10 @@ export const FileDialog: React.FC<FileDialogProps> = ({
     if (parts.length > 2) {
       // Remove last part (file/dir name)
       parts.pop();
-      setCurrentPath('vfs://' + parts.slice(1).join('/') + '/');
+      const newPath = 'vfs://' + parts.slice(1).join('/') + '/';
+      setCurrentPath(newPath);
       setSelectedFiles([]);
+      setFileName('');
     }
   };
 
@@ -119,7 +130,15 @@ export const FileDialog: React.FC<FileDialogProps> = ({
         setError('Please enter a file name');
         return;
       }
-      const fullPath = currentPath.endsWith('/') ? currentPath + fileName : currentPath + '/' + fileName;
+      // Ensure file has extension if filter is selected
+      let finalFileName = fileName.trim();
+      if (filters.length > 0 && filters[0].extensions.length > 0 && filters[0].extensions[0] !== '*') {
+        const hasExt = finalFileName.includes('.');
+        if (!hasExt && filters[0].extensions[0]) {
+          finalFileName += '.' + filters[0].extensions[0];
+        }
+      }
+      const fullPath = currentPath.endsWith('/') ? currentPath + finalFileName : currentPath + '/' + finalFileName;
       onConfirm({ canceled: false, filePaths: [fullPath] });
     } else {
       if (selectedFiles.length === 0) {

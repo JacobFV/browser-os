@@ -63,8 +63,14 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
   }, [document]);
 
   const handleFormat = useCallback((command: string, value?: string) => {
-    document.execCommand(command, false, value);
-  }, []);
+    if (editorRef.current) {
+      editorRef.current.focus();
+      const success = document.execCommand(command, false, value);
+      if (success && editorRef.current) {
+        document.setContent(editorRef.current.innerHTML);
+      }
+    }
+  }, [document]);
 
   useKeyboardShortcuts(handleSave, handleOpen, () => {
     const docId = createId();
@@ -82,10 +88,13 @@ export const DocumentWindow: React.FC<DocumentWindowProps> = ({
     : 'Untitled' + (document.modified ? ' *' : '');
 
   useEffect(() => {
-    if (window) {
+    if (window && window.title !== windowTitle) {
       window.title = windowTitle;
+      // Trigger window update event to refresh title in UI
+      const { eventBus } = require('@browser-os/core');
+      eventBus.emit('window', { type: 'update', winId: windowId });
     }
-  }, [window, windowTitle]);
+  }, [window, windowTitle, windowId]);
 
   return (
     <div className="document-window">

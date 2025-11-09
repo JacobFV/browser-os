@@ -55,18 +55,20 @@ export const WebShell: React.FC = () => {
         // Trigger re-render for maximize
         syncWindows();
         setWindowUpdateTrigger(prev => prev + 1);
-      } else if (event.type === 'focus') {
-        // Ensure window is in list when focused and trigger re-render
+      } else if (event.type === 'focus' || event.type === 'update') {
+        // Ensure window is in list when focused/updated and trigger re-render
         const win = windowManager.windows.get(event.winId);
         if (win && win.state !== 'minimized') {
           setWindows(prev => {
             const exists = prev.find(w => w.id === win.id);
             if (!exists) {
               return [...prev, { id: win.id, title: win.title, appId: win.appId }];
+            } else {
+              // Update title if changed
+              return prev.map(w => w.id === win.id ? { ...w, title: win.title } : w);
             }
-            return prev;
           });
-          // Trigger re-render to update z-index
+          // Trigger re-render to update z-index and title
           setWindowUpdateTrigger(prev => prev + 1);
         }
       }
