@@ -98,11 +98,26 @@ class WindowManagerImpl implements WindowManager {
   }
 
   maximizeWindow(winId: string): void {
-    this.setWindowState(winId, 'maximized');
+    const window = this.windows.get(winId);
+    if (window && window.state !== 'maximized') {
+      // Store original bounds before maximizing
+      (window as any).originalBounds = { ...window.bounds };
+      window.state = 'maximized';
+      window.bounds.x = 0;
+      window.bounds.y = 0;
+      window.bounds.w = globalThis.innerWidth || 1920;
+      window.bounds.h = (globalThis.innerHeight || 1080) - 40; // Account for taskbar
+      this.setWindowState(winId, 'maximized');
+    }
   }
 
   restoreWindow(winId: string): void {
-    this.setWindowState(winId, 'floating');
+    const window = this.windows.get(winId);
+    if (window && window.state === 'maximized' && (window as any).originalBounds) {
+      window.bounds = { ...(window as any).originalBounds };
+      delete (window as any).originalBounds;
+      this.setWindowState(winId, 'floating');
+    }
   }
 
   setWindowState(winId: string, state: WindowState): void {
