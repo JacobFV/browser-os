@@ -1,5 +1,8 @@
 export * from './init';
 export * from './state';
+export * from './create-os';
+export * from './register-apps';
+export * from './configure-shell';
 
 import React from 'react';
 import { Taskbar } from '@browser-os/taskbar';

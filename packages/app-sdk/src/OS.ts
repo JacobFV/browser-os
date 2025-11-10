@@ -119,7 +119,6 @@ export class OS {
       this.networkManager = this.container.resolve('networkManager');
       this.notificationManager = this.container.resolve('notificationManager');
       this.telemetryManager = this.container.resolve('telemetryManager');
-      this.workspaceManager = this.container.resolve('workspaceManager');
       
       // Create app manager (not in container, created here)
       this.appManager = new AppManager(
@@ -127,6 +126,18 @@ export class OS {
         this.processManager,
         this.eventBus
       );
+      
+      // Create workspace manager if not in container (it depends on AppManager)
+      if (this.container.has('workspaceManager')) {
+        this.workspaceManager = this.container.resolve('workspaceManager');
+      } else {
+        this.workspaceManager = config.workspaceManager || new WorkspaceManager(
+          this.windowManager,
+          this.settingsStore,
+          this.appManager
+        );
+        this.container.register('workspaceManager', this.workspaceManager);
+      }
     }
     
     // Register apps if provided

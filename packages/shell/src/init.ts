@@ -1,54 +1,53 @@
-import { applyTheme, ThemeSkin } from '@browser-os/theme';
-import { DesktopIcon } from '@browser-os/desktop';
 import { OS, App } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
-import type { FilesystemInitOptions } from '@browser-os/fs';
-import { initFilesystem, VfsImpl } from '@browser-os/fs';
 import { AppManifest } from '@browser-os/core';
+import { createOS, OSInitOptions } from './create-os';
+import { registerSystemApps } from './register-apps';
+import { configureShell, ShellConfig } from './configure-shell';
 
-export interface DesktopShellInitOptions {
-  vfs?: FilesystemInitOptions;
+export interface DesktopShellInitOptions extends OSInitOptions, ShellConfig {
   apps?: {
     manifests?: AppManifest[];
-    appInstances?: App[]; // New: App instances
+    appInstances?: App[];
     registerDefaults?: boolean;
-  };
-  desktop?: {
-    icons?: DesktopIcon[];
-    wallpaper?: string;
-  };
-  theme?: {
-    skin?: ThemeSkin;
-    accent?: string;
-  };
-  processManager?: {
-    // Future: custom process manager config
   };
 }
 
+/**
+ * Initialize desktop shell with OS, apps, and configuration
+ * 
+ * This is the main entry point for shell initialization. It orchestrates:
+ * 1. OS creation (with container and all services)
+ * 2. System app registration (using AppFactory)
+ * 3. Shell configuration (theme, desktop, filesystem)
+ * 
+ * @param options - Configuration options for shell initialization
+ * @returns Complete shell state with OS and all configured services
+ */
 export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShellState {
-  // Create OS instance first (this creates all services)
-  const os = new OS({
-    apps: options?.apps?.appInstances,
-  });
-
+  // Step 1: Create OS instance (sets up container and all services)
+  const os = createOS(options);
+  
+  // Step 2: Register system apps if requested
+  let systemApps: App[] = [];
+  if (options?.apps?.registerDefaults !== false) {
+    systemApps = registerSystemApps(os);
+  }
+  
+  // Also register any provided app instances
+  if (options?.apps?.appInstances) {
+    os.registerApps(options.apps.appInstances);
+  }
+  
   // Register manifests with AppManager (for legacy apps)
   if (options?.apps?.manifests) {
     os.getAppManager().registerManifests(options.apps.manifests);
   }
-
-  // Initialize filesystem using OS VFS instance
-  initFilesystem(os.getVFS(), options?.vfs);
-
-  // Initialize theme
-  const themeSkin = options?.theme?.skin || 'win95';
-  const themeAccent = options?.theme?.accent;
-  applyTheme(themeSkin, themeAccent);
-
-  // Get desktop icons
-  const desktopIcons = options?.desktop?.icons || [];
-
-  // Create and return state with instances from OS
+  
+  // Step 3: Configure shell (theme, desktop, filesystem)
+  const shellConfig = configureShell(os, options);
+  
+  // Step 4: Assemble and return complete state
   const state: DesktopShellState = {
     vfs: os.getVFS(),
     processManager: os.getProcessManager(),
@@ -56,15 +55,13 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
     workspaceManager: os.getWorkspaceManager(),
     appHost: os.getAppHost(),
     settingsStore: os.getSettingsStore(),
-    desktopIcons,
-    initialTheme: themeSkin,
-    wallpaper: options?.desktop?.wallpaper,
     appManager: os.getAppManager(),
     os,
     cursor: os.getCursorManager(),
     telemetry: os.getTelemetryManager(),
+    ...shellConfig,
   };
-
+  
   return state;
 }
 
