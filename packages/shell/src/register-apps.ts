@@ -35,8 +35,7 @@ export function registerSystemApps(os: OS): App[] {
     factory.createApp(EditorApp),
     factory.createApp(BrowserApp),
     factory.createApp(CalendarApp),
-    // StoreApp needs AppManager as additional parameter
-    factory.createApp(StoreApp, appManager),
+    factory.createApp(StoreApp),
   ];
   
   return apps;

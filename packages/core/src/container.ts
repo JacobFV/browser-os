@@ -9,6 +9,7 @@ import type { CursorManager } from '@browser-os/cursor';
 import type { NetworkManager } from '@browser-os/net';
 import type { NotificationManager } from '@browser-os/notif';
 import type { TelemetryManager } from '@browser-os/telemetry';
+import type { AppManager } from '@browser-os/app-sdk';
 
 /**
  * Type-safe dependency injection container
@@ -28,6 +29,7 @@ export interface Dependencies {
   networkManager: NetworkManager;
   notificationManager: NotificationManager;
   telemetryManager: TelemetryManager;
+  appManager: AppManager;
 }
 
 /**

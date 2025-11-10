@@ -94,8 +94,8 @@ export class AppManager {
       this.manifests.set(manifest.id, manifest);
       
       return manifest;
-    } catch (error: any) {
-      throw new Error(`Failed to load app manifest: ${error.message}`);
+    } catch (error: unknown) {
+      throw new Error(`Failed to load app manifest: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

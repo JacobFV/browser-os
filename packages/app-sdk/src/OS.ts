@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from './App';
 import { AppManager } from './AppManager';
-import { WindowManager, WindowManagerImpl } from '@browser-os/windowing';
+import { WindowManager } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
 import { WorkspaceManager } from '@browser-os/workspace';
 import { EventBus, Container } from '@browser-os/core';
@@ -14,26 +14,16 @@ import { NotificationManager } from '@browser-os/notif';
 import { TelemetryManager } from '@browser-os/telemetry';
 
 export interface OSConfig {
+  container: Container; // Required - container must be pre-configured
   apps?: App[];
-  // Optional container override for testing
-  container?: Container;
-  // Optional overrides for testing (deprecated - use container instead)
-  eventBus?: EventBus;
-  windowManager?: WindowManager;
-  processManager?: ProcessManager;
-  workspaceManager?: WorkspaceManager;
-  vfs?: VfsImpl;
-  settingsStore?: SettingsStoreImpl;
-  appHost?: AppHost;
-  cursorManager?: CursorManager;
-  networkManager?: NetworkManager;
-  notificationManager?: NotificationManager;
-  telemetryManager?: TelemetryManager;
 }
 
 /**
  * Top-level OS class that orchestrates all subsystems
  * This is the main entry point for browser-os
+ * 
+ * The OS constructor requires a pre-configured container. Use `createOS()` from
+ * `@browser-os/shell` to create an OS instance with a properly configured container.
  */
 export class OS {
   private container: Container;
@@ -50,94 +40,38 @@ export class OS {
   private notificationManager: NotificationManager;
   private telemetryManager: TelemetryManager;
   
-  constructor(config: OSConfig = {}) {
-    // Use provided container or create new one
-    this.container = config.container || new Container();
-    
-    // Initialize container with dependencies if not already populated
+  constructor(config: OSConfig) {
     if (!config.container) {
-      // Create core event bus first (all other services depend on it)
-      this.eventBus = config.eventBus || new EventBus();
-      this.container.register('eventBus', this.eventBus);
-      
-      // Create process manager (depends on event bus)
-      this.processManager = config.processManager || new ProcessManager(this.eventBus);
-      this.container.register('processManager', this.processManager);
-      
-      // Create window manager
-      this.windowManager = config.windowManager || new WindowManagerImpl(this.eventBus);
-      this.container.register('windowManager', this.windowManager);
-      
-      // Create settings store
-      this.settingsStore = config.settingsStore || new SettingsStoreImpl();
-      this.container.register('settingsStore', this.settingsStore);
-      
-      // Create VFS
-      this.vfs = config.vfs || new VfsImpl(this.eventBus);
-      this.container.register('vfs', this.vfs);
-      
-      // Create app host
-      this.appHost = config.appHost || new AppHost(this.processManager);
-      this.container.register('appHost', this.appHost);
-      
-      // Create system services
-      this.cursorManager = config.cursorManager || new CursorManager(this.eventBus);
-      this.container.register('cursorManager', this.cursorManager);
-      
-      this.networkManager = config.networkManager || new NetworkManager();
-      this.container.register('networkManager', this.networkManager);
-      
-      this.notificationManager = config.notificationManager || new NotificationManager(this.eventBus);
-      this.container.register('notificationManager', this.notificationManager);
-      
-      this.telemetryManager = config.telemetryManager || new TelemetryManager(this.eventBus);
-      this.container.register('telemetryManager', this.telemetryManager);
-      
-      // Create app manager (depends on window manager, process manager, and event bus)
-      this.appManager = new AppManager(
-        this.windowManager,
-        this.processManager,
-        this.eventBus
-      );
-      
-      // Create workspace manager (depends on app manager)
-      this.workspaceManager = config.workspaceManager || new WorkspaceManager(
+      throw new Error('OS requires a pre-configured container. Use createOS() from @browser-os/shell instead.');
+    }
+    
+    this.container = config.container;
+    
+    // Resolve all dependencies from container
+    this.eventBus = this.container.resolve('eventBus');
+    this.processManager = this.container.resolve('processManager');
+    this.windowManager = this.container.resolve('windowManager');
+    this.settingsStore = this.container.resolve('settingsStore');
+    this.vfs = this.container.resolve('vfs');
+    this.appHost = this.container.resolve('appHost');
+    this.cursorManager = this.container.resolve('cursorManager');
+    this.networkManager = this.container.resolve('networkManager');
+    this.notificationManager = this.container.resolve('notificationManager');
+    this.telemetryManager = this.container.resolve('telemetryManager');
+    
+    // Resolve app manager from container
+    this.appManager = this.container.resolve('appManager');
+    
+    // Create workspace manager if not in container (it depends on AppManager)
+    if (this.container.has('workspaceManager')) {
+      this.workspaceManager = this.container.resolve('workspaceManager');
+    } else {
+      this.workspaceManager = new WorkspaceManager(
         this.windowManager,
         this.settingsStore,
         this.appManager
       );
       this.container.register('workspaceManager', this.workspaceManager);
-    } else {
-      // Resolve all dependencies from container
-      this.eventBus = this.container.resolve('eventBus');
-      this.processManager = this.container.resolve('processManager');
-      this.windowManager = this.container.resolve('windowManager');
-      this.settingsStore = this.container.resolve('settingsStore');
-      this.vfs = this.container.resolve('vfs');
-      this.appHost = this.container.resolve('appHost');
-      this.cursorManager = this.container.resolve('cursorManager');
-      this.networkManager = this.container.resolve('networkManager');
-      this.notificationManager = this.container.resolve('notificationManager');
-      this.telemetryManager = this.container.resolve('telemetryManager');
-      
-      // Create app manager (not in container, created here)
-      this.appManager = new AppManager(
-        this.windowManager,
-        this.processManager,
-        this.eventBus
-      );
-      
-      // Create workspace manager if not in container (it depends on AppManager)
-      if (this.container.has('workspaceManager')) {
-        this.workspaceManager = this.container.resolve('workspaceManager');
-      } else {
-        this.workspaceManager = config.workspaceManager || new WorkspaceManager(
-          this.windowManager,
-          this.settingsStore,
-          this.appManager
-        );
-        this.container.register('workspaceManager', this.workspaceManager);
-      }
     }
     
     // Register apps if provided
@@ -240,7 +174,7 @@ export class OS {
   /**
    * Launch an app
    */
-  async launchApp(appId: string, config?: Record<string, any>): Promise<import('@browser-os/windowing').Window> {
+  async launchApp(appId: string, config?: Record<string, unknown>): Promise<import('@browser-os/windowing').Window> {
     return await this.appManager.launchApp(appId, config);
   }
 

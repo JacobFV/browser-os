@@ -52,6 +52,7 @@ describe('AppFactory', () => {
     container.register('windowManager', windowManager);
     
     appManager = new AppManager(windowManager, processManager, eventBus);
+    container.register('appManager', appManager);
     factory = new AppFactory(container, appManager);
   });
 

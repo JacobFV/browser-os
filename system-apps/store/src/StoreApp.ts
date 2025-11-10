@@ -15,26 +15,23 @@ export class StoreApp extends App {
   
   private appManager: AppManager;
   
-  constructor(
-    container: Container,
-    appManager: AppManager
-  ) {
+  constructor(container: Container) {
     super(container);
-    this.appManager = appManager;
+    this.appManager = container.resolve('appManager');
   }
   
-  initialWindow(config?: Record<string, any>): Window {
+  initialWindow(config?: Record<string, unknown>): Window {
     return new Window(
       this.id,
       'App Store',
       { x: 100, y: 100, w: 900, h: 700 },
-      config?.workspaceId || 'default',
+      config?.workspaceId as string || 'default',
       config,
       this.eventBus
     );
   }
   
-  createComponent(window: Window, config?: Record<string, any>): React.ComponentType<any> {
+  createComponent(window: Window, config?: Record<string, unknown>): React.ComponentType {
     return () => <StoreView window={window} appManager={this.appManager} />;
   }
 }

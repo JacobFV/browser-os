@@ -1,6 +1,6 @@
 import { App } from './App';
 import { AppManager } from './AppManager';
-import { Container } from '@browser-os/core';
+import { Container, EventBus } from '@browser-os/core';
 import { AppManifest } from '@browser-os/core';
 import { Window } from '@browser-os/windowing';
 import React from 'react';
@@ -87,7 +87,6 @@ export class AppFactory {
       }
 
       initialWindow(config?: Record<string, unknown>) {
-        const { EventBus } = require('@browser-os/core');
         const eventBus = this.container.resolve('eventBus') as EventBus;
         
         return new Window(
