@@ -1,13 +1,11 @@
 import { OS, App } from '@browser-os/app-sdk';
 import { DesktopShellState } from './state';
-import { AppManifest } from '@browser-os/core';
 import { createOS, OSInitOptions } from './create-os';
 import { registerSystemApps } from './register-apps';
 import { configureShell, ShellConfig } from './configure-shell';
 
 export interface DesktopShellInitOptions extends OSInitOptions, ShellConfig {
   apps?: {
-    manifests?: AppManifest[];
     appInstances?: App[];
     registerDefaults?: boolean;
   };
@@ -37,11 +35,6 @@ export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShel
   // Also register any provided app instances
   if (options?.apps?.appInstances) {
     os.registerApps(options.apps.appInstances);
-  }
-  
-  // Register manifests with AppManager (for legacy apps)
-  if (options?.apps?.manifests) {
-    os.getAppManager().registerManifests(options.apps.manifests);
   }
   
   // Step 3: Configure shell (theme, desktop, filesystem)

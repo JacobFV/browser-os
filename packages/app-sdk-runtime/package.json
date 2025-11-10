@@ -1,0 +1,24 @@
+{
+  "name": "@browser-os/app-sdk-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Runtime SDK for sandboxed apps in browser-os",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@browser-os/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  }
+}
+

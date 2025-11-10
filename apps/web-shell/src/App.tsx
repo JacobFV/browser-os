@@ -27,8 +27,6 @@ export const WebShell: React.FC<WebShellProps> = ({ state }) => {
   }, []);
 
   React.useEffect(() => {
-    if (!os) return;
-    
     const eventBus = os.getEventBus();
     
     // Sync windows list with window manager on mount

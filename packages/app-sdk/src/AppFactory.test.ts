@@ -147,23 +147,5 @@ describe('AppFactory', () => {
       expect(appManager.getApp('app2')).toBe(apps[1]);
     });
   });
-
-  describe('createAppFromManifest', () => {
-    it('should create app from manifest', async () => {
-      // Note: This test requires a real manifest and component
-      // For now, we'll test the error case
-      const manifest = {
-        id: 'manifest-app',
-        name: 'Manifest App',
-        version: '1.0.0',
-        icon: 'data:image/svg+xml,test',
-        entry: './non-existent-path',
-      };
-      
-      await expect(
-        factory.createAppFromManifest(manifest)
-      ).rejects.toThrow();
-    });
-  });
 });
 

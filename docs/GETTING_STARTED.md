@@ -7,34 +7,25 @@
 ```typescript
 import { TerminalApp } from '@system-apps/terminal';
 import { CalculatorApp } from '@system-apps/calculator';
-import { processManager } from '@browser-os/process';
-import { vfs } from '@browser-os/fs';
-
-const terminalApp = new TerminalApp(processManager, vfs);
-const calculatorApp = new CalculatorApp(processManager);
-```
-
-### 2. Initialize OS
-
-```typescript
 import { initDesktopShell } from '@browser-os/shell';
 
+// System apps are automatically registered, or you can register custom apps:
 const state = await initDesktopShell({
   apps: {
-    appInstances: [terminalApp, calculatorApp],
+    registerDefaults: true, // Registers all system apps
   },
 });
 ```
 
-### 3. Launch Apps
+### 2. Launch Apps
 
 ```typescript
 // Via OS
-state.os?.launchApp('terminal');
-state.os?.launchApp('calculator');
+state.os.launchApp('terminal');
+state.os.launchApp('calculator');
 
 // Or via AppManager
-state.appManager?.launchApp('terminal');
+state.appManager.launchApp('terminal');
 ```
 
 ## Creating Your Own App
@@ -44,24 +35,26 @@ state.appManager?.launchApp('terminal');
 ```typescript
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
+import { Container } from '@browser-os/core';
 
 class MyApp extends App {
   readonly id = 'my-app';
   readonly name = 'My Application';
   readonly version = '1.0.0';
   
-  constructor(processManager: ProcessManager) {
-    super(processManager);
+  constructor(container: Container) {
+    super(container);
   }
   
   initialWindow(config?: Record<string, any>): Window {
+    const eventBus = this.container.resolve('eventBus');
     return new Window(
       this.id,
       'My Window',
       { x: 100, y: 100, w: 800, h: 600 },
       config?.workspaceId || 'default',
-      config
+      config,
+      eventBus
     );
   }
   
@@ -109,12 +102,11 @@ export const MyAppView: React.FC<MyAppViewProps> = ({ window }) => {
 
 ```typescript
 import { initDesktopShell } from '@browser-os/shell';
-
-const myApp = new MyApp(processManager);
+import { MyApp } from './MyApp';
 
 const state = await initDesktopShell({
   apps: {
-    appInstances: [myApp],
+    appInstances: [new MyApp(state.os.getContainer())],
   },
 });
 ```

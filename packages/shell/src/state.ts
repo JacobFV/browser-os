@@ -24,9 +24,9 @@ export interface DesktopShellState {
   initialTheme: ThemeSkin;
   wallpaper?: string;
   
-  // New app system
-  appManager?: AppManager;
-  os?: OS;
+  // App system (required)
+  appManager: AppManager;
+  os: OS;
   
   // Optional services
   cursor?: CursorManager;

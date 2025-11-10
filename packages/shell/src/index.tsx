@@ -3,6 +3,7 @@ export * from './state';
 export * from './create-os';
 export * from './register-apps';
 export * from './configure-shell';
+export * from './app-registry';
 
 import React from 'react';
 import { Taskbar } from '@browser-os/taskbar';

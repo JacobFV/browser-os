@@ -19,8 +19,12 @@ export const StoreView: React.FC<StoreViewProps> = ({ window, appManager }) => {
 
   const loadApps = async () => {
     try {
-      const manifests = appManager.getAllAppManifests();
-      setInstalledApps(manifests);
+      const apps = appManager.getAllApps();
+      setInstalledApps(apps.map(app => ({
+        id: app.id,
+        name: app.name,
+        version: app.version,
+      })));
       
       // In a real implementation, this would fetch from a remote store
       setAvailableApps([
@@ -42,10 +46,8 @@ export const StoreView: React.FC<StoreViewProps> = ({ window, appManager }) => {
   const handleInstall = async (app: any) => {
     try {
       // In a real implementation, this would download and install the app
-      const manifest = await appManager.loadAppManifest(`/apps/${app.id}/manifest.json`);
-      appManager.registerManifest(manifest);
-      setInstalledApps([...installedApps, manifest]);
-      alert(`Installed ${app.name}`);
+      // For now, just show a message
+      alert(`App installation not yet implemented. ${app.name} would be installed here.`);
     } catch (error: any) {
       alert(`Failed to install: ${error.message}`);
     }

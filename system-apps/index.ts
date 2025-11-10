@@ -16,4 +16,5 @@ export { EditorApp, EditorView } from './editor/src';
 export { BrowserApp, BrowserView } from './browser/src';
 export { CalendarApp, CalendarView } from './calendar/src';
 export { StoreApp, StoreView } from './store/src';
+export { WordProcessorApp, DocumentWindow } from './word-processor/src';
 
