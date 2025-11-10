@@ -1,4 +1,6 @@
-export type Pid = string;
+import type { Pid, AppId, WindowId } from '@browser-os/core';
+
+export type { Pid, AppId, WindowId };
 
 export interface ProcessStreams {
   stdin: WritableStream<string>;
@@ -6,9 +8,14 @@ export interface ProcessStreams {
   stderr: WritableStream<string>; // Commands write to stderr
 }
 
+export interface ProcessMessage {
+  type: string;
+  data?: unknown;
+}
+
 export interface Process {
   pid: Pid;
-  appId?: string; // For app processes
+  appId?: AppId; // For app processes
   command?: string; // For command processes
   args?: string[]; // Command arguments
   state: import('@browser-os/core').ProcessState;
@@ -16,13 +23,13 @@ export interface Process {
   exitCode?: number;
   cpu?: number;
   mem?: number;
-  channels: Record<string, (msg: any) => void>;
+  channels: Record<string, (msg: ProcessMessage) => void>;
   cwd?: string; // Working directory
   env?: Record<string, string>; // Environment variables
   parentPid?: Pid; // Parent process
   children: Set<Pid>; // Child processes
   streams?: ProcessStreams; // STDIN/STDOUT/STDERR
-  windowId?: string; // Window ID for app processes
+  windowId?: WindowId; // Window ID for app processes
 }
 
 export interface CommandHandler {

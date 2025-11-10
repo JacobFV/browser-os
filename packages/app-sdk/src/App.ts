@@ -26,7 +26,7 @@ export abstract class App {
   protected container: Container;
   
   // State management (app-level, shared across windows)
-  protected state: Map<string, any> = new Map();
+  protected state: Map<string, unknown> = new Map();
   
   // Window tracking (apps own their windows)
   protected windows: Map<string, Window> = new Map();
@@ -41,7 +41,7 @@ export abstract class App {
    * Initialize and return a Window instance for this app
    * Apps create their own windows - this is called when launching
    */
-  abstract initialWindow(config?: Record<string, any>): Window;
+  abstract initialWindow(config?: Record<string, unknown>): Window;
   
   /**
    * Create a React component for rendering this app's UI in a window
@@ -49,14 +49,14 @@ export abstract class App {
    */
   abstract createComponent(
     window: Window,
-    config?: Record<string, any>
-  ): React.ComponentType<any>;
+    config?: Record<string, unknown>
+  ): React.ComponentType;
   
   /**
    * Lifecycle: Called when app is launched (first window opened)
    */
-  onLaunch?(window: Window, config?: Record<string, any>): void | Promise<void>;
-  
+  onLaunch?(window: Window, config?: Record<string, unknown>): void | Promise<void>;
+
   /**
    * Lifecycle: Called when app is closed (last window closed)
    */
@@ -89,7 +89,7 @@ export abstract class App {
   /**
    * Create a new window (for multi-window apps)
    */
-  createWindow(config?: Record<string, any>): Window {
+  createWindow(config?: Record<string, unknown>): Window {
     return this.initialWindow(config);
   }
   
@@ -153,14 +153,14 @@ export abstract class App {
   /**
    * Get app state value
    */
-  getState<T = any>(key: string): T | undefined {
+  getState<T = unknown>(key: string): T | undefined {
     return this.state.get(key) as T | undefined;
   }
-  
+
   /**
    * Set app state value
    */
-  setState(key: string, value: any): void {
+  setState(key: string, value: unknown): void {
     this.state.set(key, value);
   }
   

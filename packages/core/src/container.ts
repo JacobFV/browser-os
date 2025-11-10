@@ -1,14 +1,14 @@
 import { EventBus } from './event-bus';
-import { ProcessManager } from '@browser-os/process';
-import { WindowManager } from '@browser-os/windowing';
-import { WorkspaceManager } from '@browser-os/workspace';
-import { VfsImpl } from '@browser-os/fs';
-import { SettingsStoreImpl } from '@browser-os/settings';
-import { AppHost } from '@browser-os/app-host';
-import { CursorManager } from '@browser-os/cursor';
-import { NetworkManager } from '@browser-os/net';
-import { NotificationManager } from '@browser-os/notif';
-import { TelemetryManager } from '@browser-os/telemetry';
+import type { ProcessManager } from '@browser-os/process';
+import type { WindowManager } from '@browser-os/windowing';
+import type { WorkspaceManager } from '@browser-os/workspace';
+import type { VfsImpl } from '@browser-os/fs';
+import type { SettingsStoreImpl } from '@browser-os/settings';
+import type { AppHost } from '@browser-os/app-host';
+import type { CursorManager } from '@browser-os/cursor';
+import type { NetworkManager } from '@browser-os/net';
+import type { NotificationManager } from '@browser-os/notif';
+import type { TelemetryManager } from '@browser-os/telemetry';
 
 /**
  * Type-safe dependency injection container

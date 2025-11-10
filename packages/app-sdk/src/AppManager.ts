@@ -130,7 +130,7 @@ export class AppManager {
   /**
    * Load app component from manifest (for legacy apps)
    */
-  async loadAppFromManifest(appId: string): Promise<React.ComponentType<any> | null> {
+  async loadAppFromManifest(appId: string): Promise<React.ComponentType | null> {
     const manifest = this.manifests.get(appId);
     if (!manifest) {
       return null;
@@ -141,7 +141,7 @@ export class AppManager {
       const entryPath: string = manifest.entry;
       const module = await import(entryPath);
       return module.default || module[appId] || null;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Failed to load app ${appId}:`, error);
       return null;
     }
@@ -172,7 +172,7 @@ export class AppManager {
    * Launch an app (create window)
    * Works with both App instances and manifest-based apps
    */
-  async launchApp(appId: string, config?: Record<string, any>): Promise<Window> {
+  async launchApp(appId: string, config?: Record<string, unknown>): Promise<Window> {
     // First try to get App instance
     let app = this.apps.get(appId);
     
@@ -278,7 +278,7 @@ export class AppManager {
    * Get component for rendering an app in a window
    * Works with both App instances and manifest-based apps
    */
-  async getAppComponent(windowId: string): Promise<React.ComponentType<any> | null> {
+  async getAppComponent(windowId: string): Promise<React.ComponentType | null> {
     const window = this.windowManager.windows.get(windowId);
     if (!window) return null;
     

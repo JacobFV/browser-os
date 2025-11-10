@@ -19,7 +19,7 @@ class TestApp extends App {
     super(container);
   }
   
-  initialWindow(config?: Record<string, any>): Window {
+  initialWindow(config?: Record<string, unknown>): Window {
     const eventBus = this.container.resolve('eventBus') as EventBus;
     return new Window(
       this.id,
@@ -31,7 +31,7 @@ class TestApp extends App {
     );
   }
   
-  createComponent(window: Window, config?: Record<string, any>): React.ComponentType<any> {
+  createComponent(window: Window, config?: Record<string, unknown>): React.ComponentType {
     return () => null;
   }
 }
@@ -89,7 +89,7 @@ describe('AppFactory', () => {
           return new Window(this.id, 'Test', { x: 0, y: 0, w: 100, h: 100 }, 'default', {}, eventBus);
         }
         
-        createComponent(): React.ComponentType<any> {
+        createComponent(): React.ComponentType {
           return () => null;
         }
         
@@ -116,7 +116,7 @@ describe('AppFactory', () => {
           const eventBus = this.container.resolve('eventBus') as EventBus;
           return new Window(this.id, 'Test', { x: 0, y: 0, w: 100, h: 100 }, 'default', {}, eventBus);
         }
-        createComponent(): React.ComponentType<any> {
+        createComponent(): React.ComponentType {
           return () => null;
         }
       }
@@ -132,7 +132,7 @@ describe('AppFactory', () => {
           const eventBus = this.container.resolve('eventBus') as EventBus;
           return new Window(this.id, 'Test', { x: 0, y: 0, w: 100, h: 100 }, 'default', {}, eventBus);
         }
-        createComponent(): React.ComponentType<any> {
+        createComponent(): React.ComponentType {
           return () => null;
         }
       }

@@ -10,12 +10,21 @@ import { Desktop } from '@browser-os/desktop';
 
 export type ShellMode = 'desktop' | 'mobile';
 
+export interface DesktopIcon {
+  id: string;
+  label: string;
+  icon?: string;
+  appId?: string;
+  x: number;
+  y: number;
+}
+
 export interface ShellProps {
   mode?: ShellMode;
   windows: Array<{ id: string; title: string; appId: string }>;
-  desktopIcons: Array<{ id: string; label: string; icon?: string; appId?: string; x: number; y: number }>;
+  desktopIcons: DesktopIcon[];
   onWindowClick: (winId: string) => void;
-  onIconClick: (icon: any) => void;
+  onIconClick: (icon: DesktopIcon) => void;
 }
 
 export const Shell: React.FC<ShellProps> = ({

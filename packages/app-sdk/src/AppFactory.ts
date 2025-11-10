@@ -2,6 +2,7 @@ import { App } from './App';
 import { AppManager } from './AppManager';
 import { Container } from '@browser-os/core';
 import { AppManifest } from '@browser-os/core';
+import { Window } from '@browser-os/windowing';
 import React from 'react';
 
 /**
@@ -30,8 +31,8 @@ export class AppFactory {
    * @throws Error if app is already registered
    */
   createApp<T extends App>(
-    AppClass: new (container: Container, ...args: any[]) => T,
-    ...args: any[]
+    AppClass: new (container: Container, ...args: unknown[]) => T,
+    ...args: unknown[]
   ): T {
     const app = new AppClass(this.container, ...args);
     this.appManager.registerApp(app);
@@ -45,7 +46,7 @@ export class AppFactory {
    * @returns Array of created and registered app instances
    */
   createApps<T extends App>(
-    appClasses: Array<new (container: Container, ...args: any[]) => T>
+    appClasses: Array<new (container: Container, ...args: unknown[]) => T>
   ): T[] {
     return appClasses.map(AppClass => this.createApp(AppClass));
   }
@@ -78,15 +79,14 @@ export class AppFactory {
       readonly id = manifest.id;
       readonly name = manifest.name;
       readonly version = manifest.version;
-      private Component: React.ComponentType<any>;
+      private Component: React.ComponentType;
 
       constructor(container: Container) {
         super(container);
         this.Component = component;
       }
 
-      initialWindow(config?: Record<string, any>) {
-        const { Window } = require('@browser-os/windowing');
+      initialWindow(config?: Record<string, unknown>) {
         const { EventBus } = require('@browser-os/core');
         const eventBus = this.container.resolve('eventBus') as EventBus;
         
@@ -96,13 +96,13 @@ export class AppFactory {
           manifest.defaultWindow 
             ? { x: 100, y: 100, w: manifest.defaultWindow.w, h: manifest.defaultWindow.h }
             : { x: 100, y: 100, w: 800, h: 600 },
-          config?.workspaceId || 'default',
+          config?.workspaceId as string || 'default',
           config,
           eventBus
         );
       }
 
-      createComponent(window: any, config?: Record<string, any>): React.ComponentType<any> {
+      createComponent(window: Window, config?: Record<string, unknown>): React.ComponentType {
         const Component = this.Component;
         return () => React.createElement(Component, { window, config });
       }

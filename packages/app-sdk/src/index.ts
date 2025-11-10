@@ -3,6 +3,8 @@ export * from './AppManager';
 export * from './AppFactory';
 export * from './OS';
 
+import type { AppManifest } from '@browser-os/core';
+
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;
   unmount?: () => void | Promise<void>;
@@ -10,15 +12,20 @@ export interface AppLifecycle {
   resume?: () => void | Promise<void>;
 }
 
+export interface HostMessage {
+  type: string;
+  [key: string]: unknown;
+}
+
 export interface AppSDK {
   windowId: string;
-  manifest: any;
+  manifest: AppManifest;
   lifecycle: AppLifecycle;
   pid?: string;
   
   // IPC methods
-  sendToHost: (action: string, data?: any) => void;
-  onHostMessage: (handler: (message: any) => void) => () => void;
+  sendToHost: (action: string, data?: unknown) => void;
+  onHostMessage: (handler: (message: HostMessage) => void) => () => void;
   
   // Capability requests
   requestCapability: (capability: string) => Promise<boolean>;
@@ -30,7 +37,7 @@ export interface AppSDK {
 
 let appSDK: AppSDK | null = null;
 
-export function initializeAppSDK(windowId: string, manifest: any, pid?: string): AppSDK {
+export function initializeAppSDK(windowId: string, manifest: AppManifest, pid?: string): AppSDK {
   const lifecycle: AppLifecycle = {};
   
   const sdk: AppSDK = {
@@ -39,7 +46,7 @@ export function initializeAppSDK(windowId: string, manifest: any, pid?: string):
     lifecycle,
     pid,
     
-    sendToHost(action: string, data?: any) {
+    sendToHost(action: string, data?: unknown) {
       if (window.parent) {
         window.parent.postMessage({
           type: 'app-message',
@@ -50,7 +57,7 @@ export function initializeAppSDK(windowId: string, manifest: any, pid?: string):
       }
     },
     
-    onHostMessage(handler: (message: any) => void) {
+    onHostMessage(handler: (message: HostMessage) => void) {
       const messageHandler = (event: MessageEvent) => {
         if (event.data && event.data.type === 'host-init') {
           // Update PID if provided in host-init message

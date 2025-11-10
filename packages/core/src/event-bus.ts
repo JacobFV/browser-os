@@ -1,7 +1,9 @@
 /**
  * Event bus with typed channels
  */
-type EventHandler<T = any> = (data: T) => void;
+import type { WindowId, AppId, Pid } from './id';
+
+type EventHandler<T> = (data: T) => void;
 type ChannelMap = {
   window: WindowEvent;
   proc: ProcessEvent;
@@ -11,23 +13,23 @@ type ChannelMap = {
 };
 
 export type WindowEvent =
-  | { type: 'open'; winId: string; appId: string }
-  | { type: 'close'; winId: string }
-  | { type: 'focus'; winId: string }
-  | { type: 'blur'; winId: string }
-  | { type: 'move'; winId: string; x: number; y: number }
-  | { type: 'resize'; winId: string; w: number; h: number }
-  | { type: 'minimize'; winId: string }
-  | { type: 'maximize'; winId: string }
-  | { type: 'restore'; winId: string }
-  | { type: 'update'; winId: string };
+  | { type: 'open'; winId: WindowId; appId: AppId }
+  | { type: 'close'; winId: WindowId }
+  | { type: 'focus'; winId: WindowId }
+  | { type: 'blur'; winId: WindowId }
+  | { type: 'move'; winId: WindowId; x: number; y: number }
+  | { type: 'resize'; winId: WindowId; w: number; h: number }
+  | { type: 'minimize'; winId: WindowId }
+  | { type: 'maximize'; winId: WindowId }
+  | { type: 'restore'; winId: WindowId }
+  | { type: 'update'; winId: WindowId };
 
 export type ProcessEvent =
-  | { type: 'spawn'; pid: string; appId: string }
-  | { type: 'kill'; pid: string }
-  | { type: 'suspend'; pid: string }
-  | { type: 'resume'; pid: string }
-  | { type: 'crash'; pid: string; error: string };
+  | { type: 'spawn'; pid: Pid; appId: AppId }
+  | { type: 'kill'; pid: Pid }
+  | { type: 'suspend'; pid: Pid }
+  | { type: 'resume'; pid: Pid }
+  | { type: 'crash'; pid: Pid; error: string };
 
 export type FsEvent =
   | { type: 'mount'; mountPoint: string; driver: string }
@@ -47,7 +49,7 @@ export type NotificationEvent =
   | { type: 'click'; id: string };
 
 export class EventBus {
-  private handlers: Map<string, Set<EventHandler>> = new Map();
+  private handlers: Map<keyof ChannelMap, Set<EventHandler<ChannelMap[keyof ChannelMap]>>> = new Map();
 
   /**
    * Subscribe to a channel
@@ -59,11 +61,12 @@ export class EventBus {
     if (!this.handlers.has(channel)) {
       this.handlers.set(channel, new Set());
     }
-    this.handlers.get(channel)!.add(handler);
+    const handlersSet = this.handlers.get(channel)!;
+    handlersSet.add(handler as EventHandler<ChannelMap[keyof ChannelMap]>);
 
     // Return unsubscribe function
     return () => {
-      this.handlers.get(channel)?.delete(handler);
+      handlersSet.delete(handler as EventHandler<ChannelMap[keyof ChannelMap]>);
     };
   }
 
@@ -75,7 +78,7 @@ export class EventBus {
     if (handlers) {
       handlers.forEach((handler) => {
         try {
-          handler(data);
+          (handler as EventHandler<ChannelMap[K]>)(data);
         } catch (error) {
           console.error(`Error in event handler for ${channel}:`, error);
         }

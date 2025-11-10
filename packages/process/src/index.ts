@@ -1,7 +1,7 @@
 import { createId } from '@browser-os/core';
 import { EventBus, ProcessEvent, ProcessState } from '@browser-os/core';
 import { builtInCommands } from './commands';
-import type { Pid, ProcessStreams, Process, CommandHandler } from './types';
+import type { Pid, ProcessStreams, Process, CommandHandler, ProcessMessage } from './types';
 export * from './types';
 
 /**
@@ -316,7 +316,7 @@ export class ProcessManager {
     return Array.from(this.processes.values()).filter(proc => proc.appId === appId);
   }
 
-  send(pid: Pid, topic: string, msg: any): void {
+  send(pid: Pid, topic: string, msg: ProcessMessage): void {
     const proc = this.processes.get(pid);
     if (proc && proc.channels[topic]) {
       proc.channels[topic](msg);
