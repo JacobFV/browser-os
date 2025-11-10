@@ -25,34 +25,41 @@ All applications extend the abstract `App` class:
 
 ```typescript
 import { App } from '@browser-os/app-sdk';
+import { Container } from '@browser-os/core';
 import { Window } from '@browser-os/windowing';
-import { ProcessManager } from '@browser-os/process';
+import { EventBus } from '@browser-os/core';
 
 class MyApp extends App {
   readonly id = 'my-app';
   readonly name = 'My Application';
   readonly version = '1.0.0';
   
-  constructor(processManager: ProcessManager) {
-    super(processManager);
+  constructor(container: Container) {
+    super(container);
+    // Dependencies are automatically resolved from container
+    // Access via: this.processManager, this.eventBus, this.container
   }
   
   // Apps create their own windows
-  initialWindow(config?: Record<string, any>): Window {
+  initialWindow(config?: Record<string, unknown>): Window {
+    const eventBus = this.container.resolve('eventBus') as EventBus;
     return new Window(
       this.id,
       'My Window',
-      { x: 100, y: 100, w: 800, h: 600 }
+      { x: 100, y: 100, w: 800, h: 600 },
+      config?.workspaceId as string || 'default',
+      config,
+      eventBus
     );
   }
   
   // Apps create React components for their UI
-  createComponent(window: Window, config?: Record<string, any>): React.ComponentType {
+  createComponent(window: Window, config?: Record<string, unknown>): React.ComponentType {
     return () => <MyAppView window={window} />;
   }
   
   // Lifecycle hooks
-  async onLaunch(window: Window, config?: Record<string, any>): Promise<void> {
+  async onLaunch(window: Window, config?: Record<string, unknown>): Promise<void> {
     // Initialize app process
     this.initialize();
   }
@@ -87,16 +94,58 @@ window.setTitle('OS Title', 'os');
 window.maximize('os');
 ```
 
+### Dependency Injection with Container
+
+Apps receive dependencies through a type-safe Container:
+
+```typescript
+import { Container } from '@browser-os/core';
+import { EventBus } from '@browser-os/core';
+import type { ProcessManager, WindowManager } from '@browser-os/...';
+
+const container = new Container();
+container.register('eventBus', new EventBus());
+container.register('processManager', processManager);
+container.register('windowManager', windowManager);
+// ... register other dependencies
+
+// Apps receive the container in their constructor
+const app = new MyApp(container);
+```
+
+### AppFactory
+
+Use `AppFactory` to create and register apps with automatic dependency injection:
+
+```typescript
+import { AppFactory } from '@browser-os/app-sdk';
+import { Container } from '@browser-os/core';
+import { AppManager } from '@browser-os/app-sdk';
+import { MyApp } from './MyApp';
+
+const container = new Container();
+// ... register dependencies
+
+const appManager = new AppManager(/* ... */);
+const factory = new AppFactory(container, appManager);
+
+// Create and register app in one step
+const app = factory.createApp(MyApp);
+
+// Create multiple apps
+const apps = factory.createApps([MyApp, AnotherApp]);
+```
+
 ### AppManager
 
 Manages app instances and coordinates window creation:
 
 ```typescript
 import { AppManager } from '@browser-os/app-sdk';
-import { windowManager } from '@browser-os/windowing';
-import { processManager } from '@browser-os/process';
+import type { WindowManager, ProcessManager } from '@browser-os/...';
+import { EventBus } from '@browser-os/core';
 
-const appManager = new AppManager(windowManager, processManager);
+const appManager = new AppManager(windowManager, processManager, eventBus);
 
 // Register apps
 appManager.registerApp(new MyApp(processManager));
@@ -171,7 +220,7 @@ Apps can create multiple windows:
 
 ```typescript
 class MyApp extends App {
-  createWindow(config?: Record<string, any>): Window {
+  createWindow(config?: Record<string, unknown>): Window {
     // Create additional windows
     return this.initialWindow(config);
   }
@@ -260,10 +309,10 @@ abstract class App {
   abstract readonly name: string;
   abstract readonly version: string;
   
-  abstract initialWindow(config?: Record<string, any>): Window;
-  abstract createComponent(window: Window, config?: Record<string, any>): React.ComponentType<any>;
+  abstract initialWindow(config?: Record<string, unknown>): Window;
+  abstract createComponent(window: Window, config?: Record<string, unknown>): React.ComponentType;
   
-  onLaunch?(window: Window, config?: Record<string, any>): void | Promise<void>;
+  onLaunch?(window: Window, config?: Record<string, unknown>): void | Promise<void>;
   onClose?(window: Window): void | Promise<void>;
   onWindowCreated?(window: Window): void;
   onWindowDestroyed?(window: Window): void;
