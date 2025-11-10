@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container } from '@browser-os/core';
+import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
 import { VfsImpl } from '@browser-os/fs';
 import { ShellProcess } from './ShellProcess';
 import { TerminalView } from './TerminalView';
@@ -29,14 +29,18 @@ export class TerminalApp extends App {
   
   initialWindow(config?: Record<string, any>): Window {
     const initialDir = config?.initialDir || this.initialDir;
+    const viewportService = this.container.resolve<ViewportService>('viewportService');
+    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
     
     return new Window(
       this.id,
       'Terminal',
-      { x: 100, y: 100, w: 800, h: 600 },
+      { w: 800, h: 600 },
       config?.workspaceId || 'default',
       { initialDir, ...config },
-      this.eventBus
+      this.eventBus,
+      viewportService,
+      windowPlacementService
     );
   }
   

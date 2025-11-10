@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container } from '@browser-os/core';
+import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
 import { AppManager } from '@browser-os/app-sdk';
 import { StoreView } from './StoreView';
 
@@ -21,13 +21,17 @@ export class StoreApp extends App {
   }
   
   initialWindow(config?: Record<string, unknown>): Window {
+    const viewportService = this.container.resolve<ViewportService>('viewportService');
+    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
     return new Window(
       this.id,
       'App Store',
-      { x: 100, y: 100, w: 900, h: 700 },
+      { w: 900, h: 700 },
       config?.workspaceId as string || 'default',
       config,
-      this.eventBus
+      this.eventBus,
+      viewportService,
+      windowPlacementService
     );
   }
   

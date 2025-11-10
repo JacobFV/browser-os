@@ -6,8 +6,8 @@ export interface WindowViewProps {
   window: Window;
   onClose: (winId: string) => void;
   onFocus: (winId: string) => void;
-  onMove?: (winId: string, x: number, y: number) => void;
-  onResize?: (winId: string, w: number, h: number) => void;
+  onMove: (winId: string, x: number, y: number) => void;
+  onResize: (winId: string, w: number, h: number) => void;
   onMinimize?: (winId: string) => void;
   onMaximize?: (winId: string) => void;
   onRestore?: (winId: string) => void;
@@ -27,6 +27,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
 }) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [transformOffset, setTransformOffset] = useState<{ x: number; y: number } | null>(null);
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
   const isInteractingRef = useRef(false);
 
@@ -47,25 +48,20 @@ export const WindowView: React.FC<WindowViewProps> = ({
           },
           move(event) {
             if (dragStartPosRef.current) {
-              // Apply transform directly during drag for smooth movement
-              event.target.style.transform = `translate(${event.dx}px, ${event.dy}px)`;
-              // Don't call onMove during drag - it causes re-renders
+              // Update transform offset state for smooth movement
+              setTransformOffset({ x: event.dx, y: event.dy });
             }
           },
           end(event) {
             isInteractingRef.current = false;
             setIsDragging(false);
-            // Reset transform and update position
-            event.target.style.transform = '';
             if (dragStartPosRef.current) {
               const x = dragStartPosRef.current.x + event.dx;
               const y = dragStartPosRef.current.y + event.dy;
-              // Update window position directly (shared control)
-              window.moveTo(x, y, 'os');
-              // Also call callback if provided (for backward compat)
-              if (onMove) {
-                onMove(window.id, x, y);
-              }
+              // Call callback to update window position (single source of truth)
+              onMove(window.id, x, y);
+              // Reset transform offset after callback
+              setTransformOffset(null);
             }
             dragStartPosRef.current = null;
           },
@@ -97,12 +93,8 @@ export const WindowView: React.FC<WindowViewProps> = ({
             isInteractingRef.current = false;
             // Update size after resize completes
             const { width, height } = event.rect;
-            // Update window size directly (shared control)
-            window.resizeTo(width, height, 'os');
-            // Also call callback if provided (for backward compat)
-            if (onResize) {
-              onResize(window.id, width, height);
-            }
+            // Call callback to update window size (single source of truth)
+            onResize(window.id, width, height);
           },
         },
         modifiers: [
@@ -115,7 +107,7 @@ export const WindowView: React.FC<WindowViewProps> = ({
     return () => {
       interact(element).unset();
     };
-  }, [window.id, onFocus, onMove, onResize]); // Removed window.bounds.w and window.bounds.h
+  }, [window, onFocus, onMove, onResize]);
 
   if (window.state === 'minimized') {
     return null;
@@ -137,6 +129,8 @@ export const WindowView: React.FC<WindowViewProps> = ({
     display: 'flex',
     flexDirection: 'column',
     cursor: isDragging ? 'grabbing' : 'default',
+    // Apply transform offset during drag for smooth movement
+    transform: transformOffset ? `translate(${transformOffset.x}px, ${transformOffset.y}px)` : undefined,
   };
 
   if (window.state === 'maximized') {

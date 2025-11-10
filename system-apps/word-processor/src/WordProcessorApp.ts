@@ -1,8 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container } from '@browser-os/core';
-import { createId } from '@browser-os/core';
+import { Container, ViewportService, WindowPlacementService, createId } from '@browser-os/core';
 import { DocumentWindow } from './DocumentWindow';
 
 /**
@@ -19,14 +18,18 @@ export class WordProcessorApp extends App {
   
   initialWindow(config?: Record<string, unknown>): Window {
     const documentId = config?.documentId as string || createId();
+    const viewportService = this.container.resolve<ViewportService>('viewportService');
+    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
     
     return new Window(
       this.id,
       config?.title as string || 'Untitled',
-      { x: 100, y: 100, w: 1000, h: 700 },
+      { w: 1000, h: 700 },
       config?.workspaceId as string || 'default',
       { documentId, fileUri: config?.fileUri, ...config },
-      this.eventBus
+      this.eventBus,
+      viewportService,
+      windowPlacementService
     );
   }
   

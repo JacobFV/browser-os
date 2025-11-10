@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { windowManager, Window, WindowView } from '@browser-os/windowing';
-import { eventBus } from '@browser-os/core';
+import { Window, WindowView, WindowManagerImpl } from '@browser-os/windowing';
+import { EventBus, ViewportService, WindowPlacementService } from '@browser-os/core';
 import './App.css';
+
+// Create instances for the example
+const eventBus = new EventBus();
+const windowManager = new WindowManagerImpl(eventBus);
+const viewportService = new ViewportService(eventBus);
+const windowPlacementService = new WindowPlacementService(viewportService);
 
 export const BasicWindowingExample: React.FC = () => {
   const [windowUpdateTrigger, setWindowUpdateTrigger] = useState(0);
@@ -23,14 +29,12 @@ export const BasicWindowingExample: React.FC = () => {
     const window = new Window(
       `app-${Date.now()}`,
       title,
-      { 
-        x: 100 + Math.random() * 200, 
-        y: 100 + Math.random() * 200, 
-        w: 500, 
-        h: 400 
-      },
+      { w: 500, h: 400 },
       'default',
-      { content }
+      { content },
+      eventBus,
+      viewportService,
+      windowPlacementService
     );
     
     // Register with window manager

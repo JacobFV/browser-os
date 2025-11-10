@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container } from '@browser-os/core';
+import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
 import { SettingsView } from './SettingsView';
 
 /**
@@ -17,13 +17,17 @@ export class SettingsApp extends App {
   }
   
   initialWindow(config?: Record<string, any>): Window {
+    const viewportService = this.container.resolve<ViewportService>('viewportService');
+    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
     return new Window(
       this.id,
       'Settings',
-      { x: 200, y: 200, w: 600, h: 500 },
+      { w: 600, h: 500 },
       config?.workspaceId || 'default',
       config,
-      this.eventBus
+      this.eventBus,
+      viewportService,
+      windowPlacementService
     );
   }
   

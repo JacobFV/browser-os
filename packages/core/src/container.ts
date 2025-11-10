@@ -1,4 +1,6 @@
 import { EventBus } from './event-bus';
+import type { ViewportService } from './viewport-service';
+import type { WindowPlacementService } from './window-placement-service';
 import type { ProcessManager } from '@browser-os/process';
 import type { WindowManager } from '@browser-os/windowing';
 import type { WorkspaceManager } from '@browser-os/workspace';
@@ -30,6 +32,8 @@ export interface Dependencies {
   notificationManager: NotificationManager;
   telemetryManager: TelemetryManager;
   appManager: AppManager;
+  viewportService: ViewportService;
+  windowPlacementService: WindowPlacementService;
 }
 
 /**

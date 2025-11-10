@@ -1,6 +1,6 @@
 import { OS, OSConfig } from '@browser-os/app-sdk';
 import { Container } from '@browser-os/core';
-import { EventBus } from '@browser-os/core';
+import { EventBus, ViewportService, WindowPlacementService } from '@browser-os/core';
 import { ProcessManager } from '@browser-os/process';
 import { WindowManagerImpl } from '@browser-os/windowing';
 import { VfsImpl } from '@browser-os/fs';
@@ -26,6 +26,8 @@ export interface OSInitOptions {
   networkManager?: NetworkManager;
   notificationManager?: NotificationManager;
   telemetryManager?: TelemetryManager;
+  viewportService?: ViewportService;
+  windowPlacementService?: WindowPlacementService;
   // Note: workspaceManager is created by OS after AppManager, so it's not in options
 }
 
@@ -45,6 +47,14 @@ export function initializeContainer(
   // Create core event bus first (all other services depend on it)
   const eventBus = options?.eventBus || new EventBus();
   container.register('eventBus', eventBus);
+  
+  // Create viewport service (depends on event bus)
+  const viewportService = options?.viewportService || new ViewportService(eventBus);
+  container.register('viewportService', viewportService);
+  
+  // Create window placement service (depends on viewport service)
+  const windowPlacementService = options?.windowPlacementService || new WindowPlacementService(viewportService);
+  container.register('windowPlacementService', windowPlacementService);
   
   // Create process manager (depends on event bus)
   const processManager = options?.processManager || new ProcessManager(eventBus);
