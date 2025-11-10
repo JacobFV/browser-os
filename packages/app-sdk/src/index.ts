@@ -1,11 +1,7 @@
-export * from './registry';
 export * from './App';
 export * from './AppManager';
+export * from './AppFactory';
 export * from './OS';
-
-// AppRegistry is deprecated - use AppManager.registerManifests() instead
-// Keeping export for backward compatibility during migration
-export { AppRegistry } from './registry';
 
 export interface AppLifecycle {
   mount?: () => void | Promise<void>;

@@ -3,7 +3,7 @@ import { App } from './App';
 import { Window } from '@browser-os/windowing';
 import { WindowManager } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
-import { EventBus, AppManifest } from '@browser-os/core';
+import { EventBus, AppManifest, AppManifestSchema } from '@browser-os/core';
 
 /**
  * Manages app instances, registration, and lifecycle
@@ -79,10 +79,52 @@ export class AppManager {
   }
   
   /**
+   * Load app manifest from URL and register it
+   * 
+   * @param manifestPath - URL or path to manifest JSON file
+   * @returns Promise resolving to loaded and registered manifest
+   * @throws Error if manifest fails to load or validate
+   */
+  async loadAppManifest(manifestPath: string): Promise<AppManifest> {
+    try {
+      const response = await fetch(manifestPath);
+      const manifestData = await response.json();
+      
+      const manifest = AppManifestSchema.parse(manifestData);
+      this.manifests.set(manifest.id, manifest);
+      
+      return manifest;
+    } catch (error: any) {
+      throw new Error(`Failed to load app manifest: ${error.message}`);
+    }
+  }
+
+  /**
+   * Check if manifest exists
+   */
+  hasManifest(appId: string): boolean {
+    return this.manifests.has(appId);
+  }
+
+  /**
+   * Clear all manifests
+   */
+  clearManifests(): void {
+    this.manifests.clear();
+  }
+
+  /**
    * Get all manifests
    */
   getAllManifests(): AppManifest[] {
     return Array.from(this.manifests.values());
+  }
+
+  /**
+   * Get all manifests (alias for compatibility with app-manifest.ts)
+   */
+  getAllAppManifests(): AppManifest[] {
+    return this.getAllManifests();
   }
   
   /**

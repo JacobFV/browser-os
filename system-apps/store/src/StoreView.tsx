@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { getAllAppManifests, loadAppManifest, registerAppManifest } from '@apps/web-shell/app-manifest';
 import { AppManager } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
 import './Store.css';
@@ -20,7 +19,7 @@ export const StoreView: React.FC<StoreViewProps> = ({ window, appManager }) => {
 
   const loadApps = async () => {
     try {
-      const manifests = getAllAppManifests();
+      const manifests = appManager.getAllAppManifests();
       setInstalledApps(manifests);
       
       // In a real implementation, this would fetch from a remote store
@@ -43,8 +42,7 @@ export const StoreView: React.FC<StoreViewProps> = ({ window, appManager }) => {
   const handleInstall = async (app: any) => {
     try {
       // In a real implementation, this would download and install the app
-      const manifest = await loadAppManifest(`/apps/${app.id}/manifest.json`);
-      registerAppManifest(manifest);
+      const manifest = await appManager.loadAppManifest(`/apps/${app.id}/manifest.json`);
       appManager.registerManifest(manifest);
       setInstalledApps([...installedApps, manifest]);
       alert(`Installed ${app.name}`);
