@@ -147,8 +147,9 @@ import { EventBus } from '@browser-os/core';
 
 const appManager = new AppManager(windowManager, processManager, eventBus);
 
-// Register apps
-appManager.registerApp(new MyApp(processManager));
+// Register apps (prefer using AppFactory)
+const factory = new AppFactory(container, appManager);
+factory.createApp(MyApp);
 
 // Launch app (creates window)
 const window = appManager.launchApp('my-app', { config: 'value' });
@@ -166,13 +167,15 @@ import { OS } from '@browser-os/app-sdk';
 import { TerminalApp } from '@system-apps/terminal';
 import { CalculatorApp } from '@system-apps/calculator';
 
-// Create OS with apps
-const os = new OS({
-  apps: [
-    new TerminalApp(processManager, vfs),
-    new CalculatorApp(processManager),
-  ],
-});
+// Create OS with container
+const container = new Container();
+// ... register dependencies
+const os = new OS({ container });
+
+// Register apps using AppFactory
+const factory = new AppFactory(os.getContainer(), os.getAppManager());
+factory.createApp(TerminalApp);
+factory.createApp(CalculatorApp);
 
 // Launch apps
 os.launchApp('terminal');
@@ -262,12 +265,13 @@ class SimpleApp extends App {
   readonly name = 'Simple App';
   readonly version = '1.0.0';
   
-  constructor(processManager: ProcessManager) {
-    super(processManager);
+  constructor(container: Container) {
+    super(container);
   }
   
   initialWindow(): Window {
-    return new Window(this.id, 'Simple', { x: 100, y: 100, w: 400, h: 300 });
+    const eventBus = this.container.resolve('eventBus') as EventBus;
+    return new Window(this.id, 'Simple', { x: 100, y: 100, w: 400, h: 300 }, 'default', undefined, eventBus);
   }
   
   createComponent(window: Window): React.ComponentType {
@@ -319,10 +323,10 @@ abstract class App {
   
   getWindows(): Window[];
   getWindow(windowId: string): Window | undefined;
-  createWindow(config?: Record<string, any>): Window;
+  createWindow(config?: Record<string, unknown>): Window;
   getPid(): Pid | undefined;
-  getState<T>(key: string): T | undefined;
-  setState(key: string, value: any): void;
+  getState<T = unknown>(key: string): T | undefined;
+  setState(key: string, value: unknown): void;
 }
 ```
 
@@ -334,7 +338,7 @@ class AppManager {
   registerApps(apps: App[]): void;
   getApp(appId: string): App | undefined;
   getAllApps(): App[];
-  launchApp(appId: string, config?: Record<string, any>): Window;
+  launchApp(appId: string, config?: Record<string, unknown>): Window;
   closeWindow(windowId: string): void;
   closeApp(appId: string): void;
   suspendApp(appId: string): void;
@@ -350,7 +354,7 @@ class OS {
   getAppManager(): AppManager;
   getWindowManager(): WindowManager;
   getProcessManager(): ProcessManager;
-  launchApp(appId: string, config?: Record<string, any>): Window;
+  launchApp(appId: string, config?: Record<string, unknown>): Window;
   closeWindow(windowId: string): void;
   closeApp(appId: string): void;
   registerApp(app: App): void;

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createId, Clock } from './id';
-import { eventBus, WindowEvent } from './event-bus';
+import { createId, Clock, createWindowId, createAppId, createPid } from './id';
+import { EventBus, WindowEvent, ProcessEvent } from './event-bus';
 
 describe('ID Generation', () => {
   it('should generate unique IDs', () => {
@@ -18,6 +18,18 @@ describe('ID Generation', () => {
     const id = createId();
     // ULIDs are 26 characters
     expect(id.length).toBe(26);
+  });
+
+  it('should create branded WindowId', () => {
+    const windowId = createWindowId();
+    expect(typeof windowId).toBe('string');
+    expect(windowId.length).toBe(26);
+  });
+
+  it('should create branded AppId', () => {
+    const appId = createAppId();
+    expect(typeof appId).toBe('string');
+    expect(appId.length).toBe(26);
   });
 });
 
@@ -44,8 +56,10 @@ describe('Clock', () => {
 });
 
 describe('Event Bus', () => {
+  let eventBus: EventBus;
+
   beforeEach(() => {
-    eventBus.clear();
+    eventBus = new EventBus();
   });
   
   it('should subscribe and emit events', () => {
@@ -55,7 +69,7 @@ describe('Event Bus', () => {
       received = event;
     });
     
-    const testEvent: WindowEvent = { type: 'open', winId: 'win-1', appId: 'app-1' };
+    const testEvent: WindowEvent = { type: 'open', winId: createWindowId(), appId: createAppId() };
     eventBus.emit('window', testEvent);
     
     expect(received).toEqual(testEvent);
@@ -74,7 +88,7 @@ describe('Event Bus', () => {
       received.push(event);
     });
     
-    const testEvent: WindowEvent = { type: 'open', winId: 'win-1', appId: 'app-1' };
+    const testEvent: WindowEvent = { type: 'open', winId: createWindowId(), appId: createAppId() };
     eventBus.emit('window', testEvent);
     
     expect(received.length).toBe(2);
@@ -89,12 +103,12 @@ describe('Event Bus', () => {
       callCount++;
     });
     
-    eventBus.emit('window', { type: 'open', winId: 'win-1', appId: 'app-1' });
+    eventBus.emit('window', { type: 'open', winId: createWindowId(), appId: createAppId() });
     expect(callCount).toBe(1);
     
     unsubscribe();
     
-    eventBus.emit('window', { type: 'open', winId: 'win-2', appId: 'app-2' });
+    eventBus.emit('window', { type: 'open', winId: createWindowId(), appId: createAppId() });
     expect(callCount).toBe(1); // Should not increment
   });
   
@@ -106,8 +120,8 @@ describe('Event Bus', () => {
     
     eventBus.clear('window');
     
-    eventBus.emit('window', { type: 'open', winId: 'win-1', appId: 'app-1' });
-    eventBus.emit('proc', { type: 'spawn', pid: 'pid-1', appId: 'app-1' });
+    eventBus.emit('window', { type: 'open', winId: createWindowId(), appId: createAppId() });
+    eventBus.emit('proc', { type: 'spawn', pid: createPid(), appId: createAppId() });
     
     expect(callCount).toBe(1); // Only proc event fired
   });
