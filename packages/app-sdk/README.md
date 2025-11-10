@@ -113,29 +113,6 @@ container.register('windowManager', windowManager);
 const app = new MyApp(container);
 ```
 
-### AppFactory
-
-Use `AppFactory` to create and register apps with automatic dependency injection:
-
-```typescript
-import { AppFactory } from '@browser-os/app-sdk';
-import { Container } from '@browser-os/core';
-import { AppManager } from '@browser-os/app-sdk';
-import { MyApp } from './MyApp';
-
-const container = new Container();
-// ... register dependencies
-
-const appManager = new AppManager(/* ... */);
-const factory = new AppFactory(container, appManager);
-
-// Create and register app in one step
-const app = factory.createApp(MyApp);
-
-// Create multiple apps
-const apps = factory.createApps([MyApp, AnotherApp]);
-```
-
 ### AppManager
 
 Manages app instances and coordinates window creation:
@@ -147,9 +124,9 @@ import { EventBus } from '@browser-os/core';
 
 const appManager = new AppManager(windowManager, processManager, eventBus);
 
-// Register apps (prefer using AppFactory)
-const factory = new AppFactory(container, appManager);
-factory.createApp(MyApp);
+// Register apps
+const app = new MyApp(container);
+appManager.registerApp(app);
 
 // Launch app (creates window)
 const window = appManager.launchApp('my-app', { config: 'value' });
@@ -172,10 +149,9 @@ const container = new Container();
 // ... register dependencies
 const os = new OS({ container });
 
-// Register apps using AppFactory
-const factory = new AppFactory(os.getContainer(), os.getAppManager());
-factory.createApp(TerminalApp);
-factory.createApp(CalculatorApp);
+// Register apps
+os.registerApp(new TerminalApp(os.getContainer()));
+os.registerApp(new CalculatorApp(os.getContainer()));
 
 // Launch apps
 os.launchApp('terminal');

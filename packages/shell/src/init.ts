@@ -16,7 +16,7 @@ export interface DesktopShellInitOptions extends OSInitOptions, ShellConfig {
  * 
  * This is the main entry point for shell initialization. It orchestrates:
  * 1. OS creation (with container and all services)
- * 2. System app registration (using AppFactory)
+ * 2. System app registration (using AppRegistry)
  * 3. Shell configuration (theme, desktop, filesystem)
  * 
  * @param options - Configuration options for shell initialization
