@@ -2,7 +2,7 @@ import React from 'react';
 import { Window } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
 import type { Pid } from '@browser-os/process';
-import { WindowBounds, WindowState, EventBus, Container } from '@browser-os/core';
+import { WindowBounds, WindowState, EventBus, Container, ViewportService, WindowPlacementService, WindowSize } from '@browser-os/core';
 
 /**
  * Abstract base class for all applications in browser-os
@@ -91,6 +91,31 @@ export abstract class App {
    */
   createWindow(config?: Record<string, unknown>): Window {
     return this.initialWindow(config);
+  }
+  
+  /**
+   * Helper method to create a Window instance with resolved services
+   * Handles boilerplate of resolving viewportService and windowPlacementService
+   */
+  protected createWindowInstance(
+    title: string,
+    size: WindowSize,
+    config?: Record<string, unknown>
+  ): Window {
+    const viewportService = this.container.resolve<ViewportService>('viewportService');
+    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
+    const workspaceId = (config?.workspaceId as string) || 'default';
+    
+    return new Window(
+      this.id,
+      title,
+      size,
+      workspaceId,
+      config,
+      this.eventBus,
+      viewportService,
+      windowPlacementService
+    );
   }
   
   /**

@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
+import { Container } from '@browser-os/core';
 import { BrowserView } from './BrowserView';
 
 /**
@@ -17,17 +17,10 @@ export class BrowserApp extends App {
   }
   
   initialWindow(config?: Record<string, any>): Window {
-    const viewportService = this.container.resolve<ViewportService>('viewportService');
-    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
-    return new Window(
-      this.id,
+    return this.createWindowInstance(
       'Browser',
       { w: 1000, h: 700 },
-      config?.workspaceId || 'default',
-      config,
-      this.eventBus,
-      viewportService,
-      windowPlacementService
+      config
     );
   }
   

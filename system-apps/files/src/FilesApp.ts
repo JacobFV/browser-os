@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
+import { Container } from '@browser-os/core';
 import { VfsImpl } from '@browser-os/fs';
 import { FilesView } from './FilesView';
 
@@ -26,17 +26,10 @@ export class FilesApp extends App {
   }
   
   initialWindow(config?: Record<string, any>): Window {
-    const viewportService = this.container.resolve<ViewportService>('viewportService');
-    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
-    return new Window(
-      this.id,
+    return this.createWindowInstance(
       'Files',
       { w: 900, h: 700 },
-      config?.workspaceId || 'default',
-      { initialPath: config?.initialPath || this.initialPath, ...config },
-      this.eventBus,
-      viewportService,
-      windowPlacementService
+      { initialPath: config?.initialPath || this.initialPath, ...config }
     );
   }
   

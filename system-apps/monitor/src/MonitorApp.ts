@@ -1,7 +1,7 @@
 import React from 'react';
 import { App } from '@browser-os/app-sdk';
 import { Window } from '@browser-os/windowing';
-import { Container, ViewportService, WindowPlacementService } from '@browser-os/core';
+import { Container } from '@browser-os/core';
 import { MonitorView } from './MonitorView';
 
 /**
@@ -17,17 +17,10 @@ export class MonitorApp extends App {
   }
   
   initialWindow(config?: Record<string, any>): Window {
-    const viewportService = this.container.resolve<ViewportService>('viewportService');
-    const windowPlacementService = this.container.resolve<WindowPlacementService>('windowPlacementService');
-    return new Window(
-      this.id,
+    return this.createWindowInstance(
       'Process Monitor',
       { w: 900, h: 600 },
-      config?.workspaceId || 'default',
-      config,
-      this.eventBus,
-      viewportService,
-      windowPlacementService
+      config
     );
   }
   
