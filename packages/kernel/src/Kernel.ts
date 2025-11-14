@@ -59,13 +59,15 @@ export class Kernel {
   /**
    * Initialize kernel and all modules
    */
-  async init(): Promise<void> {
+  async init(options?: { skipFilesystem?: boolean }): Promise<void> {
     if (this.initialized) {
       return;
     }
 
-    // Initialize filesystem
-    await this.initFilesystem();
+    // Initialize filesystem (unless skipped for testing)
+    if (!options?.skipFilesystem) {
+      await this.initFilesystem();
+    }
 
     // Load system configuration
     const config = await this.loadConfig();
