@@ -10,7 +10,7 @@ import { CursorManager } from '@browser-os/cursor';
 import { NetworkManager } from '@browser-os/net';
 import { NotificationManager } from '@browser-os/notif';
 import { TelemetryManager } from '@browser-os/telemetry';
-import { AppManager } from '@browser-os/app-sdk';
+import { AppManager, AppLoader } from '@browser-os/app-sdk';
 
 export interface OSInitOptions {
   // Optional container override for testing
@@ -89,11 +89,16 @@ export function initializeContainer(
   const telemetryManager = options?.telemetryManager || new TelemetryManager(eventBus);
   container.register('telemetryManager', telemetryManager);
   
-  // Create app manager (depends on window manager, process manager, and event bus)
+  // Create app loader first (depends on VFS and container)
+  const appLoader = new AppLoader(vfs, container);
+  container.register('appLoader', appLoader);
+  
+  // Create app manager (depends on window manager, process manager, event bus, and app loader)
   const appManager = new AppManager(
     windowManager,
     processManager,
-    eventBus
+    eventBus,
+    appLoader
   );
   container.register('appManager', appManager);
   

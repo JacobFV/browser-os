@@ -1,5 +1,6 @@
 import React from 'react';
 import { App } from './App';
+import { AppLoader } from './AppLoader';
 import { Window } from '@browser-os/windowing';
 import { WindowManager } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
@@ -14,15 +15,18 @@ export class AppManager {
   private windowManager: WindowManager;
   private processManager: ProcessManager;
   private eventBus: EventBus;
+  private appLoader?: AppLoader;
   
   constructor(
     windowManager: WindowManager,
     processManager: ProcessManager,
-    eventBus: EventBus
+    eventBus: EventBus,
+    appLoader?: AppLoader
   ) {
     this.windowManager = windowManager;
     this.processManager = processManager;
     this.eventBus = eventBus;
+    this.appLoader = appLoader;
     
     // Listen for window close events
     this.eventBus.on('window', (event) => {
@@ -78,9 +82,21 @@ export class AppManager {
   
   /**
    * Launch an app (create window)
+   * If app is not found in registry, attempts to load from VFS using PATH
    */
   async launchApp(appId: string, config?: Record<string, unknown>): Promise<Window> {
-    const app = this.apps.get(appId);
+    let app = this.apps.get(appId);
+    
+    // If app not found and we have an app loader, try loading from VFS
+    if (!app && this.appLoader) {
+      try {
+        app = await this.appLoader.loadApp(appId);
+        this.registerApp(app);
+      } catch (error) {
+        throw new Error(`App ${appId} not found and could not be loaded from VFS: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    
     if (!app) {
       throw new Error(`App ${appId} not found`);
     }

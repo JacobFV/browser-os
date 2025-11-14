@@ -72,7 +72,10 @@ export class ProcessManager {
       channels: {},
       children: new Set(),
       parentPid,
-      env: {},
+      env: {
+        PATH: 'vfs://bin/',
+        HOME: 'vfs://documents/',
+      },
       windowId,
     };
 
@@ -142,7 +145,11 @@ export class ProcessManager {
       children: new Set(),
       parentPid: options?.parentPid,
       cwd: options?.cwd || 'vfs://documents/',
-      env: { ...options?.env },
+      env: {
+        PATH: 'vfs://bin/',
+        HOME: 'vfs://documents/',
+        ...options?.env,
+      },
       streams,
     };
     

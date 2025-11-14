@@ -1,89 +1,97 @@
-import { OS, App } from '@browser-os/app-sdk';
-import { Container } from '@browser-os/core';
-import { AppRegistry, AppPlugin } from './app-registry';
-import { TerminalApp } from '@system-apps/terminal';
-import { CalculatorApp } from '@system-apps/calculator';
-import { FilesApp } from '@system-apps/files';
-import { NotesApp } from '@system-apps/notes';
-import { MonitorApp } from '@system-apps/monitor';
-import { SettingsApp } from '@system-apps/settings';
-import { EditorApp } from '@system-apps/editor';
-import { BrowserApp } from '@system-apps/browser';
-import { CalendarApp } from '@system-apps/calendar';
-import { StoreApp } from '@system-apps/store';
-import { WordProcessorApp } from '@system-apps/word-processor';
+import { OS, App, AppMetadata } from '@browser-os/app-sdk';
 
 /**
- * Get all system app plugins
- * This function returns plugins that can be registered with AppRegistry
+ * Get all system app metadata definitions
+ * This function returns metadata for apps that will be stored in VFS
  */
-function getSystemAppPlugins(): AppPlugin[] {
+function getSystemAppMetadata(): AppMetadata[] {
   return [
     {
       id: 'terminal',
-      createApp: (container: Container) => new TerminalApp(container),
+      modulePath: '@system-apps/terminal',
+      className: 'TerminalApp',
     },
     {
       id: 'calculator',
-      createApp: (container: Container) => new CalculatorApp(container),
+      modulePath: '@system-apps/calculator',
+      className: 'CalculatorApp',
     },
     {
       id: 'files',
-      createApp: (container: Container) => new FilesApp(container),
+      modulePath: '@system-apps/files',
+      className: 'FilesApp',
     },
     {
       id: 'notes',
-      createApp: (container: Container) => new NotesApp(container),
+      modulePath: '@system-apps/notes',
+      className: 'NotesApp',
     },
     {
       id: 'monitor',
-      createApp: (container: Container) => new MonitorApp(container),
+      modulePath: '@system-apps/monitor',
+      className: 'MonitorApp',
     },
     {
       id: 'settings',
-      createApp: (container: Container) => new SettingsApp(container),
+      modulePath: '@system-apps/settings',
+      className: 'SettingsApp',
     },
     {
       id: 'editor',
-      createApp: (container: Container) => new EditorApp(container),
+      modulePath: '@system-apps/editor',
+      className: 'EditorApp',
     },
     {
       id: 'browser',
-      createApp: (container: Container) => new BrowserApp(container),
+      modulePath: '@system-apps/browser',
+      className: 'BrowserApp',
     },
     {
       id: 'calendar',
-      createApp: (container: Container) => new CalendarApp(container),
+      modulePath: '@system-apps/calendar',
+      className: 'CalendarApp',
     },
     {
       id: 'store',
-      createApp: (container: Container) => new StoreApp(container),
+      modulePath: '@system-apps/store',
+      className: 'StoreApp',
     },
     {
       id: 'os.word-processor',
-      createApp: (container: Container) => new WordProcessorApp(container),
+      modulePath: '@system-apps/word-processor',
+      className: 'WordProcessorApp',
     },
   ];
 }
 
 /**
- * Register system apps with the OS using plugin registry
+ * Register system apps with the OS using VFS-based app registry
  * 
- * Uses AppRegistry to decouple app imports from registration logic.
- * Apps can be added/removed by modifying getSystemAppPlugins().
+ * This function:
+ * 1. Writes app metadata files to VFS at vfs://bin/
+ * 2. Loads apps from VFS using OS.loadAppFromVFS()
+ * 
+ * This decouples the shell from system apps - apps are stored in VFS
+ * and loaded dynamically by the kernel (OS) using PATH resolution.
  * 
  * @param os - OS instance to register apps with
  * @returns Array of registered app instances
  */
-export function registerSystemApps(os: OS): App[] {
-  const container = os.getContainer();
-  const appManager = os.getAppManager();
-  const registry = new AppRegistry();
+export async function registerSystemApps(os: OS): Promise<App[]> {
+  const metadataList = getSystemAppMetadata();
+  const registeredApps: App[] = [];
   
-  // Register all system app plugins
-  registry.registerPlugins(getSystemAppPlugins());
+  // Step 1: Write all app metadata to VFS
+  for (const metadata of metadataList) {
+    await os.registerAppToVFS(metadata);
+  }
   
-  // Create and register all apps
-  return registry.createApps(container, appManager);
+  // Step 2: Load all apps from VFS
+  for (const metadata of metadataList) {
+    const app = await os.loadAppFromVFS(metadata.id);
+    registeredApps.push(app);
+  }
+  
+  return registeredApps;
 }
 

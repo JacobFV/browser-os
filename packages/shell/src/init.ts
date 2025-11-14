@@ -16,20 +16,20 @@ export interface DesktopShellInitOptions extends OSInitOptions, ShellConfig {
  * 
  * This is the main entry point for shell initialization. It orchestrates:
  * 1. OS creation (with container and all services)
- * 2. System app registration (using AppRegistry)
+ * 2. System app registration (using VFS-based app registry)
  * 3. Shell configuration (theme, desktop, filesystem)
  * 
  * @param options - Configuration options for shell initialization
  * @returns Complete shell state with OS and all configured services
  */
-export function initDesktopShell(options?: DesktopShellInitOptions): DesktopShellState {
+export async function initDesktopShell(options?: DesktopShellInitOptions): Promise<DesktopShellState> {
   // Step 1: Create OS instance (sets up container and all services)
   const os = createOS(options);
   
-  // Step 2: Register system apps if requested
+  // Step 2: Register system apps if requested (now async - loads from VFS)
   let systemApps: App[] = [];
   if (options?.apps?.registerDefaults !== false) {
-    systemApps = registerSystemApps(os);
+    systemApps = await registerSystemApps(os);
   }
   
   // Also register any provided app instances

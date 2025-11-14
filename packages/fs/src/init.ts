@@ -9,6 +9,7 @@ export function initFilesystem(vfs: VfsImpl, options?: FilesystemInitOptions): v
   // Default mount: /documents with mem driver
   const defaultMounts = [
     { mountPoint: '/documents', driver: createMemDriver() },
+    { mountPoint: '/bin', driver: createMemDriver() },
   ];
 
   const mounts = options?.mounts || defaultMounts;

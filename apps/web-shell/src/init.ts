@@ -17,7 +17,7 @@ export interface WebShellInitOptions extends DesktopShellInitOptions {
 export async function initWebShell(options?: WebShellInitOptions): Promise<DesktopShellState> {
   // Initialize desktop shell with defaults
   // System apps are automatically registered via registerSystemApps()
-  const state = initDesktopShell({
+  const state = await initDesktopShell({
     desktop: {
       icons: options?.desktop?.icons || defaultDesktopIcons,
       wallpaper: options?.desktop?.wallpaper,

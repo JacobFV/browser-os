@@ -1,6 +1,7 @@
 import React from 'react';
 import { App } from './App';
 import { AppManager } from './AppManager';
+import { AppLoader, AppMetadata } from './AppLoader';
 import { WindowManager } from '@browser-os/windowing';
 import { ProcessManager } from '@browser-os/process';
 import { WorkspaceManager } from '@browser-os/workspace';
@@ -39,6 +40,7 @@ export class OS {
   private networkManager: NetworkManager;
   private notificationManager: NotificationManager;
   private telemetryManager: TelemetryManager;
+  private appLoader: AppLoader;
   
   constructor(config: OSConfig) {
     if (!config.container) {
@@ -61,6 +63,14 @@ export class OS {
     
     // Resolve app manager from container
     this.appManager = this.container.resolve('appManager');
+    
+    // Create app loader if not in container
+    if (this.container.has('appLoader')) {
+      this.appLoader = this.container.resolve('appLoader');
+    } else {
+      this.appLoader = new AppLoader(this.vfs, this.container);
+      this.container.register('appLoader', this.appLoader);
+    }
     
     // Create workspace manager if not in container (it depends on AppManager)
     if (this.container.has('workspaceManager')) {
@@ -229,6 +239,24 @@ export class OS {
     apps.forEach(app => {
       this.appManager.closeApp(app.id);
     });
+  }
+
+  /**
+   * Load an app from VFS using PATH resolution
+   * This is the kernel-level app loading mechanism
+   */
+  async loadAppFromVFS(appId: string, path?: string): Promise<App> {
+    const app = await this.appLoader.loadApp(appId, path);
+    this.appManager.registerApp(app);
+    return app;
+  }
+
+  /**
+   * Register app metadata to VFS
+   * This places the app in the VFS at the PATH location
+   */
+  async registerAppToVFS(metadata: AppMetadata, path?: string): Promise<void> {
+    await this.appLoader.registerAppToVFS(metadata, path);
   }
 }
 
