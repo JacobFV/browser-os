@@ -1,5 +1,5 @@
 import { EventBus } from '@browser-os/events';
-import { FileSystem, IndexedDBBackend, EphemeralBackend } from '@browser-os/fs';
+import { FileSystem, EphemeralBackend } from '@browser-os/fs';
 import { ProcessManager } from '@browser-os/proc';
 import { AppRegistry } from '@browser-os/app-registry';
 import { PermissionManager } from './PermissionManager';
@@ -89,7 +89,8 @@ export class Kernel {
    * Initialize filesystem with default structure
    */
   private async initFilesystem(): Promise<void> {
-    // Mount root filesystem (IndexedDB)
+    // Mount root filesystem (IndexedDB) - use dynamic import to avoid loading in Node.js
+    const { IndexedDBBackend } = await import('@browser-os/fs');
     const rootBackend = new IndexedDBBackend({ dbName: 'browser-os-fs' });
     await rootBackend.init();
     await this.fs.mount('/', rootBackend);

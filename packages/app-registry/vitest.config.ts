@@ -7,15 +7,27 @@ export default defineConfig({
     environment: 'node',
     pool: 'threads',
     threads: false, // Run in main thread to avoid memory issues
+    setupFiles: ['./src/test-setup.ts'], // Mock browser APIs before imports
   },
   resolve: {
     alias: {
       '@browser-os/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
       '@browser-os/events': path.resolve(__dirname, '../../packages/events/src'),
-      '@browser-os/fs': path.resolve(__dirname, '../../packages/fs/src'),
+      '@browser-os/fs': path.resolve(__dirname, '../../packages/fs/src/node'), // Use Node.js entry point
       '@browser-os/proc': path.resolve(__dirname, '../../packages/proc/src'),
       '@browser-os/app-registry': path.resolve(__dirname, '../../packages/app-registry/src'),
       '@browser-os/kernel': path.resolve(__dirname, '../../packages/kernel/src'),
+      // Prevent loading browser backends
+      '@browser-os/fs/src/backends/IndexedDBBackend': path.resolve(__dirname, '../../packages/fs/src/backends/BaseBackend'),
+      '@browser-os/fs/src/backends/LocalStorageBackend': path.resolve(__dirname, '../../packages/fs/src/backends/BaseBackend'),
+      '@browser-os/fs/src/backends/ServerBackend': path.resolve(__dirname, '../../packages/fs/src/backends/BaseBackend'),
+    },
+  },
+  server: {
+    deps: {
+      external: [
+        /@browser-os\/fs\/src\/backends\/(IndexedDB|LocalStorage|Server)Backend/,
+      ],
     },
   },
 });
