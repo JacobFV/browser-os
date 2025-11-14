@@ -57,9 +57,13 @@ export class PathUtils {
   static dirname(path: string): string {
     const normalized = this.normalize(path);
     if (normalized === '/' || normalized === '.') return normalized;
-    const parts = normalized.split('/');
+    const isAbsolute = normalized.startsWith('/');
+    const parts = normalized.split('/').filter((p) => p);
     parts.pop();
-    return parts.length === 0 ? '.' : parts.join('/');
+    if (parts.length === 0) {
+      return isAbsolute ? '/' : '.';
+    }
+    return isAbsolute ? '/' + parts.join('/') : parts.join('/');
   }
 
   /**

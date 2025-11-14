@@ -32,10 +32,16 @@ export class MountManager {
     
     // Find the longest matching mount point
     let bestMatch: { backend: Backend; mountPath: string } | null = null;
-    let bestLength = 0;
+    let bestLength = -1;
 
     for (const [mountPath, { backend }] of this.mounts.entries()) {
-      if (normalized === mountPath || normalized.startsWith(mountPath + '/')) {
+      if (mountPath === '/') {
+        // Root mount matches everything
+        if (bestLength < 0) {
+          bestMatch = { backend, mountPath };
+          bestLength = 0;
+        }
+      } else if (normalized === mountPath || normalized.startsWith(mountPath + '/')) {
         if (mountPath.length > bestLength) {
           bestLength = mountPath.length;
           bestMatch = { backend, mountPath };

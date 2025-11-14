@@ -138,6 +138,12 @@ export class FileSystem {
           // Directory might already exist, continue
         }
       }
+      // Also ensure the final path exists
+      try {
+        await mount.backend.mkdir(relativePath);
+      } catch {
+        // Might already exist
+      }
     } else {
       await mount.backend.mkdir(relativePath);
     }
@@ -284,7 +290,7 @@ export class FileSystem {
    */
   private getRelativePath(path: string, mountPath: string): string {
     if (path === mountPath) return '/';
-    if (mountPath === '/') return path;
+    if (mountPath === '/') return path.startsWith('/') ? path : '/' + path;
     return path.startsWith(mountPath + '/') ? path.slice(mountPath.length) : path;
   }
 }

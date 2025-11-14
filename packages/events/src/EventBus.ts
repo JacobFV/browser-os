@@ -51,6 +51,43 @@ export class EventBus {
       timestamp: Date.now(),
     };
 
+    // Check for request handlers first (for request-response pattern)
+    const requestHandler = this.requestHandlers.get(type);
+    if (requestHandler) {
+      // This is a request, handle it and respond
+      const result = requestHandler(event);
+      if (result instanceof Promise) {
+        result.catch((error) => {
+          console.error(`Error in request handler for ${type}:`, error);
+        });
+      }
+      return; // Don't process as regular event
+    }
+
+    // Handle response events (for request-response pattern)
+    if (type.endsWith(':response') && event.target) {
+      const requestId = event.target;
+      if (this.pendingRequests.has(requestId)) {
+        const request = this.pendingRequests.get(requestId)!;
+        clearTimeout(request.timeout);
+        this.pendingRequests.delete(requestId);
+        request.resolve(event.payload);
+        return;
+      }
+    }
+
+    // Handle error events (for request-response pattern)
+    if (type.endsWith(':error') && event.target) {
+      const requestId = event.target;
+      if (this.pendingRequests.has(requestId)) {
+        const request = this.pendingRequests.get(requestId)!;
+        clearTimeout(request.timeout);
+        this.pendingRequests.delete(requestId);
+        request.reject(new Error(event.payload as string));
+        return;
+      }
+    }
+
     // Handle direct type matches
     const handlers = this.handlers.get(type);
     if (handlers) {
@@ -77,14 +114,6 @@ export class EventBus {
         }
       }
     });
-
-    // Handle request-response pattern
-    if (event.target && this.pendingRequests.has(event.target)) {
-      const request = this.pendingRequests.get(event.target)!;
-      clearTimeout(request.timeout);
-      this.pendingRequests.delete(event.target);
-      request.resolve(event.payload);
-    }
   }
 
   /**
@@ -96,8 +125,10 @@ export class EventBus {
 
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        this.pendingRequests.delete(requestId);
-        reject(new Error(`Request timeout: ${type}`));
+        if (this.pendingRequests.has(requestId)) {
+          this.pendingRequests.delete(requestId);
+          reject(new Error(`Request timeout: ${type}`));
+        }
       }, timeout);
 
       this.pendingRequests.set(requestId, {
@@ -112,9 +143,10 @@ export class EventBus {
         timeout: timeoutId,
       });
 
+      // Emit request with source set to requestId so response can target it
       this.emit(type, payload, {
-        source: options?.source,
-        target: requestId,
+        source: requestId,
+        target: options?.target,
       });
     });
   }
