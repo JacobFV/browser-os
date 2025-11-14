@@ -1,0 +1,20 @@
+{
+  "name": "@browser-os/app-registry",
+  "version": "0.1.0",
+  "description": "App metadata and installation tracking",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/fs": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
+

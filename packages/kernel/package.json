@@ -1,0 +1,22 @@
+{
+  "name": "@browser-os/kernel",
+  "version": "0.1.0",
+  "description": "Kernel with syscall routing, permissions, and security",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/proc": "workspace:*",
+    "@browser-os/app-registry": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
+

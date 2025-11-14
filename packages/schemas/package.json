@@ -1,0 +1,17 @@
+{
+  "name": "@browser-os/schemas",
+  "version": "0.1.0",
+  "description": "Zod schemas and TypeScript types for browser-os",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
