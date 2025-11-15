@@ -3,8 +3,7 @@ import { EventBus } from '@browser-os/events';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
 import { AppRegistry } from '@browser-os/app-registry';
 import { WindowManager } from '@browser-os/windowing';
-import { WorkspaceManager, useWorkspace, useKeyboardShortcuts } from '@browser-os/workspace';
-import { Workspace } from '@browser-os/workspace/src/Workspace';
+import { WorkspaceManager, Workspace, useWorkspace, useKeyboardShortcuts } from '@browser-os/workspace';
 import { Taskbar } from '@browser-os/taskbar';
 import { Desktop } from './Desktop';
 import './OS.css';
@@ -21,7 +20,7 @@ export interface OSProps {
 export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'browser-os-fs' }) => {
   const [eventBus] = useState(() => new EventBus());
   const [fs] = useState(() => new FileSystem());
-  const [appRegistry] = useState(() => new AppRegistry(fs, eventBus));
+  const [appRegistry] = useState(() => new AppRegistry({ fs, eventBus }));
   const [windowManager] = useState(() => new WindowManager({ eventBus }));
   const [workspaceManager, setWorkspaceManager] = useState<WorkspaceManager | null>(null);
   const [initialized, setInitialized] = useState(false);

@@ -25,6 +25,13 @@ export class AppRegistry {
   }
 
   /**
+   * Initialize the registry (load from filesystem)
+   */
+  async init(): Promise<void> {
+    await this.load();
+  }
+
+  /**
    * Load registry from filesystem
    */
   async load(): Promise<void> {
