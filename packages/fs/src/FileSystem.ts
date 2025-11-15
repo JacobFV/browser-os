@@ -102,15 +102,22 @@ export class FileSystem {
    */
   async exists(path: string): Promise<boolean> {
     try {
+      console.log('[FileSystem] Checking if exists:', path);
       const resolved = this.resolve(path);
+      console.log('[FileSystem] Resolved path:', resolved);
       const mount = this.mountManager.getBackend(resolved);
       if (!mount) {
+        console.log('[FileSystem] No mount point found for:', resolved);
         return false;
       }
 
       const relativePath = this.getRelativePath(resolved, mount.mountPath);
-      return await mount.backend.exists(relativePath);
-    } catch {
+      console.log('[FileSystem] Relative path:', relativePath, 'calling backend.exists()');
+      const result = await mount.backend.exists(relativePath);
+      console.log('[FileSystem] Backend.exists() returned:', result);
+      return result;
+    } catch (error) {
+      console.error('[FileSystem] exists() error:', error);
       return false;
     }
   }
@@ -119,21 +126,27 @@ export class FileSystem {
    * Create a directory
    */
   async mkdir(path: string, options?: { recursive?: boolean }): Promise<void> {
+    console.log('[FileSystem] mkdir called:', path, 'recursive:', options?.recursive);
     const resolved = this.resolve(path);
+    console.log('[FileSystem] mkdir resolved:', resolved);
     const mount = this.mountManager.getBackend(resolved);
     if (!mount) {
       throw new Error(`No mount point found for path: ${path}`);
     }
 
     const relativePath = this.getRelativePath(resolved, mount.mountPath);
+    console.log('[FileSystem] mkdir relative path:', relativePath);
 
     if (options?.recursive) {
       const parts = relativePath.split('/').filter((p) => p);
+      console.log('[FileSystem] mkdir recursive parts:', parts);
       let currentPath = '';
       for (const part of parts) {
         currentPath = currentPath ? `${currentPath}/${part}` : part;
+        console.log('[FileSystem] mkdir creating:', currentPath);
         try {
           await mount.backend.mkdir(currentPath);
+          console.log('[FileSystem] mkdir created:', currentPath);
         } catch {
           // Directory might already exist, continue
         }

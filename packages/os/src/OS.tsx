@@ -33,19 +33,34 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
   useEffect(() => {
     const init = async () => {
       try {
+        console.log('[OS] Starting initialization...');
+        
         // Initialize filesystem with IndexedDB backend
+        console.log('[OS] Initializing IndexedDB backend...');
         const backend = new IndexedDBBackend({ dbName });
         await backend.init();
+        console.log('[OS] IndexedDB backend initialized');
+        
         await fs.mount('/', backend);
+        console.log('[OS] Filesystem mounted');
 
         // Initialize app registry
+        console.log('[OS] Initializing app registry...');
         await appRegistry.init();
+        console.log('[OS] App registry initialized');
 
         // Register browser app component
+        console.log('[OS] Registering browser app component...');
+        console.log('[OS] Browser component:', Browser);
+        if (!Browser) {
+          throw new Error('Browser component is undefined');
+        }
         appComponentRegistry.registerAppComponent('browser', Browser);
+        console.log('[OS] Browser app component registered');
 
         // Register browser app in registry if not already registered
         if (!appRegistry.isInstalled('browser')) {
+          console.log('[OS] Registering browser app in registry...');
           const browserEntry = {
             id: 'browser',
             installedAt: Date.now(),
@@ -63,19 +78,27 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           };
           appRegistry.add(browserEntry);
           await appRegistry.save();
+          console.log('[OS] Browser app registered in registry');
         }
 
         // Initialize workspace manager
+        console.log('[OS] Initializing workspace manager...');
         const wm = new WorkspaceManager({
           eventBus,
           windowManager,
           initialWorkspaceCount: workspaceCount,
         });
         setWorkspaceManager(wm);
+        console.log('[OS] Workspace manager initialized');
 
         setInitialized(true);
+        console.log('[OS] Initialization complete!');
       } catch (error) {
-        console.error('Failed to initialize OS:', error);
+        console.error('[OS] Failed to initialize OS:', error);
+        console.error('[OS] Error details:', {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
       }
     };
 

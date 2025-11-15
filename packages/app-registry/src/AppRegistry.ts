@@ -36,14 +36,23 @@ export class AppRegistry {
    */
   async load(): Promise<void> {
     try {
+      console.log('[AppRegistry] Checking if registry exists at:', REGISTRY_PATH);
       const exists = await this.fs.exists(REGISTRY_PATH);
+      console.log('[AppRegistry] Registry exists:', exists);
+      
       if (!exists) {
-        // Create empty registry
+        // Create empty registry - set loaded first to prevent infinite loop
+        this.loaded = true;
+        console.log('[AppRegistry] Creating empty registry...');
         await this.save();
+        console.log('[AppRegistry] Empty registry created');
         return;
       }
 
+      console.log('[AppRegistry] Reading registry file...');
       const data = await this.fs.read(REGISTRY_PATH);
+      console.log('[AppRegistry] Registry file read, size:', data.length);
+      
       const json = new TextDecoder().decode(data);
       const parsed = JSON.parse(json);
 
@@ -58,9 +67,10 @@ export class AppRegistry {
       }
 
       this.loaded = true;
+      console.log('[AppRegistry] Registry loaded, entries:', this.entries.size);
       this.eventBus?.emit('registry:loaded', { count: this.entries.size }, { source: 'app-registry' });
     } catch (error) {
-      console.error('Failed to load registry:', error);
+      console.error('[AppRegistry] Failed to load registry:', error);
       // Start with empty registry if load fails
       this.entries.clear();
       this.loaded = true;
@@ -71,8 +81,17 @@ export class AppRegistry {
    * Save registry to filesystem
    */
   async save(): Promise<void> {
+    console.log('[AppRegistry] Saving registry...');
+    // Don't call load() if we're already in the process of loading
+    // This prevents infinite loops when the file doesn't exist
     if (!this.loaded) {
+      console.log('[AppRegistry] Not loaded yet, loading first...');
       await this.load();
+      // If load() created an empty registry, we're done
+      if (this.loaded && this.entries.size === 0) {
+        console.log('[AppRegistry] Load created empty registry, skipping save');
+        return;
+      }
     }
 
     const entries = Array.from(this.entries.values());
@@ -80,13 +99,18 @@ export class AppRegistry {
     const data = new TextEncoder().encode(json);
 
     // Ensure /etc directory exists
+    console.log('[AppRegistry] Ensuring /etc directory exists...');
     try {
       await this.fs.mkdir('/etc', { recursive: true });
-    } catch {
+      console.log('[AppRegistry] /etc directory ensured');
+    } catch (error) {
+      console.log('[AppRegistry] /etc directory creation (might already exist):', error);
       // Directory might already exist
     }
 
+    console.log('[AppRegistry] Writing registry file...');
     await this.fs.write(REGISTRY_PATH, data);
+    console.log('[AppRegistry] Registry file written');
     this.eventBus?.emit('registry:saved', { count: entries.length }, { source: 'app-registry' });
   }
 
