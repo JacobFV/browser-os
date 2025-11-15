@@ -38,6 +38,7 @@ describe('AppRegistry', () => {
             version: '1.0.0',
             entrypoint: '/bin/app-1.js',
             permissions: [],
+            showInTaskbar: true,
           },
         },
       ];
@@ -61,6 +62,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-1.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
 
@@ -85,6 +87,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-1.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
 
@@ -105,6 +108,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-1.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
 
@@ -132,6 +136,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-1.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
 
@@ -154,6 +159,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-1.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
       registry.add({
@@ -167,6 +173,7 @@ describe('AppRegistry', () => {
           version: '1.0.0',
           entrypoint: '/bin/app-2.js',
           permissions: [],
+          showInTaskbar: true,
         },
       });
 

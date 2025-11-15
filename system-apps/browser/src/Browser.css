@@ -1,0 +1,93 @@
+.browser {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+}
+
+.browser-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.browser-nav-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.browser-nav-button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  padding: 0;
+}
+
+.browser-nav-button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.browser-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.browser-url-bar {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+}
+
+.browser-url-input {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.browser-url-input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.browser-go-button {
+  padding: 6px 16px;
+  border: 1px solid #0066cc;
+  background: #0066cc;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.browser-go-button:hover {
+  background: #0052a3;
+}
+
+.browser-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.browser-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+

@@ -16,7 +16,7 @@ export class ServerBackend implements Backend {
     const response = await fetch(url, {
       method,
       headers: body ? { 'Content-Type': 'application/octet-stream' } : {},
-      body: body ? body : undefined,
+      body: body as BodyInit | undefined,
     });
 
     if (!response.ok) {

@@ -14,6 +14,7 @@ export default defineConfig({
       '@browser-os/workspace': path.resolve(__dirname, '../../packages/workspace/src'),
       '@browser-os/taskbar': path.resolve(__dirname, '../../packages/taskbar/src'),
       '@browser-os/os': path.resolve(__dirname, '../../packages/os/src'),
+      '@browser-os/browser': path.resolve(__dirname, '../../system-apps/browser/src'),
     },
   },
 });

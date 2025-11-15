@@ -16,6 +16,7 @@
     "@browser-os/windowing": "workspace:*",
     "@browser-os/workspace": "workspace:*",
     "@browser-os/taskbar": "workspace:*",
+    "@browser-os/browser": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {

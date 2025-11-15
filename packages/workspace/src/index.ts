@@ -1,7 +1,7 @@
 export * from './Workspace';
-export * from './WorkspaceManager';
+export { WorkspaceManager } from './WorkspaceManager';
 export * from './WorkspaceOverview';
 export * from './useWorkspace';
 export * from './useKeyboardShortcuts';
-export * from './types';
+export type { WorkspaceManager as IWorkspaceManager, AppComponentRegistry, AppComponent, AppComponentProps } from './types';
 

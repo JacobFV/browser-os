@@ -20,7 +20,6 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({
       onContextMenu={onContextMenu}
       title={window.title}
     >
-      {window.icon && <img src={window.icon} alt="" className="taskbar-button-icon" />}
       <span className="taskbar-button-label">{window.title}</span>
     </button>
   );

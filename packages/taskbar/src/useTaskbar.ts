@@ -43,8 +43,8 @@ export function useTaskbar(options: UseTaskbarOptions) {
     };
 
     const updateShortcuts = () => {
-      const apps = appRegistry.getEnabled().filter((app) => app.manifest.showInTaskbar !== false);
-      const shortcutsList: TaskbarShortcut[] = apps.map((app) => ({
+      const apps = appRegistry.getEnabled().filter((app: any) => app.manifest.showInTaskbar !== false);
+      const shortcutsList: TaskbarShortcut[] = apps.map((app: any) => ({
         appId: app.id,
         name: app.manifest.name,
         icon: app.manifest.icon,

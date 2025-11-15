@@ -116,12 +116,12 @@ export const Window: React.FC<WindowProps> = ({
       setIsResizing(null);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    globalThis.window.addEventListener('mousemove', handleMouseMove);
+    globalThis.window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      globalThis.window.removeEventListener('mousemove', handleMouseMove);
+      globalThis.window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, isResizing, dragStart, resizeStart, window, onMove, onResize]);
 

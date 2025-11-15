@@ -33,6 +33,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: ['fs.read'],
+        showInTaskbar: true,
       };
 
       await installer.install('test-app', code, manifest);
@@ -49,6 +50,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: [],
+        showInTaskbar: true,
       };
 
       await expect(installer.install('test-app', code, manifest)).rejects.toThrow(
@@ -64,6 +66,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: [],
+        showInTaskbar: true,
       };
 
       await installer.install('test-app', code, manifest, { enabled: false });
@@ -81,6 +84,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: [],
+        showInTaskbar: true,
       };
 
       await installer.install('test-app', code, manifest);
@@ -105,6 +109,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: [],
+        showInTaskbar: true,
       };
 
       await installer.install('test-app', code, manifest, { enabled: false });
@@ -122,6 +127,7 @@ describe('Installer', () => {
         version: '1.0.0',
         entrypoint: '/bin/test-app.js',
         permissions: [],
+        showInTaskbar: true,
       };
 
       await installer.install('test-app', code, manifest);

@@ -2,12 +2,14 @@ import React from 'react';
 import type { Window } from '@browser-os/schemas';
 import { Window as WindowComponent } from '@browser-os/windowing';
 import type { WindowManager } from '@browser-os/windowing';
+import type { AppComponentRegistry, AppComponentProps } from './types';
 import './Workspace.css';
 
 export interface WorkspaceProps {
   workspaceId: string;
   windows: Window[];
   windowManager: WindowManager;
+  appComponentRegistry?: AppComponentRegistry;
   eventBus?: any;
   children?: React.ReactNode;
 }
@@ -16,9 +18,30 @@ export const Workspace: React.FC<WorkspaceProps> = ({
   workspaceId,
   windows,
   windowManager,
+  appComponentRegistry,
   eventBus,
   children,
 }) => {
+  const renderWindowContent = (window: Window) => {
+    // If window has an appId, try to render the app component
+    if (window.appId && appComponentRegistry) {
+      const AppComponent = appComponentRegistry.getAppComponent(window.appId);
+      if (AppComponent) {
+        const props: AppComponentProps = {
+          windowId: window.id,
+        };
+        return <AppComponent {...props} />;
+      }
+    }
+
+    // Fallback to placeholder content
+    return (
+      <div style={{ width: '100%', height: '100%', padding: '16px' }}>
+        Window: {window.title}
+      </div>
+    );
+  };
+
   return (
     <div className="workspace">
       {children}
@@ -31,13 +54,10 @@ export const Workspace: React.FC<WorkspaceProps> = ({
           onMaximize={() => windowManager.maximizeWindow(window.id)}
           onRestore={() => windowManager.restoreWindow(window.id)}
           onFocus={() => windowManager.focusWindow(window.id)}
-          onMove={(x, y) => windowManager.updateWindow(window.id, { x, y })}
-          onResize={(width, height) => windowManager.updateWindow(window.id, { width, height })}
+          onMove={(x: number, y: number) => windowManager.updateWindow(window.id, { x, y })}
+          onResize={(width: number, height: number) => windowManager.updateWindow(window.id, { width, height })}
         >
-          {/* Window content will be provided by the app that creates the window */}
-          <div style={{ width: '100%', height: '100%', padding: '16px' }}>
-            Window: {window.title}
-          </div>
+          {renderWindowContent(window)}
         </WindowComponent>
       ))}
     </div>

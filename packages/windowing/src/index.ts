@@ -1,6 +1,7 @@
 export * from './Window';
-export * from './WindowManager';
+export { WindowManager } from './WindowManager';
+export type { WindowManagerOptions } from './WindowManager';
 export * from './WindowRegistry';
 export * from './useWindow';
-export * from './types';
+export type { WindowOptions, WindowManager as IWindowManager } from './types';
 
