@@ -1,0 +1,25 @@
+{
+  "name": "@browser-os/workspace",
+  "version": "0.1.0",
+  "description": "Workspace management for multiple desktop workspaces",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/windowing": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
+

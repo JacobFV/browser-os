@@ -1,0 +1,40 @@
+.taskbar-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 120px;
+  max-width: 200px;
+  transition: background 0.2s;
+}
+
+.taskbar-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.taskbar-button.focused {
+  background: rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid #0078d4;
+}
+
+.taskbar-button.minimized {
+  opacity: 0.6;
+}
+
+.taskbar-button-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.taskbar-button-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+

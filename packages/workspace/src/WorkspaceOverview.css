@@ -1,0 +1,123 @@
+.workspace-overview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.workspace-overview-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.workspace-overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.workspace-overview-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.workspace-overview-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.workspace-overview-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.workspace-overview-grid {
+  display: grid;
+  gap: 16px;
+  min-width: 600px;
+  min-height: 400px;
+}
+
+.workspace-overview-item {
+  background: #f5f5f5;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-overview-item:hover {
+  border-color: #0078d4;
+  transform: scale(1.02);
+}
+
+.workspace-overview-item.active {
+  border-color: #0078d4;
+  background: #e3f2fd;
+}
+
+.workspace-overview-item-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.workspace-overview-item-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.workspace-overview-empty {
+  color: #999;
+  font-style: italic;
+}
+
+.workspace-overview-windows {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.workspace-overview-window-thumbnail {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-overview-more {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  padding: 4px;
+}
+

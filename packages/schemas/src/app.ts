@@ -8,6 +8,7 @@ export const AppManifestSchema = z.object({
   entrypoint: z.string(), // Path to JS file in bin/
   permissions: z.array(z.string()), // Required syscalls
   icon: z.string().optional(), // Path to icon
+  showInTaskbar: z.boolean().default(true), // Whether app appears in taskbar
 });
 
 export const AppRegistryEntrySchema = z.object({

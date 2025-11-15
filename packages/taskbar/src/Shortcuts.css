@@ -1,0 +1,42 @@
+.taskbar-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.taskbar-shortcut {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.taskbar-shortcut:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.taskbar-shortcut-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.taskbar-shortcut-icon-placeholder {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0078d4;
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+

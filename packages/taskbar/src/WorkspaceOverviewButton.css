@@ -1,0 +1,38 @@
+.workspace-overview-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.workspace-overview-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.workspace-overview-button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  width: 20px;
+  height: 20px;
+}
+
+.workspace-overview-button-dot {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+.workspace-overview-button:hover .workspace-overview-button-dot {
+  background: rgba(255, 255, 255, 1);
+}
+

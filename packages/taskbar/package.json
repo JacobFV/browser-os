@@ -1,0 +1,27 @@
+{
+  "name": "@browser-os/taskbar",
+  "version": "0.1.0",
+  "description": "Taskbar with shortcuts, search, and workspace overview",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/windowing": "workspace:*",
+    "@browser-os/app-registry": "workspace:*",
+    "@browser-os/workspace": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
+

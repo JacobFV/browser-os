@@ -1,0 +1,133 @@
+.window {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  user-select: none;
+}
+
+.window-titlebar {
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.window-title {
+  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.window-controls {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.window-control {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+
+.window-control:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.window-control.close:hover {
+  background: #e81123;
+  color: white;
+}
+
+.window-content {
+  background: white;
+  overflow: auto;
+}
+
+.resize-handle {
+  position: absolute;
+  background: transparent;
+}
+
+.resize-n {
+  top: 0;
+  left: 4px;
+  right: 4px;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.resize-s {
+  bottom: 0;
+  left: 4px;
+  right: 4px;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.resize-e {
+  top: 4px;
+  right: 0;
+  bottom: 4px;
+  width: 4px;
+  cursor: ew-resize;
+}
+
+.resize-w {
+  top: 4px;
+  left: 0;
+  bottom: 4px;
+  width: 4px;
+  cursor: ew-resize;
+}
+
+.resize-ne {
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  cursor: nesw-resize;
+}
+
+.resize-nw {
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  cursor: nwse-resize;
+}
+
+.resize-se {
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  cursor: nwse-resize;
+}
+
+.resize-sw {
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  cursor: nesw-resize;
+}
+

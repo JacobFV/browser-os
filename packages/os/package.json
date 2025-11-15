@@ -1,0 +1,26 @@
+{
+  "name": "@browser-os/os",
+  "version": "0.1.0",
+  "description": "Browser OS main component",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/app-registry": "workspace:*",
+    "@browser-os/windowing": "workspace:*",
+    "@browser-os/workspace": "workspace:*",
+    "@browser-os/taskbar": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.3.0"
+  }
+}
+
