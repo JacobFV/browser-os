@@ -1,24 +1,21 @@
 # browser-os
 
-A comprehensive browser-based operating system monorepo built with React, TypeScript, and Turbo.
+A browser-based operating system monorepo built with React, TypeScript, and Turbo.
 
 ## Overview
 
-browser-os provides a complete OS-in-a-tab experience - a fully functional operating system that runs entirely in the browser. It features desktop and mobile modes, window management, a virtual filesystem, process management, and a complete app ecosystem.
+browser-os provides a complete OS-in-a-tab experience - a fully functional operating system that runs entirely in the browser. It features window management, a virtual filesystem, process management, and a complete app ecosystem.
 
 ### Key Features
 
-- **Object-Oriented Architecture**: Apps are classes that extend `App`, with clear separation of logic and UI
-- **Apps as Processes**: Every app spawns a process with full lifecycle management
-- **Window Ownership**: Apps create and own their windows, with shared control between App and OS
-- **Desktop & Mobile Shells**: Seamlessly switch between desktop and mobile modes
-- **Advanced Windowing**: Window class with shared control, snap-to-grid, drag/resize, multi-workspace
-- **Virtual Filesystem**: Multiple backend drivers (IndexedDB, OPFS, Memory, localStorage)
-- **Process Management**: Full process lifecycle with IPC and monitoring
-- **App System**: Object-oriented app architecture with AppManager and OS orchestration
-- **Theme System**: Multiple skins (Win95, macOS, Monaco, Glass) with runtime switching
-- **Built-in Apps**: Files, Terminal, Editor, Browser, Notes, Calendar, Settings, Store, Monitor
-- **Real-time Collaboration**: Optional cursor presence and multi-user support via Yjs
+- **Kernel Architecture**: Central kernel orchestrates all system modules with syscall routing and security
+- **Process Management**: Full process lifecycle with IPC, sandboxing, and monitoring
+- **Virtual Filesystem**: Multiple backend drivers (IndexedDB, localStorage, ephemeral memory, server)
+- **Window Management**: Multi-workspace windowing system with drag/resize, focus management
+- **App Registry**: App installation, metadata tracking, and lifecycle management
+- **Event System**: Centralized event bus for IPC and pub/sub communication
+- **Workspace Management**: Multiple virtual workspaces with keyboard shortcuts
+- **Taskbar**: Desktop taskbar with app shortcuts, window management, and workspace overview
 
 ## Prerequisites
 
@@ -33,44 +30,21 @@ pnpm install
 
 ## Structure
 
-```
+```text
 browser-os/
 ├── apps/
-│   ├── web-shell/          # React OS shell (web)
-│   ├── electron-shell/     # Electron wrapper
-│   └── showcase/           # Component gallery
+│   └── desktop-shell/      # Desktop shell application (React + Vite)
 ├── packages/
-│   ├── core/               # Event bus, IDs, Zod contracts
-│   ├── ui/                 # Primitive components
-│   ├── theme/              # Theme tokens and skins
-│   ├── windowing/          # Window management
-│   ├── workspace/          # Workspace management
-│   ├── taskbar/            # Taskbar and app switcher
-│   ├── desktop/            # Desktop and icons
-│   ├── process/            # Process management
-│   ├── fs/                 # Virtual filesystem
-│   ├── shell/              # Desktop/mobile shell
-│   ├── app-sdk/            # App SDK
-│   ├── app-host/           # App sandboxing
-│   ├── cursor/             # Cursor and presence
-│   ├── net/                # Network abstraction
-│   ├── notif/              # Notifications
-│   ├── settings/            # Settings store
-│   └── telemetry/          # Metrics and logging
-├── system-apps/
-│   ├── files/              # File manager
-│   ├── terminal/           # Terminal
-│   ├── editor/             # Monaco editor
-│   ├── browser/            # Web browser
-│   ├── notes/             # Notes app
-│   ├── calendar/          # Calendar
-│   ├── settings/          # Settings panel
-│   ├── store/             # App store
-│   └── monitor/           # Process monitor
-└── examples/
-    ├── basic-windowing/   # Windowing example
-    ├── theme-switching/   # Theme example
-    └── custom-app/        # Custom app example
+│   ├── events/             # Event bus system for IPC and pub/sub
+│   ├── fs/                 # Virtual filesystem with multiple backends
+│   ├── kernel/             # Kernel with syscall routing and security
+│   ├── os/                 # OS component (Desktop + Workspace + Taskbar)
+│   ├── proc/               # Process lifecycle management
+│   ├── schemas/            # Zod schemas and TypeScript types
+│   ├── taskbar/            # Taskbar component with shortcuts
+│   ├── windowing/          # Window management system
+│   └── workspace/          # Workspace management with keyboard shortcuts
+└── system-apps/            # System applications (placeholder)
 ```
 
 ## Quick Start
@@ -82,58 +56,59 @@ pnpm install
 # Build all packages
 pnpm build
 
-# Start web shell (main OS interface)
-pnpm --filter @browser-os/web-shell dev
+# Start desktop shell (main OS interface)
+pnpm --filter @browser-os/desktop-shell dev
 
 # Run tests
 pnpm test
 ```
 
-## Key Features
-
-- **Windowing**: Floating windows with drag/resize, snap-to-grid, multi-workspace
-- **Process Management**: Lifecycle, IPC, monitoring, crash isolation
-- **Virtual Filesystem**: Multiple drivers (mem, idb, opfs, localStorage), mount system, file watching
-- **Themes**: Win95, macOS, Monaco, Glass with runtime switching
-- **Mobile Mode**: Fullscreen app cards, app switcher, gesture support
-
 ## Architecture
 
 ### Core Concepts
 
-**Desktop Shell**: Composed of windowing + desktop + taskbar + workspaces + app host + process manager + fs + cursor + theme.
+**Kernel**: Central orchestrator that manages filesystem, process manager, app registry, and syscall routing. All system operations go through the kernel's permission system.
 
-**Apps**: Packages exposing a manifest + React entry point. Installable & updatable via the app store.
+**Process Management**: Apps run as processes with sandboxed execution. Each process has a PID, IPC channel, and controlled access to system resources via syscalls.
 
-**Modes**:
-- **Desktop Mode**: XY window positioning, taskbar at bottom/top
-- **Mobile Mode**: Full-screen cards, app switcher replaces taskbar, desktop grid = home screen
+**Filesystem**: Virtual filesystem with Unix-like structure (`/bin`, `/etc`, `/home`, `/tmp`, etc.) supporting multiple storage backends.
+
+**Windowing**: Multi-workspace windowing system where windows belong to workspaces and can be moved, resized, focused, and managed.
+
+**Event Bus**: Centralized event system for IPC between processes and general pub/sub communication.
 
 ### Package Dependencies
 
-```
-core → windowing → workspace, taskbar, desktop
-core → process → app-sdk → app-host
-core → fs, cursor, net, notif, settings, telemetry
-shell → windowing + taskbar + desktop
+```text
+events (core IPC/pub-sub)
+  ↓
+fs, kernel, proc, app-registry, schemas
+  ↓
+windowing, workspace, taskbar
+  ↓
+os (composes windowing + workspace + taskbar)
+  ↓
+desktop-shell (uses os component)
 ```
 
 See individual package READMEs for detailed API documentation.
 
 ## Documentation
 
-- [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture and OOP design
-- [Getting Started Guide](./docs/GETTING_STARTED.md) - Quick start with app development
-- [App Development Guide](./docs/DEVELOPMENT.md) - Building apps for browser-os
-- [Contributing Guide](./docs/CONTRIBUTING.md) - Contributing to the project
+- [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture and design
+- [Developing Guide](./docs/DEVELOPING.md) - Development setup and contributing
 
-## Examples
+## Packages
 
-- [basic-windowing](./examples/basic-windowing/) - Window class usage
-- [theme-switching](./examples/theme-switching/) - Theme system demo
-- [custom-app](./examples/custom-app/) - Building custom apps
-- [win95](./examples/win95/) - Windows 95 aesthetic demo
+Each package has its own README with detailed API documentation:
+
+- [@browser-os/events](./packages/events/README.md) - Event bus system
+- [@browser-os/fs](./packages/fs/README.md) - Virtual filesystem
+- [@browser-os/kernel](./packages/kernel/README.md) - Kernel and syscalls
+- [@browser-os/proc](./packages/proc/README.md) - Process management
+- [@browser-os/app-registry](./packages/app-registry/README.md) - App registry
+- [@browser-os/schemas](./packages/schemas/README.md) - Type schemas
 
 ## License
 
-MIT
+MIT - See [LICENSE](./LICENSE) file for details
