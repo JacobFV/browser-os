@@ -426,6 +426,15 @@ importers:
 
   system-apps/terminal:
     dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       react:
         specifier: ^18.2.0
         version: 18.3.1

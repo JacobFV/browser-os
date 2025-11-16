@@ -420,7 +420,16 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
         appComponentRegistry={appComponentRegistry}
         eventBus={eventBus}
       >
-        {desktop ?? <Desktop />}
+        {desktop ?? (
+          <Desktop
+            eventBus={eventBus}
+            windowManager={windowManager}
+            appRegistry={appRegistry}
+            appComponentRegistry={appComponentRegistry}
+            workspaceManager={workspaceManager}
+            activeWorkspaceId={activeWorkspaceId}
+          />
+        )}
       </Workspace>
       <Taskbar
         windowManager={windowManager}
