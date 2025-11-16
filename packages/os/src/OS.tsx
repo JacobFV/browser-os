@@ -174,52 +174,121 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
   const { activeWorkspaceId } = useWorkspace({ workspaceManager, eventBus });
   useKeyboardShortcuts({ workspaceManager, enabled: true });
 
-  const windows = windowManager.getWindowsInWorkspace(activeWorkspaceId);
+  // Make windows reactive by using useState and useEffect
+  const [windows, setWindows] = useState<Window[]>(() => 
+    windowManager.getWindowsInWorkspace(activeWorkspaceId)
+  );
+
+  // Update windows when workspace changes or window events occur
+  useEffect(() => {
+    const updateWindows = () => {
+      const currentWindows = windowManager.getWindowsInWorkspace(activeWorkspaceId);
+      console.log('[OS] Updating windows list:', currentWindows.length, 'windows');
+      setWindows(currentWindows);
+    };
+
+    // Initial update
+    updateWindows();
+
+    // Subscribe to window events
+    const unsubscribeCreated = eventBus.on('window:created', () => {
+      console.log('[OS] Window created event received, updating windows list');
+      updateWindows();
+    });
+
+    const unsubscribeUpdated = eventBus.on('window:updated', () => {
+      updateWindows();
+    });
+
+    const unsubscribeDestroyed = eventBus.on('window:destroyed', () => {
+      console.log('[OS] Window destroyed event received, updating windows list');
+      updateWindows();
+    });
+
+    const unsubscribeMinimized = eventBus.on('window:minimized', () => {
+      updateWindows();
+    });
+
+    const unsubscribeRestored = eventBus.on('window:restored', () => {
+      updateWindows();
+    });
+
+    return () => {
+      unsubscribeCreated();
+      unsubscribeUpdated();
+      unsubscribeDestroyed();
+      unsubscribeMinimized();
+      unsubscribeRestored();
+    };
+  }, [eventBus, windowManager, activeWorkspaceId]);
 
   // Handle app launching
   useEffect(() => {
+    console.log('[OS] Setting up taskbar:shortcut:clicked event listener');
+    
     const handleShortcutClick = (event: any) => {
+      console.log('[OS] Received taskbar:shortcut:clicked event:', event);
       const { appId } = event.payload || {};
-      if (!appId) return;
+      
+      if (!appId) {
+        console.warn('[OS] No appId in event payload:', event);
+        return;
+      }
+
+      console.log('[OS] Attempting to launch app:', appId);
 
       // Check if app is installed and enabled
       const app = appRegistry.get(appId);
       if (!app || !app.enabled) {
-        console.warn(`App ${appId} is not installed or not enabled`);
+        console.warn(`[OS] App ${appId} is not installed or not enabled`, { app, enabled: app?.enabled });
         return;
       }
 
+      console.log('[OS] App found in registry:', app.manifest.name);
+
       // Check if app component is registered
       if (!appComponentRegistry.hasAppComponent(appId)) {
-        console.warn(`App component for ${appId} is not registered`);
+        console.warn(`[OS] App component for ${appId} is not registered`);
         return;
       }
+
+      console.log('[OS] App component is registered');
 
       // Check if app already has an open window in the active workspace
       const existingWindows = windowManager.getWindowsInWorkspace(activeWorkspaceId);
       const existingWindow = existingWindows.find((w: Window) => w.appId === appId && w.state !== 'minimized');
 
       if (existingWindow) {
+        console.log('[OS] Focusing existing window:', existingWindow.id);
         // Focus existing window
         windowManager.focusWindow(existingWindow.id);
         if (existingWindow.state === 'minimized') {
           windowManager.restoreWindow(existingWindow.id);
         }
       } else {
-        // Create new window for the app
-        windowManager.createWindow({
-          title: app.manifest.name,
-          width: 1000,
-          height: 700,
-          workspaceId: activeWorkspaceId,
-          appId: appId,
-        });
+        console.log('[OS] Creating new window for app:', app.manifest.name);
+        try {
+          const windowId = windowManager.createWindow({
+            title: app.manifest.name,
+            width: 1000,
+            height: 700,
+            workspaceId: activeWorkspaceId,
+            appId: appId,
+          });
+          console.log('[OS] Window created successfully:', windowId);
+        } catch (error) {
+          console.error('[OS] Failed to create window:', error);
+        }
       }
     };
 
     const unsubscribe = eventBus.on('taskbar:shortcut:clicked', handleShortcutClick);
+    console.log('[OS] Event listener registered for taskbar:shortcut:clicked');
 
-    return unsubscribe;
+    return () => {
+      console.log('[OS] Unsubscribing from taskbar:shortcut:clicked event');
+      unsubscribe();
+    };
   }, [eventBus, appRegistry, appComponentRegistry, windowManager, activeWorkspaceId]);
 
   return (

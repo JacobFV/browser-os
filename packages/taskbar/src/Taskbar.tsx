@@ -16,7 +16,7 @@ export interface TaskbarProps {
   windowManager: WindowManager;
   appRegistry: AppRegistry;
   workspaceManager: WorkspaceManager;
-  eventBus?: EventBus;
+  eventBus: EventBus;
   activeWorkspaceId: string;
 }
 
@@ -47,10 +47,12 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   };
 
   const handleShortcutClick = (appId: string) => {
-    // TODO: Launch app or focus existing window
-    // For now, just emit an event
-    const bus = eventBus ?? new EventBus();
-    bus.emit('taskbar:shortcut:clicked', { appId }, { source: 'taskbar' });
+    if (!eventBus) {
+      console.error('[Taskbar] eventBus is required but not provided');
+      return;
+    }
+    console.log('[Taskbar] Emitting taskbar:shortcut:clicked event for app:', appId);
+    eventBus.emit('taskbar:shortcut:clicked', { appId }, { source: 'taskbar' });
   };
 
   const handleAppSelect = (appId: string) => {
