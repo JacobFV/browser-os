@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import type { DrawingTool } from './Toolbar';
+import type { BrushType } from './BrushEngine';
+import { drawBrush } from './BrushEngine';
 import './Canvas.css';
 
 export interface CanvasProps {
   tool: DrawingTool;
   color: string;
   brushSize: number;
+  brushType?: BrushType;
   width?: number;
   height?: number;
 }
@@ -17,12 +20,13 @@ export interface CanvasRef {
 }
 
 export const Canvas = forwardRef<CanvasRef, CanvasProps>(
-  ({ tool, color, brushSize, width = 800, height = 600 }, ref) => {
+  ({ tool, color, brushSize, brushType = 'watercolor', width = 800, height = 600 }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const previewCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
     const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+    const lastTimeRef = useRef<number>(0);
     
     // Define vector tools that use preview overlay
     const vectorTools: DrawingTool[] = ['rectangle', 'circle', 'line', 'arrow', 'polygon', 'text'];
@@ -102,7 +106,7 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
           previewCtx.lineJoin = 'round';
         }
       }
-    }, [width, height, color, brushSize]);
+    }, [width, height, color, brushSize, brushType]);
 
     // Update drawing styles when color or brush size changes
     useEffect(() => {
@@ -193,6 +197,7 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       setIsDrawing(true);
       setStartPos({ x, y });
       setLastPos({ x, y });
+      lastTimeRef.current = Date.now();
     };
 
     const draw = (x: number, y: number) => {
@@ -202,21 +207,37 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       if (!ctx || !isDrawing) return;
 
       // Pixel tools draw directly to main canvas
-      if (tool === 'pen' || tool === 'brush') {
+      if (tool === 'pen') {
         if (lastPos) {
           ctx.beginPath();
-          if (tool === 'brush') {
-            // Brush uses round line cap for smoother strokes
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.globalAlpha = 0.7; // Slightly transparent for brush effect
-          }
+          ctx.strokeStyle = color;
+          ctx.lineWidth = brushSize;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.moveTo(lastPos.x, lastPos.y);
           ctx.lineTo(x, y);
           ctx.stroke();
-          if (tool === 'brush') {
-            ctx.globalAlpha = 1.0;
-          }
+        }
+        setLastPos({ x, y });
+      } else if (tool === 'brush') {
+        if (lastPos) {
+          // Calculate speed for pressure simulation
+          const now = Date.now();
+          const timeDelta = now - lastTimeRef.current;
+          const dx = x - lastPos.x;
+          const dy = y - lastPos.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const speed = timeDelta > 0 ? distance / (timeDelta / 16.67) : distance; // pixels per frame (60fps baseline)
+          
+          // Use BrushEngine for advanced brush algorithms
+          drawBrush(ctx, { x: lastPos.x, y: lastPos.y, speed }, { x, y, speed }, {
+            type: brushType,
+            color,
+            size: brushSize,
+            opacity: 1.0,
+          });
+          
+          lastTimeRef.current = now;
         }
         setLastPos({ x, y });
       } else if (tool === 'eraser') {

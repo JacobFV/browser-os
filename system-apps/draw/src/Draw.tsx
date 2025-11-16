@@ -5,6 +5,7 @@ import { SaveDialog, OpenDialog } from '@browser-os/dialogs';
 import { Toolbar, type DrawingTool } from './Toolbar';
 import { Canvas, type CanvasRef } from './Canvas';
 import { Menubar } from './Menubar';
+import type { BrushType } from './BrushEngine';
 import './Draw.css';
 
 export interface DrawProps {
@@ -19,6 +20,7 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
   const [currentTool, setCurrentTool] = useState<DrawingTool>('pen');
   const [currentColor, setCurrentColor] = useState('#000000');
   const [brushSize, setBrushSize] = useState(5);
+  const [brushType, setBrushType] = useState<BrushType>('watercolor');
   const [currentPath, setCurrentPath] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -178,15 +180,23 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
           currentTool={currentTool}
           currentColor={currentColor}
           brushSize={brushSize}
+          brushType={brushType}
           onToolChange={setCurrentTool}
           onColorChange={setCurrentColor}
           onBrushSizeChange={setBrushSize}
+          onBrushTypeChange={setBrushType}
           onClear={() => {
             canvasRef.current?.clear();
             setHasUnsavedChanges(true);
           }}
         />
-        <Canvas ref={canvasRef} tool={currentTool} color={currentColor} brushSize={brushSize} />
+        <Canvas
+          ref={canvasRef}
+          tool={currentTool}
+          color={currentColor}
+          brushSize={brushSize}
+          brushType={brushType}
+        />
       </div>
       {showSaveDialog && eventBus && (
         <SaveDialog

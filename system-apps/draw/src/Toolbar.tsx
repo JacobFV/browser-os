@@ -1,4 +1,5 @@
 import React from 'react';
+import type { BrushType } from './BrushEngine';
 import './Toolbar.css';
 
 export type DrawingTool = 'pen' | 'rectangle' | 'circle' | 'line' | 'eraser' | 'text' | 'polygon' | 'arrow' | 'brush';
@@ -7,9 +8,11 @@ export interface ToolbarProps {
   currentTool: DrawingTool;
   currentColor: string;
   brushSize: number;
+  brushType?: BrushType;
   onToolChange: (tool: DrawingTool) => void;
   onColorChange: (color: string) => void;
   onBrushSizeChange: (size: number) => void;
+  onBrushTypeChange?: (type: BrushType) => void;
   onClear: () => void;
 }
 
@@ -17,9 +20,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   currentTool,
   currentColor,
   brushSize,
+  brushType = 'watercolor',
   onToolChange,
   onColorChange,
   onBrushSizeChange,
+  onBrushTypeChange,
   onClear,
 }) => {
   const tools: { id: DrawingTool; label: string; icon: string }[] = [
@@ -34,10 +39,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     { id: 'eraser', label: 'Eraser', icon: '🧹' },
   ];
 
+  const brushTypes: { id: BrushType; label: string; icon: string }[] = [
+    { id: 'watercolor', label: 'Watercolor', icon: '💧' },
+    { id: 'oil', label: 'Oil', icon: '🎨' },
+    { id: 'charcoal', label: 'Charcoal', icon: '🖤' },
+    { id: 'airbrush', label: 'Airbrush', icon: '💨' },
+    { id: 'marker', label: 'Marker', icon: '🖊️' },
+  ];
+
   return (
     <div className="draw-toolbar">
       <div className="draw-toolbar-section">
-        <h3 className="draw-toolbar-title">Tools</h3>
         <div className="draw-toolbar-tools">
           {tools.map((tool) => (
             <button
@@ -47,20 +59,43 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               title={tool.label}
             >
               <span className="draw-toolbar-icon">{tool.icon}</span>
-              <span className="draw-toolbar-label">{tool.label}</span>
             </button>
           ))}
         </div>
       </div>
 
+      {currentTool === 'brush' && onBrushTypeChange && (
+        <div className="draw-toolbar-section">
+          <div className="draw-toolbar-brush-types">
+            {brushTypes.map((type) => (
+              <button
+                key={type.id}
+                className={`draw-toolbar-brush-type ${brushType === type.id ? 'active' : ''}`}
+                onClick={() => onBrushTypeChange(type.id)}
+                title={type.label}
+              >
+                <span className="draw-toolbar-brush-icon">{type.icon}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="draw-toolbar-section">
-        <h3 className="draw-toolbar-title">Color</h3>
-        <div className="draw-toolbar-color">
-          <input
-            type="color"
-            value={currentColor}
-            onChange={(e) => onColorChange(e.target.value)}
-            className="draw-toolbar-color-input"
+        <div className="draw-toolbar-color-wrapper">
+          <div
+            className="draw-toolbar-color-swatch"
+            style={{ backgroundColor: currentColor }}
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'color';
+              input.value = currentColor;
+              input.onchange = (e) => {
+                const target = e.target as HTMLInputElement;
+                onColorChange(target.value);
+              };
+              input.click();
+            }}
           />
           <input
             type="text"
@@ -73,8 +108,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       <div className="draw-toolbar-section">
-        <h3 className="draw-toolbar-title">Brush Size</h3>
-        <div className="draw-toolbar-brush">
+        <div className="draw-toolbar-brush-size">
+          <div className="draw-toolbar-brush-preview">
+            <div
+              className="draw-toolbar-brush-circle"
+              style={{
+                width: `${Math.min(brushSize * 2, 40)}px`,
+                height: `${Math.min(brushSize * 2, 40)}px`,
+                backgroundColor: currentColor,
+              }}
+            />
+          </div>
           <input
             type="range"
             min="1"
@@ -101,7 +145,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="draw-toolbar-section">
         <button className="draw-toolbar-button clear" onClick={onClear}>
-          Clear Canvas
+          Clear
         </button>
       </div>
     </div>
