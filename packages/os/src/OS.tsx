@@ -10,6 +10,7 @@ import { AppComponentRegistry } from './AppComponentRegistry';
 import { Browser } from '@browser-os/browser';
 import { Terminal } from '@browser-os/terminal';
 import { Notepad } from '@browser-os/notepad';
+import { FileBrowser } from '@browser-os/file-browser';
 import { Desktop } from './Desktop';
 import './OS.css';
 
@@ -145,6 +146,38 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(notepadEntry);
           await appRegistry.save();
           console.log('[OS] Notepad app registered in registry');
+        }
+
+        // Register file browser app component
+        console.log('[OS] Registering file browser app component...');
+        console.log('[OS] FileBrowser component:', FileBrowser);
+        if (!FileBrowser) {
+          throw new Error('FileBrowser component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('file-browser', FileBrowser);
+        console.log('[OS] FileBrowser app component registered');
+
+        // Register file browser app in registry if not already registered
+        if (!appRegistry.isInstalled('file-browser')) {
+          console.log('[OS] Registering file browser app in registry...');
+          const fileBrowserEntry = {
+            id: 'file-browser',
+            installedAt: Date.now(),
+            installedBy: 'system',
+            enabled: true,
+            manifest: {
+              id: 'file-browser',
+              name: 'File Browser',
+              version: '0.1.0',
+              description: 'File browser',
+              entrypoint: '/bin/file-browser.js',
+              permissions: [],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(fileBrowserEntry);
+          await appRegistry.save();
+          console.log('[OS] FileBrowser app registered in registry');
         }
 
         // Initialize workspace manager

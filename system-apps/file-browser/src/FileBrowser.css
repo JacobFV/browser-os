@@ -1,0 +1,34 @@
+.file-browser {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+.file-browser-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #666;
+}
+
+.file-browser-loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+}
+
+.file-browser-error {
+  padding: 12px 16px;
+  background: #fee;
+  border-bottom: 1px solid #fcc;
+  color: #c00;
+  font-size: 13px;
+}
+

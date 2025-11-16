@@ -1,0 +1,124 @@
+.file-list {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
+}
+
+.file-list.list-view {
+  padding: 8px;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  gap: 8px;
+  transition: background-color 0.15s;
+}
+
+.file-list-item:hover {
+  background: #f0f0f0;
+}
+
+.file-list-item.selected {
+  background: #e8f4fd;
+  color: #0066cc;
+}
+
+.file-list-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.file-list-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.file-list-header {
+  padding: 8px 12px;
+  text-align: left;
+  background: #f5f5f5;
+  border-bottom: 2px solid #d0d0d0;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: background-color 0.15s;
+}
+
+.file-list-header:hover {
+  background: #e8e8e8;
+}
+
+.file-list-header.active {
+  background: #e0e0e0;
+  color: #0066cc;
+}
+
+.sort-indicator {
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+.file-list-row {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.file-list-row:hover {
+  background: #f5f5f5;
+}
+
+.file-list-row.selected {
+  background: #e8f4fd;
+}
+
+.file-list-row.selected .file-list-name {
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.file-list-cell {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.file-list-cell.name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.file-list-cell.size {
+  width: 100px;
+  text-align: right;
+  font-family: monospace;
+  color: #666;
+}
+
+.file-list-cell.modified {
+  width: 180px;
+  color: #666;
+}
+
+.file-list-cell.type {
+  width: 120px;
+  color: #666;
+}
+

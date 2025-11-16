@@ -1,0 +1,150 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.dialog-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  min-width: 400px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f5f5f5;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dialog-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dialog-close:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.dialog-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 16px;
+}
+
+.dialog-actions button {
+  padding: 8px 16px;
+  border: 1px solid #c0c0c0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: background-color 0.15s;
+}
+
+.dialog-actions button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.dialog-actions button.primary {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.dialog-actions button.primary:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.dialog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dialog-input {
+  margin-bottom: 16px;
+}
+
+.dialog-input label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.dialog-input input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #c0c0c0;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.dialog-input input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.dialog-message {
+  margin-bottom: 16px;
+  color: #333;
+  font-size: 14px;
+}
+
+.dialog-error {
+  padding: 8px 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c00;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
