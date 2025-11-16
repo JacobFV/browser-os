@@ -8,6 +8,7 @@ import type { DialogManager } from '@browser-os/dialogs';
 import type { ClipboardManager } from '@browser-os/clipboard';
 import type { StorageManager } from '@browser-os/storage';
 import type { NetworkManager } from '@browser-os/network';
+import type { SystemInfoManager } from '@browser-os/system';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -20,6 +21,7 @@ import { createClipboardSyscalls } from './syscalls/clipboard';
 import { createStorageSyscalls } from './syscalls/storage';
 import { createProcessSyscalls } from './syscalls/process';
 import { createNetworkSyscalls } from './syscalls/network';
+import { createSystemSyscalls } from './syscalls/system';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -34,6 +36,7 @@ export interface KernelOptions {
   clipboardManager?: ClipboardManager;
   storageManager?: StorageManager;
   networkManager?: NetworkManager;
+  systemInfoManager?: SystemInfoManager;
 }
 
 /**
@@ -50,6 +53,7 @@ export class Kernel {
   private clipboardManager?: ClipboardManager;
   private storageManager?: StorageManager;
   private networkManager?: NetworkManager;
+  private systemInfoManager?: SystemInfoManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -65,6 +69,7 @@ export class Kernel {
     this.clipboardManager = options?.clipboardManager;
     this.storageManager = options?.storageManager;
     this.networkManager = options?.networkManager;
+    this.systemInfoManager = options?.systemInfoManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -320,6 +325,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register system info syscalls (if systemInfoManager is provided)
+    if (this.systemInfoManager) {
+      const systemSyscalls = createSystemSyscalls(this.systemInfoManager);
+      for (const [name, handler] of Object.entries(systemSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -389,6 +402,15 @@ export class Kernel {
         'network.request',
         'network.get',
         'network.post',
+        'system.getInfo',
+        'system.getPlatform',
+        'system.getUserAgent',
+        'system.getLanguage',
+        'system.getLanguages',
+        'system.getTimezone',
+        'system.getScreenSize',
+        'system.isOnline',
+        'system.getHardwareConcurrency',
       ],
       fsAccess: [
         '/home/user/**',

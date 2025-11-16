@@ -7,6 +7,7 @@ import type { ClipboardAPI } from './ClipboardAPI';
 import type { StorageAPI } from './StorageAPI';
 import type { ProcessAPI } from './ProcessAPI';
 import type { NetworkAPI } from './NetworkAPI';
+import type { SystemInfoAPI } from './SystemInfoAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -27,5 +28,6 @@ export interface OSAPI {
   storage: StorageAPI;
   process: ProcessAPI;
   network: NetworkAPI;
+  system: SystemInfoAPI;
 }
 

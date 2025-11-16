@@ -9,6 +9,7 @@ import { ClipboardAPI } from './ClipboardAPI';
 import { StorageAPI } from './StorageAPI';
 import { ProcessAPI } from './ProcessAPI';
 import { NetworkAPI } from './NetworkAPI';
+import { SystemInfoAPI } from './SystemInfoAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -92,6 +93,7 @@ export class ProcessManager {
       storage: new StorageAPI(syscallWrapper),
       process: new ProcessAPI(syscallWrapper),
       network: new NetworkAPI(syscallWrapper),
+      system: new SystemInfoAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously
