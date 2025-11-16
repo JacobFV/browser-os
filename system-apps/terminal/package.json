@@ -14,15 +14,17 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@browser-os/fs": "workspace:*",
     "@browser-os/events": "workspace:*",
+    "@browser-os/fs": "workspace:*",
     "@browser-os/schemas": "workspace:*",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.0.0",
     "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.5.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -33,4 +35,3 @@
     "vitest": "^1.0.0"
   }
 }
-
