@@ -8,6 +8,7 @@ import { Taskbar } from '@browser-os/taskbar';
 import type { Window } from '@browser-os/schemas';
 import { AppComponentRegistry } from './AppComponentRegistry';
 import { Browser } from '@browser-os/browser';
+import { Terminal } from '@browser-os/terminal';
 import { Desktop } from './Desktop';
 import './OS.css';
 
@@ -79,6 +80,38 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(browserEntry);
           await appRegistry.save();
           console.log('[OS] Browser app registered in registry');
+        }
+
+        // Register terminal app component
+        console.log('[OS] Registering terminal app component...');
+        console.log('[OS] Terminal component:', Terminal);
+        if (!Terminal) {
+          throw new Error('Terminal component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('terminal', Terminal);
+        console.log('[OS] Terminal app component registered');
+
+        // Register terminal app in registry if not already registered
+        if (!appRegistry.isInstalled('terminal')) {
+          console.log('[OS] Registering terminal app in registry...');
+          const terminalEntry = {
+            id: 'terminal',
+            installedAt: Date.now(),
+            installedBy: 'system',
+            enabled: true,
+            manifest: {
+              id: 'terminal',
+              name: 'Terminal',
+              version: '0.1.0',
+              description: 'Terminal emulator',
+              entrypoint: '/bin/terminal.js',
+              permissions: [],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(terminalEntry);
+          await appRegistry.save();
+          console.log('[OS] Terminal app registered in registry');
         }
 
         // Initialize workspace manager
