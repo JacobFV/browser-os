@@ -1,0 +1,24 @@
+.draw {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+.draw-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #666;
+}
+
+.draw-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+

@@ -1,0 +1,22 @@
+.draw-canvas-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+  overflow: auto;
+  padding: 20px;
+}
+
+.draw-canvas {
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.draw-canvas:active {
+  cursor: crosshair;
+}
+

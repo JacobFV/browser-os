@@ -12,6 +12,7 @@ import { Terminal } from '@browser-os/terminal';
 import { Notepad } from '@browser-os/notepad';
 import { FileBrowser } from '@browser-os/file-browser';
 import { Settings } from '@browser-os/settings';
+import { Draw } from '@browser-os/draw';
 import { Desktop } from './Desktop';
 import { NotificationManager } from '@browser-os/notifications';
 import './OS.css';
@@ -213,6 +214,38 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(settingsEntry);
           await appRegistry.save();
           console.log('[OS] Settings app registered in registry');
+        }
+
+        // Register draw app component
+        console.log('[OS] Registering draw app component...');
+        console.log('[OS] Draw component:', Draw);
+        if (!Draw) {
+          throw new Error('Draw component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('draw', Draw);
+        console.log('[OS] Draw app component registered');
+
+        // Register draw app in registry if not already registered
+        if (!appRegistry.isInstalled('draw')) {
+          console.log('[OS] Registering draw app in registry...');
+          const drawEntry = {
+            id: 'draw',
+            installedAt: Date.now(),
+            installedBy: 'system',
+            enabled: true,
+            manifest: {
+              id: 'draw',
+              name: 'Draw',
+              version: '0.1.0',
+              description: 'Drawing app',
+              entrypoint: '/bin/draw.js',
+              permissions: [],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(drawEntry);
+          await appRegistry.save();
+          console.log('[OS] Draw app registered in registry');
         }
 
         // Initialize workspace manager

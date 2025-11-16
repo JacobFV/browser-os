@@ -22,6 +22,7 @@
     "@browser-os/notepad": "workspace:*",
     "@browser-os/file-browser": "workspace:*",
     "@browser-os/settings": "workspace:*",
+    "@browser-os/draw": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {
