@@ -3,6 +3,7 @@ import type { Channel } from '@browser-os/events';
 import type { WindowAPI } from './WindowAPI';
 import type { NotificationAPI } from './NotificationAPI';
 import type { DialogAPI } from './DialogAPI';
+import type { ClipboardAPI } from './ClipboardAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -19,5 +20,6 @@ export interface OSAPI {
   window: WindowAPI;
   notification: NotificationAPI;
   dialog: DialogAPI;
+  clipboard: ClipboardAPI;
 }
 

@@ -5,4 +5,5 @@ export * from './types';
 export * from './WindowAPI';
 export * from './NotificationAPI';
 export * from './DialogAPI';
+export * from './ClipboardAPI';
 

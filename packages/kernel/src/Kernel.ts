@@ -5,6 +5,7 @@ import { AppRegistry } from '@browser-os/app-registry';
 import type { WindowManager } from '@browser-os/windowing';
 import type { NotificationManager } from '@browser-os/notifications';
 import type { DialogManager } from '@browser-os/dialogs';
+import type { ClipboardManager } from '@browser-os/clipboard';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -13,6 +14,7 @@ import { createRegistrySyscalls } from './syscalls/registry';
 import { createWindowSyscalls } from './syscalls/window';
 import { createNotificationSyscalls } from './syscalls/notification';
 import { createDialogSyscalls } from './syscalls/dialog';
+import { createClipboardSyscalls } from './syscalls/clipboard';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -24,6 +26,7 @@ export interface KernelOptions {
   windowManager?: WindowManager;
   notificationManager?: NotificationManager;
   dialogManager?: DialogManager;
+  clipboardManager?: ClipboardManager;
 }
 
 /**
@@ -37,6 +40,7 @@ export class Kernel {
   private windowManager?: WindowManager;
   private notificationManager?: NotificationManager;
   private dialogManager?: DialogManager;
+  private clipboardManager?: ClipboardManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -49,6 +53,7 @@ export class Kernel {
     this.windowManager = options?.windowManager;
     this.notificationManager = options?.notificationManager;
     this.dialogManager = options?.dialogManager;
+    this.clipboardManager = options?.clipboardManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -274,6 +279,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register clipboard syscalls (if clipboardManager is provided)
+    if (this.clipboardManager) {
+      const clipboardSyscalls = createClipboardSyscalls(this.clipboardManager);
+      for (const [name, handler] of Object.entries(clipboardSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -320,6 +333,13 @@ export class Kernel {
         'dialog.openFile',
         'dialog.saveFile',
         'dialog.selectDirectory',
+        'clipboard.readText',
+        'clipboard.writeText',
+        'clipboard.read',
+        'clipboard.write',
+        'clipboard.clear',
+        'clipboard.hasText',
+        'clipboard.hasImage',
       ],
       fsAccess: [
         '/home/user/**',
