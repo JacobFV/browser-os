@@ -303,8 +303,8 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
         try {
           const windowId = windowManager.createWindow({
             title: app.manifest.name,
-            width: 1000,
-            height: 700,
+            width: 600,
+            height: 500,
             workspaceId: activeWorkspaceId,
             appId: appId,
           });
