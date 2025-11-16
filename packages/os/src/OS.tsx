@@ -13,6 +13,7 @@ import { Notepad } from '@browser-os/notepad';
 import { FileBrowser } from '@browser-os/file-browser';
 import { Settings } from '@browser-os/settings';
 import { Desktop } from './Desktop';
+import { NotificationManager } from '@browser-os/notifications';
 import './OS.css';
 
 export interface OSProps {
@@ -31,6 +32,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
   const [windowManager] = useState(() => new WindowManager({ eventBus }));
   const [appComponentRegistry] = useState(() => new AppComponentRegistry(eventBus));
   const [workspaceManager, setWorkspaceManager] = useState<WorkspaceManager | null>(null);
+  const [notificationManager] = useState(() => new NotificationManager({ eventBus }));
   const [initialized, setInitialized] = useState(false);
 
   // Initialize filesystem and app registry
@@ -250,6 +252,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
       appComponentRegistry={appComponentRegistry}
       desktop={desktop}
       fs={fs}
+      notificationManager={notificationManager}
     />
   );
 };
@@ -262,6 +265,7 @@ interface DesktopShellProps {
   appComponentRegistry: AppComponentRegistry;
   desktop?: React.ReactNode;
   fs: FileSystem;
+  notificationManager: NotificationManager;
 }
 
 const DesktopShell: React.FC<DesktopShellProps> = ({
@@ -272,6 +276,7 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
   appComponentRegistry,
   desktop,
   fs,
+  notificationManager,
 }) => {
   const { activeWorkspaceId } = useWorkspace({ workspaceManager, eventBus });
   useKeyboardShortcuts({ workspaceManager, enabled: true });
@@ -438,8 +443,64 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
         eventBus={eventBus}
         activeWorkspaceId={activeWorkspaceId}
         fs={fs}
+        notificationManager={notificationManager}
+      />
+      <NotificationOverlay
+        notificationManager={notificationManager}
+        eventBus={eventBus}
       />
     </div>
+  );
+};
+
+// Notification overlay component
+import { NotificationToast } from '@browser-os/notifications';
+import { useNotifications } from '@browser-os/notifications';
+
+interface NotificationOverlayProps {
+  notificationManager: NotificationManager;
+  eventBus: EventBus;
+}
+
+const NotificationOverlay: React.FC<NotificationOverlayProps> = ({
+  notificationManager,
+  eventBus,
+}) => {
+  const { notifications } = useNotifications({ notificationManager });
+  const settings = notificationManager.getSettings();
+
+  const handleDismiss = (id: string) => {
+    notificationManager.dismissNotification(id);
+  };
+
+  const handleNotificationClick = (notification: import('@browser-os/schemas').Notification) => {
+    // Handle notification click - could open app or window
+    if (notification.appId) {
+      eventBus.emit('taskbar:shortcut:clicked', { appId: notification.appId }, { source: 'notification' });
+    }
+  };
+
+  const handleNotificationAction = (
+    notification: import('@browser-os/schemas').Notification,
+    action: string,
+    data?: unknown
+  ) => {
+    // Handle notification action
+    if (action === 'open-file' && data && typeof data === 'object' && 'path' in data) {
+      // Open file browser with path
+      eventBus.emit('taskbar:shortcut:clicked', { appId: 'file-browser' }, { source: 'notification' });
+    }
+  };
+
+  return (
+    <NotificationToast
+      notifications={notifications}
+      position={settings.toastPosition}
+      autoDismissTimeout={settings.autoDismissTimeout}
+      onDismiss={handleDismiss}
+      onClick={handleNotificationClick}
+      onAction={handleNotificationAction}
+    />
   );
 };
 

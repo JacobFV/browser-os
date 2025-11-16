@@ -6,4 +6,5 @@ export * from './WorkspaceOverviewButton';
 export * from './useTaskbar';
 export * from './types';
 export * from './RecentFilesManager';
+export * from './NotificationBadgeButton';
 

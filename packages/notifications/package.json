@@ -1,11 +1,12 @@
 {
-  "name": "@browser-os/taskbar",
+  "name": "@browser-os/notifications",
   "version": "0.1.0",
-  "description": "Taskbar with shortcuts, search, and workspace overview",
+  "description": "Notification subsystem for Browser OS",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy-css",
+    "copy-css": "node -e \"const fs=require('fs');const path=require('path');['NotificationCenter.css','NotificationItem.css','NotificationBadge.css','NotificationToast.css','NotificationSettings.css'].forEach(f=>{const src=path.join('src',f);const dst=path.join('dist',f);if(fs.existsSync(src))fs.copyFileSync(src,dst);});\"",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -14,10 +15,6 @@
     "@browser-os/schemas": "workspace:*",
     "@browser-os/events": "workspace:*",
     "@browser-os/fs": "workspace:*",
-    "@browser-os/windowing": "workspace:*",
-    "@browser-os/app-registry": "workspace:*",
-    "@browser-os/workspace": "workspace:*",
-    "@browser-os/notifications": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {

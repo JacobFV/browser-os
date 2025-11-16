@@ -11,6 +11,8 @@ import { TaskbarButton } from './TaskbarButton';
 import { WorkspaceOverviewButton } from './WorkspaceOverviewButton';
 import { WorkspaceOverview } from '@browser-os/workspace';
 import { useTaskbar } from './useTaskbar';
+import { NotificationCenter } from '@browser-os/notifications';
+import { NotificationBadgeButton } from './NotificationBadgeButton';
 import './Taskbar.css';
 
 export interface TaskbarProps {
@@ -20,6 +22,7 @@ export interface TaskbarProps {
   eventBus: EventBus;
   activeWorkspaceId: string;
   fs?: FileSystem;
+  notificationManager?: import('@browser-os/notifications').NotificationManager;
 }
 
 export const Taskbar: React.FC<TaskbarProps> = ({
@@ -29,6 +32,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   eventBus,
   activeWorkspaceId,
   fs,
+  notificationManager,
 }) => {
   const [showOverview, setShowOverview] = useState(false);
   const { windows, shortcuts, recentFilesManager } = useTaskbar({
@@ -74,9 +78,17 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     windowsByWorkspace.set(workspace.id, wsWindows);
   });
 
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+
   return (
     <>
       <div className="taskbar">
+        {notificationManager && (
+          <NotificationBadgeButton
+            notificationManager={notificationManager}
+            onClick={() => setShowNotificationCenter(!showNotificationCenter)}
+          />
+        )}
         {recentFilesManager ? (
           <Shortcuts
             shortcuts={shortcuts}
@@ -130,6 +142,27 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           }}
           onClose={() => setShowOverview(false)}
         />
+      )}
+      {showNotificationCenter && notificationManager && (
+        <>
+          <div
+            className="notification-center-backdrop"
+            onClick={() => setShowNotificationCenter(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 10001,
+            }}
+          />
+          <NotificationCenter
+            notificationManager={notificationManager}
+            onClose={() => setShowNotificationCenter(false)}
+          />
+        </>
       )}
     </>
   );

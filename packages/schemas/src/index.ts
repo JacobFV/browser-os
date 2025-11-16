@@ -7,4 +7,5 @@ export * from './permission';
 export * from './config';
 export * from './window';
 export * from './workspace';
+export * from './notification';
 

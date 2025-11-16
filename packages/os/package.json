@@ -16,6 +16,7 @@
     "@browser-os/windowing": "workspace:*",
     "@browser-os/workspace": "workspace:*",
     "@browser-os/taskbar": "workspace:*",
+    "@browser-os/notifications": "workspace:*",
     "@browser-os/browser": "workspace:*",
     "@browser-os/terminal": "workspace:*",
     "@browser-os/notepad": "workspace:*",

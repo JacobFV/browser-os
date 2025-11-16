@@ -1,0 +1,83 @@
+.notification-toast-container {
+  position: fixed;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.notification-toast-top-right {
+  top: 16px;
+  right: 16px;
+  align-items: flex-end;
+}
+
+.notification-toast-top-left {
+  top: 16px;
+  left: 16px;
+  align-items: flex-start;
+}
+
+.notification-toast-bottom-right {
+  bottom: 80px; /* Above taskbar */
+  right: 16px;
+  align-items: flex-end;
+  flex-direction: column-reverse;
+}
+
+.notification-toast-bottom-left {
+  bottom: 80px; /* Above taskbar */
+  left: 16px;
+  align-items: flex-start;
+  flex-direction: column-reverse;
+}
+
+.notification-toast-item {
+  pointer-events: auto;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+@keyframes notification-toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-toast-top-left .notification-toast-item {
+  animation-name: notification-toast-slide-in-left;
+}
+
+@keyframes notification-toast-slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-toast-bottom-right .notification-toast-item,
+.notification-toast-bottom-left .notification-toast-item {
+  animation-name: notification-toast-slide-in-bottom;
+}
+
+@keyframes notification-toast-slide-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
