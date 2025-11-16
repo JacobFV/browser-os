@@ -11,6 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/schemas": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
