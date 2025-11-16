@@ -26,7 +26,8 @@
     "@browser-os/power": "workspace:*",
     "@browser-os/audio": "workspace:*",
     "@browser-os/media": "workspace:*",
-    "@browser-os/location": "workspace:*"
+    "@browser-os/location": "workspace:*",
+    "@browser-os/sensor": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.0",

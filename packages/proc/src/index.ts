@@ -14,4 +14,5 @@ export * from './PowerAPI';
 export * from './AudioAPI';
 export * from './MediaAPI';
 export * from './LocationAPI';
+export * from './SensorAPI';
 

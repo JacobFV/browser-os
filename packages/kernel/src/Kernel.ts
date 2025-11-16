@@ -13,6 +13,7 @@ import type { PowerManager } from '@browser-os/power';
 import type { AudioManager } from '@browser-os/audio';
 import type { MediaManager } from '@browser-os/media';
 import type { LocationManager } from '@browser-os/location';
+import type { SensorManager } from '@browser-os/sensor';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -30,6 +31,7 @@ import { createPowerSyscalls } from './syscalls/power';
 import { createAudioSyscalls } from './syscalls/audio';
 import { createMediaSyscalls } from './syscalls/media';
 import { createLocationSyscalls } from './syscalls/location';
+import { createSensorSyscalls } from './syscalls/sensor';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -49,6 +51,7 @@ export interface KernelOptions {
   audioManager?: AudioManager;
   mediaManager?: MediaManager;
   locationManager?: LocationManager;
+  sensorManager?: SensorManager;
 }
 
 /**
@@ -70,6 +73,7 @@ export class Kernel {
   private audioManager?: AudioManager;
   private mediaManager?: MediaManager;
   private locationManager?: LocationManager;
+  private sensorManager?: SensorManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -90,6 +94,7 @@ export class Kernel {
     this.audioManager = options?.audioManager;
     this.mediaManager = options?.mediaManager;
     this.locationManager = options?.locationManager;
+    this.sensorManager = options?.sensorManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -385,6 +390,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register sensor syscalls (if sensorManager is provided)
+    if (this.sensorManager) {
+      const sensorSyscalls = createSensorSyscalls(this.sensorManager);
+      for (const [name, handler] of Object.entries(sensorSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -481,6 +494,14 @@ export class Kernel {
         'media.stopAllStreams',
         'media.enumerateDevices',
         'location.getCurrentPosition',
+        'sensor.isSupported',
+        'sensor.startAccelerometer',
+        'sensor.stopAccelerometer',
+        'sensor.startGyroscope',
+        'sensor.stopGyroscope',
+        'sensor.startMagnetometer',
+        'sensor.stopMagnetometer',
+        'sensor.stopAll',
       ],
       fsAccess: [
         '/home/user/**',

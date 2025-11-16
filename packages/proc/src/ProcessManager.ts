@@ -14,6 +14,7 @@ import { PowerAPI } from './PowerAPI';
 import { AudioAPI } from './AudioAPI';
 import { MediaAPI } from './MediaAPI';
 import { LocationAPI } from './LocationAPI';
+import { SensorAPI } from './SensorAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -102,6 +103,7 @@ export class ProcessManager {
       audio: new AudioAPI(syscallWrapper),
       media: new MediaAPI(syscallWrapper),
       location: new LocationAPI(syscallWrapper),
+      sensor: new SensorAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously
