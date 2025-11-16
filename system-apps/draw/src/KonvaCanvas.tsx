@@ -1,4 +1,4 @@
-import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useRef, useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Stage, Layer, Line, Rect, Circle, Arrow, RegularPolygon, Group, Image as KonvaImage } from 'react-konva';
 import Konva from 'konva';
 import type { DrawingTool } from './Toolbar';
@@ -16,6 +16,7 @@ export interface KonvaCanvasRef {
   clear: () => void;
   getImageData: () => string;
   loadImageData: (dataUrl: string) => Promise<void>;
+  resetTransform: () => void;
 }
 
 interface LinePoint {
@@ -51,6 +52,42 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
       points?: number[];
     } | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+    
+    // Canvas transform state
+    const [stageX, setStageX] = useState(0);
+    const [stageY, setStageY] = useState(0);
+    const [stageScale, setStageScale] = useState(1);
+    const [stageRotation, setStageRotation] = useState(0);
+    
+    // Pan/Rotate state
+    const [isPanning, setIsPanning] = useState(false);
+    const [isRotating, setIsRotating] = useState(false);
+    const [lastPanPoint, setLastPanPoint] = useState<{ x: number; y: number } | null>(null);
+    const [rotateCenter, setRotateCenter] = useState<{ x: number; y: number } | null>(null);
+    const [lastAngle, setLastAngle] = useState(0);
+    const [spacePressed, setSpacePressed] = useState(false);
+
+    // Track spacebar for panning
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.code === 'Space' || e.key === ' ') {
+          setSpacePressed(true);
+        }
+      };
+      const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.code === 'Space' || e.key === ' ') {
+          setSpacePressed(false);
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+      };
+    }, []);
 
     useImperativeHandle(ref, () => ({
       clear: () => {
@@ -59,6 +96,12 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
         setCurrentLine([]);
         setPreviewShape(null);
         setBackgroundImage(null);
+      },
+      resetTransform: () => {
+        setStageX(0);
+        setStageY(0);
+        setStageScale(1);
+        setStageRotation(0);
       },
       getImageData: () => {
         const stage = stageRef.current;
@@ -89,9 +132,40 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     }));
 
     const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
-      const pos = e.target.getStage()?.getPointerPosition();
+      const stage = e.target.getStage();
+      if (!stage) return;
+      
+      const pos = stage.getPointerPosition();
       if (!pos) return;
 
+      // Check for pan/rotate modifiers
+      const isMiddleButton = e.evt.button === 1;
+      const isRightButton = e.evt.button === 2;
+      const isCtrlPressed = e.evt.ctrlKey || e.evt.metaKey;
+
+      // Pan: Middle mouse button or Space + left click
+      if (isMiddleButton || (e.evt.button === 0 && spacePressed)) {
+        setIsPanning(true);
+        setLastPanPoint(pos);
+        e.evt.preventDefault();
+        return;
+      }
+
+      // Rotate: Right mouse button or Ctrl + drag
+      if (isRightButton || (e.evt.button === 0 && isCtrlPressed)) {
+        setIsRotating(true);
+        const container = stage.container();
+        const stageBox = container.getBoundingClientRect();
+        const centerX = stageBox.left + stageBox.width / 2;
+        const centerY = stageBox.top + stageBox.height / 2;
+        setRotateCenter({ x: centerX, y: centerY });
+        const angle = Math.atan2(pos.y - stageBox.height / 2, pos.x - stageBox.width / 2);
+        setLastAngle(angle);
+        e.evt.preventDefault();
+        return;
+      }
+
+      // Drawing tools - only proceed if not panning/rotating
       const vectorTools: DrawingTool[] = ['rectangle', 'circle', 'line', 'arrow', 'polygon', 'text'];
       const isVectorTool = vectorTools.includes(tool);
 
@@ -105,9 +179,41 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     };
 
     const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
-      const pos = e.target.getStage()?.getPointerPosition();
+      const stage = e.target.getStage();
+      if (!stage) return;
+      
+      const pos = stage.getPointerPosition();
       if (!pos) return;
 
+      // Handle panning
+      if (isPanning && lastPanPoint) {
+        const dx = pos.x - lastPanPoint.x;
+        const dy = pos.y - lastPanPoint.y;
+        setStageX((prev) => prev + dx);
+        setStageY((prev) => prev + dy);
+        setLastPanPoint(pos);
+        e.evt.preventDefault();
+        return;
+      }
+
+      // Handle rotating
+      if (isRotating && rotateCenter) {
+        const container = stage.container();
+        const stageBox = container.getBoundingClientRect();
+        const mouseX = e.evt.clientX;
+        const mouseY = e.evt.clientY;
+        const centerX = stageBox.left + stageBox.width / 2;
+        const centerY = stageBox.top + stageBox.height / 2;
+        
+        const angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+        const deltaAngle = angle - lastAngle;
+        setStageRotation((prev) => prev + (deltaAngle * 180) / Math.PI);
+        setLastAngle(angle);
+        e.evt.preventDefault();
+        return;
+      }
+
+      // Drawing tools
       if (isDrawing && (tool === 'pen' || tool === 'brush' || tool === 'eraser')) {
         setCurrentLine((prev) => [...prev, pos.x, pos.y]);
       } else if (shapeStart && previewShape) {
@@ -129,6 +235,18 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     };
 
     const handleMouseUp = () => {
+      // End panning/rotating
+      if (isPanning) {
+        setIsPanning(false);
+        setLastPanPoint(null);
+      }
+      if (isRotating) {
+        setIsRotating(false);
+        setRotateCenter(null);
+        setLastAngle(0);
+      }
+
+      // Handle drawing completion
       if (isDrawing && currentLine.length > 0) {
         setLines((prev) => [
           ...prev,
@@ -161,6 +279,35 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
         setShapeStart(null);
         setPreviewShape(null);
       }
+    };
+
+    const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+      e.evt.preventDefault();
+      
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const scaleBy = 1.1;
+      const oldScale = stageScale;
+      const mousePointTo = {
+        x: (pointer.x - stageX) / oldScale,
+        y: (pointer.y - stageY) / oldScale,
+      };
+
+      const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+      const clampedScale = Math.max(0.1, Math.min(5, newScale));
+
+      setStageScale(clampedScale);
+      setStageX(pointer.x - mousePointTo.x * clampedScale);
+      setStageY(pointer.y - mousePointTo.y * clampedScale);
+    };
+
+    const handleContextMenu = (e: Konva.KonvaEventObject<MouseEvent>) => {
+      // Prevent default context menu when right-clicking for rotate
+      e.evt.preventDefault();
     };
 
     const renderShape = (
@@ -250,10 +397,17 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
           ref={stageRef}
           width={width}
           height={height}
+          x={stageX}
+          y={stageY}
+          scaleX={stageScale}
+          scaleY={stageScale}
+          rotation={stageRotation}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
+          onContextMenu={handleContextMenu}
           onTouchStart={(e) => {
             const touch = e.evt.touches[0];
             const pos = stageRef.current?.getPointerPosition();
@@ -268,6 +422,7 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
             }
           }}
           onTouchEnd={handleMouseUp}
+          style={{ cursor: isPanning || spacePressed ? 'grab' : isRotating ? 'crosshair' : 'default' }}
         >
           <Layer>
             {/* Background */}

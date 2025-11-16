@@ -177,6 +177,9 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
           canvasRef.current?.clear();
           setHasUnsavedChanges(true);
         }}
+        onResetView={() => {
+          canvasRef.current?.resetTransform();
+        }}
         toolbarPosition={toolbarPosition}
         onToolbarPositionChange={setToolbarPosition}
       />

@@ -12,6 +12,7 @@ export interface MenubarProps {
   onUndo?: () => void;
   onRedo?: () => void;
   onClear?: () => void;
+  onResetView?: () => void;
   toolbarPosition: ToolbarPosition;
   onToolbarPositionChange: (position: ToolbarPosition) => void;
 }
@@ -25,6 +26,7 @@ export const Menubar: React.FC<MenubarProps> = ({
   onUndo,
   onRedo,
   onClear,
+  onResetView,
   toolbarPosition,
   onToolbarPositionChange,
 }) => {
@@ -181,6 +183,14 @@ export const Menubar: React.FC<MenubarProps> = ({
         </button>
         {isViewMenuOpen && (
           <div className="menubar-menu">
+            {onResetView && (
+              <>
+                <button className="menubar-menu-item" onClick={onResetView}>
+                  Reset View
+                </button>
+                <div className="menubar-menu-separator" />
+              </>
+            )}
             <div className="menubar-menu-item" style={{ cursor: 'default', fontWeight: 600 }}>
               Toolbar Position
             </div>
