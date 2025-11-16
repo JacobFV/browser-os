@@ -9,6 +9,7 @@ import type { ClipboardManager } from '@browser-os/clipboard';
 import type { StorageManager } from '@browser-os/storage';
 import type { NetworkManager } from '@browser-os/network';
 import type { SystemInfoManager } from '@browser-os/system';
+import type { PowerManager } from '@browser-os/power';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -22,6 +23,7 @@ import { createStorageSyscalls } from './syscalls/storage';
 import { createProcessSyscalls } from './syscalls/process';
 import { createNetworkSyscalls } from './syscalls/network';
 import { createSystemSyscalls } from './syscalls/system';
+import { createPowerSyscalls } from './syscalls/power';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -37,6 +39,7 @@ export interface KernelOptions {
   storageManager?: StorageManager;
   networkManager?: NetworkManager;
   systemInfoManager?: SystemInfoManager;
+  powerManager?: PowerManager;
 }
 
 /**
@@ -54,6 +57,7 @@ export class Kernel {
   private storageManager?: StorageManager;
   private networkManager?: NetworkManager;
   private systemInfoManager?: SystemInfoManager;
+  private powerManager?: PowerManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -70,6 +74,7 @@ export class Kernel {
     this.storageManager = options?.storageManager;
     this.networkManager = options?.networkManager;
     this.systemInfoManager = options?.systemInfoManager;
+    this.powerManager = options?.powerManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -333,6 +338,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register power syscalls (if powerManager is provided)
+    if (this.powerManager) {
+      const powerSyscalls = createPowerSyscalls(this.powerManager);
+      for (const [name, handler] of Object.entries(powerSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -411,6 +424,12 @@ export class Kernel {
         'system.getScreenSize',
         'system.isOnline',
         'system.getHardwareConcurrency',
+        'power.requestWakeLock',
+        'power.releaseWakeLock',
+        'power.isWakeLockActive',
+        'power.getBatteryStatus',
+        'power.isOnBattery',
+        'power.getBatteryLevel',
       ],
       fsAccess: [
         '/home/user/**',

@@ -8,6 +8,7 @@ import type { StorageAPI } from './StorageAPI';
 import type { ProcessAPI } from './ProcessAPI';
 import type { NetworkAPI } from './NetworkAPI';
 import type { SystemInfoAPI } from './SystemInfoAPI';
+import type { PowerAPI } from './PowerAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -29,5 +30,6 @@ export interface OSAPI {
   process: ProcessAPI;
   network: NetworkAPI;
   system: SystemInfoAPI;
+  power: PowerAPI;
 }
 

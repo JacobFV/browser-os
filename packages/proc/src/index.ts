@@ -10,4 +10,5 @@ export * from './StorageAPI';
 export * from './ProcessAPI';
 export * from './NetworkAPI';
 export * from './SystemInfoAPI';
+export * from './PowerAPI';
 
