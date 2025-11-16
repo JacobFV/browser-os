@@ -33,17 +33,19 @@ export const wc: CommandHandler = async (args, flags, _flagValues, context) => {
       
       const data = await fs.read(path);
       const text = new TextDecoder().decode(data);
-      const lines = text.split('\n');
-      const lineCount = lines.length - (text.endsWith('\n') ? 0 : 1);
+      // Count lines: number of newline characters (Unix wc -l behavior)
+      const lineCount = text.split('\n').length - 1;
+      // If text is empty or doesn't end with newline, we still count the last line
+      const actualLineCount = text.length === 0 ? 0 : (text.endsWith('\n') ? lineCount : lineCount + 1);
       const wordCount = text.split(/\s+/).filter(w => w).length;
       const charCount = text.length;
       
-      totalLines += lineCount;
+      totalLines += actualLineCount;
       totalWords += wordCount;
       totalChars += charCount;
       
       const parts: string[] = [];
-      if (showLines) parts.push(lineCount.toString());
+      if (showLines) parts.push(actualLineCount.toString());
       if (showWords) parts.push(wordCount.toString());
       if (showChars) parts.push(charCount.toString());
       parts.push(path);
