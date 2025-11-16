@@ -11,6 +11,7 @@ import { Browser } from '@browser-os/browser';
 import { Terminal } from '@browser-os/terminal';
 import { Notepad } from '@browser-os/notepad';
 import { FileBrowser } from '@browser-os/file-browser';
+import { Settings } from '@browser-os/settings';
 import { Desktop } from './Desktop';
 import './OS.css';
 
@@ -178,6 +179,38 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(fileBrowserEntry);
           await appRegistry.save();
           console.log('[OS] FileBrowser app registered in registry');
+        }
+
+        // Register settings app component
+        console.log('[OS] Registering settings app component...');
+        console.log('[OS] Settings component:', Settings);
+        if (!Settings) {
+          throw new Error('Settings component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('settings', Settings);
+        console.log('[OS] Settings app component registered');
+
+        // Register settings app in registry if not already registered
+        if (!appRegistry.isInstalled('settings')) {
+          console.log('[OS] Registering settings app in registry...');
+          const settingsEntry = {
+            id: 'settings',
+            installedAt: Date.now(),
+            installedBy: 'system',
+            enabled: true,
+            manifest: {
+              id: 'settings',
+              name: 'Settings',
+              version: '0.1.0',
+              description: 'System settings',
+              entrypoint: '/bin/settings.js',
+              permissions: [],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(settingsEntry);
+          await appRegistry.save();
+          console.log('[OS] Settings app registered in registry');
         }
 
         // Initialize workspace manager

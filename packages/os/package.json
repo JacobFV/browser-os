@@ -20,6 +20,7 @@
     "@browser-os/terminal": "workspace:*",
     "@browser-os/notepad": "workspace:*",
     "@browser-os/file-browser": "workspace:*",
+    "@browser-os/settings": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {
