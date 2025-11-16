@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/desktop-shell && pnpm build",
+  "buildCommand": "pnpm build --filter @browser-os/desktop-shell",
   "outputDirectory": "apps/desktop-shell/dist",
   "installCommand": "pnpm install",
   "framework": "vite",
