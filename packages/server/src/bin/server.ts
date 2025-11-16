@@ -18,7 +18,7 @@ const portArg = argv.port ?? argv.p;
 const portNumber = portArg ? parseInt(String(portArg), 10) : undefined;
 
 // Use environment variables as fallback, then defaults
-const finalPort = portNumber && !isNaN(portNumber) ? portNumber : (process.env.PORT ? parseInt(process.env.PORT, 10) : 3000);
+const finalPort = portNumber && !isNaN(portNumber) ? portNumber : (process.env.PORT ? parseInt(process.env.PORT, 10) : 8000);
 const finalHost = argv.host ?? argv.h ?? process.env.HOST ?? '0.0.0.0';
 
 const server = new Server({ port: finalPort, host: finalHost });

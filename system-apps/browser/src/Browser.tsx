@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { useState, useRef, useEffect } from 'react';
 import './Browser.css';
 
@@ -6,6 +7,9 @@ export interface BrowserProps {
 }
 
 export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
+  // Get proxy URL from environment variable
+  const proxyUrl = import.meta.env.VITE_PROXY_URL || 'http://localhost:8000/proxy';
+  
   const [url, setUrl] = useState('https://www.google.com');
   const [currentUrl, setCurrentUrl] = useState('https://www.google.com');
   const [history, setHistory] = useState<string[]>(['https://www.google.com']);
@@ -13,6 +17,13 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  /**
+   * Get the proxied URL for a given target URL
+   */
+  const getProxiedUrl = (targetUrl: string): string => {
+    return `${proxyUrl}?url=${encodeURIComponent(targetUrl)}`;
+  };
 
   const navigateToUrl = (newUrl: string) => {
     // Ensure URL has protocol
@@ -67,7 +78,8 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
 
   const handleReload = () => {
     if (iframeRef.current) {
-      iframeRef.current.src = iframeRef.current.src;
+      // Reload by setting the proxied URL again
+      iframeRef.current.src = getProxiedUrl(currentUrl);
       setLoading(true);
       setError(null);
     }
@@ -80,23 +92,12 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
 
     const handleLoad = () => {
       setLoading(false);
-      // Check if iframe content is blocked
-      try {
-        // Try to access iframe content - will throw if blocked by CORS/X-Frame-Options
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-        if (!iframeDoc) {
-          // Likely blocked by X-Frame-Options
-          setError('This website cannot be displayed in an iframe due to security restrictions (X-Frame-Options). Many websites like Google, Facebook, and others block iframe embedding to prevent clickjacking attacks.');
-        }
-      } catch (e) {
-        // Cross-origin or blocked
-        setError('This website cannot be displayed in an iframe due to security restrictions. Many websites block iframe embedding to prevent clickjacking attacks.');
-      }
+      setError(null);
     };
 
     const handleError = () => {
       setLoading(false);
-      setError('Failed to load the webpage. The site may be blocking iframe embedding or there may be a network error.');
+      setError('Failed to load the webpage. Please check that the proxy server is running and the URL is valid.');
     };
 
     iframe.addEventListener('load', handleLoad);
@@ -106,9 +107,9 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     const timeout = setTimeout(() => {
       if (loading) {
         setLoading(false);
-        setError('Page load timeout. The site may be blocking iframe embedding.');
+        setError('Page load timeout. The site may be taking too long to load or the proxy server may be unavailable.');
       }
-    }, 10000);
+    }, 30000); // Increased timeout for proxy requests
 
     return () => {
       iframe.removeEventListener('load', handleLoad);
@@ -183,7 +184,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
               </svg>
               <div>
-                <strong>Tip:</strong> Try opening this URL in a new window or use a site that allows iframe embedding.
+                <strong>Tip:</strong> Make sure the proxy server is running at {proxyUrl}. Check your .env.local file for VITE_PROXY_URL.
               </div>
             </div>
             <div className="browser-error-actions">
@@ -202,7 +203,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
                   setError(null);
                   setLoading(true);
                   if (iframeRef.current) {
-                    iframeRef.current.src = iframeRef.current.src;
+                    iframeRef.current.src = getProxiedUrl(currentUrl);
                   }
                 }}
               >
@@ -216,7 +217,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
         )}
         <iframe
           ref={iframeRef}
-          src={currentUrl}
+          src={getProxiedUrl(currentUrl)}
           className="browser-iframe"
           title="Browser content"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation"

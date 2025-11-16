@@ -5,6 +5,7 @@ import { TelemetryService } from './TelemetryService';
 import { ServiceRegistry } from './ServiceRegistry';
 import { WebSocketHandler } from './WebSocketHandler';
 import { createTelemetryRoutes } from './routes/telemetry';
+import { createProxyRoutes } from './routes/proxy';
 import type { ServerOptions } from './types';
 
 /**
@@ -21,7 +22,7 @@ export class Server {
 
   constructor(options: ServerOptions = {}) {
     this.options = {
-      port: options.port ?? 3000,
+      port: options.port ?? 8000,
       host: options.host ?? '0.0.0.0',
       pingInterval: options.pingInterval ?? 30000,
     };
@@ -33,6 +34,13 @@ export class Server {
       telemetryService: this.telemetryService,
       serviceRegistry: this.serviceRegistry,
       pingInterval: this.options.pingInterval,
+    });
+
+    // Register proxy service
+    this.serviceRegistry.register({
+      name: 'proxy',
+      version: '1.0.0',
+      enabled: true,
     });
 
     this.setupRoutes();
@@ -128,6 +136,9 @@ export class Server {
 
     // Telemetry routes
     this.app.use('/telemetry', createTelemetryRoutes(this.telemetryService));
+
+    // Proxy routes
+    this.app.use('/proxy', createProxyRoutes());
 
     // Service routes
     this.app.get('/services', (req, res) => {

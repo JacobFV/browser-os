@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "types": ["vite/client"],
     "paths": {
       "@browser-os/schemas": ["../../packages/schemas/src"],
       "@browser-os/events": ["../../packages/events/src"],

@@ -5,11 +5,11 @@
   "description": "A monorepo for browser-based operating system UI components",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=@browser-os/desktop-shell",
     "backend": "pnpm --filter @browser-os/server dev",
-    "dev:with-server": "concurrently \"pnpm backend\" \"pnpm dev\"",
-    "preview": "turbo run preview",
-    "preview:with-server": "concurrently \"pnpm backend\" \"pnpm preview\"",
+    "dev:with-server": "turbo run dev --filter=@browser-os/desktop-shell --filter=@browser-os/server",
+    "preview": "turbo run preview --filter=@browser-os/desktop-shell",
+    "preview:with-server": "turbo run preview --filter=@browser-os/desktop-shell --filter=@browser-os/server",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean && pnpm store prune"
