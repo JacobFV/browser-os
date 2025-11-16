@@ -6,4 +6,5 @@ export * from './WindowAPI';
 export * from './NotificationAPI';
 export * from './DialogAPI';
 export * from './ClipboardAPI';
+export * from './StorageAPI';
 

@@ -6,6 +6,7 @@ import type { WindowManager } from '@browser-os/windowing';
 import type { NotificationManager } from '@browser-os/notifications';
 import type { DialogManager } from '@browser-os/dialogs';
 import type { ClipboardManager } from '@browser-os/clipboard';
+import type { StorageManager } from '@browser-os/storage';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -15,6 +16,7 @@ import { createWindowSyscalls } from './syscalls/window';
 import { createNotificationSyscalls } from './syscalls/notification';
 import { createDialogSyscalls } from './syscalls/dialog';
 import { createClipboardSyscalls } from './syscalls/clipboard';
+import { createStorageSyscalls } from './syscalls/storage';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -27,6 +29,7 @@ export interface KernelOptions {
   notificationManager?: NotificationManager;
   dialogManager?: DialogManager;
   clipboardManager?: ClipboardManager;
+  storageManager?: StorageManager;
 }
 
 /**
@@ -41,6 +44,7 @@ export class Kernel {
   private notificationManager?: NotificationManager;
   private dialogManager?: DialogManager;
   private clipboardManager?: ClipboardManager;
+  private storageManager?: StorageManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -54,6 +58,7 @@ export class Kernel {
     this.notificationManager = options?.notificationManager;
     this.dialogManager = options?.dialogManager;
     this.clipboardManager = options?.clipboardManager;
+    this.storageManager = options?.storageManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -287,6 +292,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register storage syscalls (if storageManager is provided)
+    if (this.storageManager) {
+      const storageSyscalls = createStorageSyscalls(this.storageManager, this.procManager);
+      for (const [name, handler] of Object.entries(storageSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -340,6 +353,15 @@ export class Kernel {
         'clipboard.clear',
         'clipboard.hasText',
         'clipboard.hasImage',
+        'storage.get',
+        'storage.set',
+        'storage.remove',
+        'storage.clear',
+        'storage.keys',
+        'storage.has',
+        'storage.size',
+        'storage.getJSON',
+        'storage.setJSON',
       ],
       fsAccess: [
         '/home/user/**',

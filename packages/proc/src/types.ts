@@ -4,6 +4,7 @@ import type { WindowAPI } from './WindowAPI';
 import type { NotificationAPI } from './NotificationAPI';
 import type { DialogAPI } from './DialogAPI';
 import type { ClipboardAPI } from './ClipboardAPI';
+import type { StorageAPI } from './StorageAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -21,5 +22,6 @@ export interface OSAPI {
   notification: NotificationAPI;
   dialog: DialogAPI;
   clipboard: ClipboardAPI;
+  storage: StorageAPI;
 }
 
