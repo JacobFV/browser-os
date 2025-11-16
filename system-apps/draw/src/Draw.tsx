@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
 import type { EventBus } from '@browser-os/events';
 import { SaveDialog, OpenDialog } from '@browser-os/dialogs';
-import { Toolbar, type DrawingTool } from './Toolbar';
-import { Canvas, type CanvasRef } from './Canvas';
+import { Toolbar, type DrawingTool, type ToolbarPosition } from './Toolbar';
+import { KonvaCanvas, type KonvaCanvasRef } from './KonvaCanvas';
 import { Menubar } from './Menubar';
-import type { BrushType } from './BrushEngine';
 import './Draw.css';
 
 export interface DrawProps {
@@ -20,12 +19,12 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
   const [currentTool, setCurrentTool] = useState<DrawingTool>('pen');
   const [currentColor, setCurrentColor] = useState('#000000');
   const [brushSize, setBrushSize] = useState(5);
-  const [brushType, setBrushType] = useState<BrushType>('watercolor');
+  const [toolbarPosition, setToolbarPosition] = useState<ToolbarPosition>('left');
   const [currentPath, setCurrentPath] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showOpenDialog, setShowOpenDialog] = useState(false);
-  const canvasRef = useRef<CanvasRef>(null);
+  const canvasRef = useRef<KonvaCanvasRef>(null);
 
   // Initialize filesystem
   useEffect(() => {
@@ -174,28 +173,32 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
         onSave={handleSave}
         onSaveAs={handleSaveAs}
         onExit={handleExit}
+        onClear={() => {
+          canvasRef.current?.clear();
+          setHasUnsavedChanges(true);
+        }}
+        toolbarPosition={toolbarPosition}
+        onToolbarPositionChange={setToolbarPosition}
       />
       <div className="draw-content">
         <Toolbar
           currentTool={currentTool}
           currentColor={currentColor}
           brushSize={brushSize}
-          brushType={brushType}
+          position={toolbarPosition}
           onToolChange={setCurrentTool}
           onColorChange={setCurrentColor}
           onBrushSizeChange={setBrushSize}
-          onBrushTypeChange={setBrushType}
           onClear={() => {
             canvasRef.current?.clear();
             setHasUnsavedChanges(true);
           }}
         />
-        <Canvas
+        <KonvaCanvas
           ref={canvasRef}
           tool={currentTool}
           color={currentColor}
           brushSize={brushSize}
-          brushType={brushType}
         />
       </div>
       {showSaveDialog && eventBus && (

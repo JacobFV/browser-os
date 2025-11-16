@@ -56,6 +56,11 @@
   background: #f0f0f0;
 }
 
+.menubar-menu-item-checked {
+  background: #e8f4fd;
+  font-weight: 500;
+}
+
 .menubar-shortcut {
   color: #999;
   font-size: 12px;

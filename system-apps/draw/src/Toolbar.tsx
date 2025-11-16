@@ -1,18 +1,18 @@
 import React from 'react';
-import type { BrushType } from './BrushEngine';
 import './Toolbar.css';
 
 export type DrawingTool = 'pen' | 'rectangle' | 'circle' | 'line' | 'eraser' | 'text' | 'polygon' | 'arrow' | 'brush';
+
+export type ToolbarPosition = 'left' | 'bottom' | 'right';
 
 export interface ToolbarProps {
   currentTool: DrawingTool;
   currentColor: string;
   brushSize: number;
-  brushType?: BrushType;
+  position: ToolbarPosition;
   onToolChange: (tool: DrawingTool) => void;
   onColorChange: (color: string) => void;
   onBrushSizeChange: (size: number) => void;
-  onBrushTypeChange?: (type: BrushType) => void;
   onClear: () => void;
 }
 
@@ -20,11 +20,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   currentTool,
   currentColor,
   brushSize,
-  brushType = 'watercolor',
+  position,
   onToolChange,
   onColorChange,
   onBrushSizeChange,
-  onBrushTypeChange,
   onClear,
 }) => {
   const tools: { id: DrawingTool; label: string; icon: string }[] = [
@@ -39,16 +38,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     { id: 'eraser', label: 'Eraser', icon: '🧹' },
   ];
 
-  const brushTypes: { id: BrushType; label: string; icon: string }[] = [
-    { id: 'watercolor', label: 'Watercolor', icon: '💧' },
-    { id: 'oil', label: 'Oil', icon: '🎨' },
-    { id: 'charcoal', label: 'Charcoal', icon: '🖤' },
-    { id: 'airbrush', label: 'Airbrush', icon: '💨' },
-    { id: 'marker', label: 'Marker', icon: '🖊️' },
-  ];
-
   return (
-    <div className="draw-toolbar">
+    <div className={`draw-toolbar draw-toolbar-${position}`}>
       <div className="draw-toolbar-section">
         <div className="draw-toolbar-tools">
           {tools.map((tool) => (
@@ -63,23 +54,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           ))}
         </div>
       </div>
-
-      {currentTool === 'brush' && onBrushTypeChange && (
-        <div className="draw-toolbar-section">
-          <div className="draw-toolbar-brush-types">
-            {brushTypes.map((type) => (
-              <button
-                key={type.id}
-                className={`draw-toolbar-brush-type ${brushType === type.id ? 'active' : ''}`}
-                onClick={() => onBrushTypeChange(type.id)}
-                title={type.label}
-              >
-                <span className="draw-toolbar-brush-icon">{type.icon}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="draw-toolbar-section">
         <div className="draw-toolbar-color-wrapper">
