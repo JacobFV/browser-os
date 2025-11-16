@@ -18,6 +18,7 @@
     "@browser-os/taskbar": "workspace:*",
     "@browser-os/browser": "workspace:*",
     "@browser-os/terminal": "workspace:*",
+    "@browser-os/notepad": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {

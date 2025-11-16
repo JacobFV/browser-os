@@ -1,0 +1,84 @@
+.menubar {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-bottom: 1px solid #d0d0d0;
+  padding: 0;
+  height: 28px;
+  font-size: 13px;
+  user-select: none;
+}
+
+.menubar-item {
+  position: relative;
+}
+
+.menubar-button {
+  background: none;
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.15s;
+}
+
+.menubar-button:hover {
+  background: #e0e0e0;
+}
+
+.menubar-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #c0c0c0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  z-index: 1000;
+  padding: 4px 0;
+}
+
+.menubar-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: background-color 0.15s;
+}
+
+.menubar-menu-item:hover {
+  background: #e8f4fd;
+}
+
+.menubar-menu-item:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.menubar-menu-item:disabled:hover {
+  background: none;
+}
+
+.menubar-shortcut {
+  color: #999;
+  font-size: 11px;
+  margin-left: 20px;
+}
+
+.menubar-menu-separator {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 4px 0;
+}
+

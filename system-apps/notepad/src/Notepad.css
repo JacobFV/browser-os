@@ -1,0 +1,229 @@
+.notepad {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+.notepad-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #666;
+}
+
+.notepad-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notepad-textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 12px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  color: #333;
+  background: white;
+  overflow-y: auto;
+}
+
+.notepad-textarea::placeholder {
+  color: #999;
+}
+
+.notepad-textarea:focus {
+  outline: none;
+}
+
+/* File dialog styles */
+.file-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  max-height: 600px;
+}
+
+.file-dialog-browser {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.file-dialog-path {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #d0d0d0;
+  gap: 8px;
+}
+
+.file-dialog-nav {
+  background: white;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+  transition: background-color 0.15s;
+}
+
+.file-dialog-nav:hover:not(:disabled) {
+  background: #e8f4fd;
+}
+
+.file-dialog-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.file-dialog-current-path {
+  flex: 1;
+  font-size: 12px;
+  color: #666;
+  font-family: monospace;
+}
+
+.file-dialog-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+  background: white;
+}
+
+.file-dialog-loading,
+.file-dialog-empty {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.file-dialog-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.15s;
+  gap: 8px;
+}
+
+.file-dialog-item:hover {
+  background: #f0f0f0;
+}
+
+.file-dialog-item.selected {
+  background: #e8f4fd;
+  color: #0066cc;
+}
+
+.file-dialog-item.directory {
+  font-weight: 500;
+}
+
+.file-dialog-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.file-dialog-name {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-dialog-input {
+  margin-bottom: 12px;
+}
+
+.file-dialog-input label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.file-dialog-input input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: monospace;
+}
+
+.file-dialog-input input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.file-dialog-error {
+  padding: 8px 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 3px;
+  color: #c00;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.file-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.file-dialog-actions button {
+  padding: 6px 16px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: background-color 0.15s;
+}
+
+.file-dialog-actions button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.file-dialog-actions button.primary {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.file-dialog-actions button.primary:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.file-dialog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

@@ -9,6 +9,7 @@ import type { Window } from '@browser-os/schemas';
 import { AppComponentRegistry } from './AppComponentRegistry';
 import { Browser } from '@browser-os/browser';
 import { Terminal } from '@browser-os/terminal';
+import { Notepad } from '@browser-os/notepad';
 import { Desktop } from './Desktop';
 import './OS.css';
 
@@ -112,6 +113,38 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(terminalEntry);
           await appRegistry.save();
           console.log('[OS] Terminal app registered in registry');
+        }
+
+        // Register notepad app component
+        console.log('[OS] Registering notepad app component...');
+        console.log('[OS] Notepad component:', Notepad);
+        if (!Notepad) {
+          throw new Error('Notepad component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('notepad', Notepad);
+        console.log('[OS] Notepad app component registered');
+
+        // Register notepad app in registry if not already registered
+        if (!appRegistry.isInstalled('notepad')) {
+          console.log('[OS] Registering notepad app in registry...');
+          const notepadEntry = {
+            id: 'notepad',
+            installedAt: Date.now(),
+            installedBy: 'system',
+            enabled: true,
+            manifest: {
+              id: 'notepad',
+              name: 'Notepad',
+              version: '0.1.0',
+              description: 'Text editor',
+              entrypoint: '/bin/notepad.js',
+              permissions: [],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(notepadEntry);
+          await appRegistry.save();
+          console.log('[OS] Notepad app registered in registry');
         }
 
         // Initialize workspace manager
