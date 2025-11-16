@@ -7,8 +7,11 @@
   max-width: 300px;
   max-height: 400px;
   overflow-y: auto;
-  z-index: 10000;
+  z-index: 99999 !important;
   font-size: 14px;
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
 }
 
 .shortcut-context-menu-header {

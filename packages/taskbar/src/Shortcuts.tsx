@@ -29,6 +29,8 @@ export const Shortcuts: React.FC<ShortcutsProps> = ({
 
   const handleContextMenu = (e: React.MouseEvent, shortcut: TaskbarShortcut) => {
     e.preventDefault();
+    e.stopPropagation();
+    console.log('[Shortcuts] Right-click on shortcut:', shortcut.appId, shortcut.name);
     setContextMenu({
       appId: shortcut.appId,
       appName: shortcut.name,
