@@ -9,6 +9,7 @@ import type { ProcessAPI } from './ProcessAPI';
 import type { NetworkAPI } from './NetworkAPI';
 import type { SystemInfoAPI } from './SystemInfoAPI';
 import type { PowerAPI } from './PowerAPI';
+import type { AudioAPI } from './AudioAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -31,5 +32,6 @@ export interface OSAPI {
   network: NetworkAPI;
   system: SystemInfoAPI;
   power: PowerAPI;
+  audio: AudioAPI;
 }
 

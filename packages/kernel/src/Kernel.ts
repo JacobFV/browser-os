@@ -10,6 +10,7 @@ import type { StorageManager } from '@browser-os/storage';
 import type { NetworkManager } from '@browser-os/network';
 import type { SystemInfoManager } from '@browser-os/system';
 import type { PowerManager } from '@browser-os/power';
+import type { AudioManager } from '@browser-os/audio';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -24,6 +25,7 @@ import { createProcessSyscalls } from './syscalls/process';
 import { createNetworkSyscalls } from './syscalls/network';
 import { createSystemSyscalls } from './syscalls/system';
 import { createPowerSyscalls } from './syscalls/power';
+import { createAudioSyscalls } from './syscalls/audio';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -40,6 +42,7 @@ export interface KernelOptions {
   networkManager?: NetworkManager;
   systemInfoManager?: SystemInfoManager;
   powerManager?: PowerManager;
+  audioManager?: AudioManager;
 }
 
 /**
@@ -58,6 +61,7 @@ export class Kernel {
   private networkManager?: NetworkManager;
   private systemInfoManager?: SystemInfoManager;
   private powerManager?: PowerManager;
+  private audioManager?: AudioManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -75,6 +79,7 @@ export class Kernel {
     this.networkManager = options?.networkManager;
     this.systemInfoManager = options?.systemInfoManager;
     this.powerManager = options?.powerManager;
+    this.audioManager = options?.audioManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -346,6 +351,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register audio syscalls (if audioManager is provided)
+    if (this.audioManager) {
+      const audioSyscalls = createAudioSyscalls(this.audioManager);
+      for (const [name, handler] of Object.entries(audioSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -430,6 +443,13 @@ export class Kernel {
         'power.getBatteryStatus',
         'power.isOnBattery',
         'power.getBatteryLevel',
+        'audio.play',
+        'audio.stop',
+        'audio.pause',
+        'audio.resume',
+        'audio.setVolume',
+        'audio.getVolume',
+        'audio.beep',
       ],
       fsAccess: [
         '/home/user/**',

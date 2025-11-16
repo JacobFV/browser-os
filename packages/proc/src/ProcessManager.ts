@@ -11,6 +11,7 @@ import { ProcessAPI } from './ProcessAPI';
 import { NetworkAPI } from './NetworkAPI';
 import { SystemInfoAPI } from './SystemInfoAPI';
 import { PowerAPI } from './PowerAPI';
+import { AudioAPI } from './AudioAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -96,6 +97,7 @@ export class ProcessManager {
       network: new NetworkAPI(syscallWrapper),
       system: new SystemInfoAPI(syscallWrapper),
       power: new PowerAPI(syscallWrapper),
+      audio: new AudioAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously
