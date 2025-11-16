@@ -14,6 +14,7 @@ import type { AudioManager } from '@browser-os/audio';
 import type { MediaManager } from '@browser-os/media';
 import type { LocationManager } from '@browser-os/location';
 import type { SensorManager } from '@browser-os/sensor';
+import type { PrintManager } from '@browser-os/print';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -32,6 +33,7 @@ import { createAudioSyscalls } from './syscalls/audio';
 import { createMediaSyscalls } from './syscalls/media';
 import { createLocationSyscalls } from './syscalls/location';
 import { createSensorSyscalls } from './syscalls/sensor';
+import { createPrintSyscalls } from './syscalls/print';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -52,6 +54,7 @@ export interface KernelOptions {
   mediaManager?: MediaManager;
   locationManager?: LocationManager;
   sensorManager?: SensorManager;
+  printManager?: PrintManager;
 }
 
 /**
@@ -74,6 +77,7 @@ export class Kernel {
   private mediaManager?: MediaManager;
   private locationManager?: LocationManager;
   private sensorManager?: SensorManager;
+  private printManager?: PrintManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -95,6 +99,7 @@ export class Kernel {
     this.mediaManager = options?.mediaManager;
     this.locationManager = options?.locationManager;
     this.sensorManager = options?.sensorManager;
+    this.printManager = options?.printManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -398,6 +403,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register print syscalls (if printManager is provided)
+    if (this.printManager) {
+      const printSyscalls = createPrintSyscalls(this.printManager);
+      for (const [name, handler] of Object.entries(printSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -502,6 +515,9 @@ export class Kernel {
         'sensor.startMagnetometer',
         'sensor.stopMagnetometer',
         'sensor.stopAll',
+        'print.html',
+        'print.window',
+        'print.url',
       ],
       fsAccess: [
         '/home/user/**',

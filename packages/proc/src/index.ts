@@ -15,4 +15,5 @@ export * from './AudioAPI';
 export * from './MediaAPI';
 export * from './LocationAPI';
 export * from './SensorAPI';
+export * from './PrintAPI';
 
