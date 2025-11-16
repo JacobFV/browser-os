@@ -8,6 +8,7 @@ import { DialogAPI } from './DialogAPI';
 import { ClipboardAPI } from './ClipboardAPI';
 import { StorageAPI } from './StorageAPI';
 import { ProcessAPI } from './ProcessAPI';
+import { NetworkAPI } from './NetworkAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -90,6 +91,7 @@ export class ProcessManager {
       clipboard: new ClipboardAPI(syscallWrapper),
       storage: new StorageAPI(syscallWrapper),
       process: new ProcessAPI(syscallWrapper),
+      network: new NetworkAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously

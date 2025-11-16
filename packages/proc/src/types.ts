@@ -6,6 +6,7 @@ import type { DialogAPI } from './DialogAPI';
 import type { ClipboardAPI } from './ClipboardAPI';
 import type { StorageAPI } from './StorageAPI';
 import type { ProcessAPI } from './ProcessAPI';
+import type { NetworkAPI } from './NetworkAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -25,5 +26,6 @@ export interface OSAPI {
   clipboard: ClipboardAPI;
   storage: StorageAPI;
   process: ProcessAPI;
+  network: NetworkAPI;
 }
 

@@ -8,4 +8,5 @@ export * from './DialogAPI';
 export * from './ClipboardAPI';
 export * from './StorageAPI';
 export * from './ProcessAPI';
+export * from './NetworkAPI';
 

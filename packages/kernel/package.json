@@ -20,7 +20,8 @@
     "@browser-os/notifications": "workspace:*",
     "@browser-os/dialogs": "workspace:*",
     "@browser-os/clipboard": "workspace:*",
-    "@browser-os/storage": "workspace:*"
+    "@browser-os/storage": "workspace:*",
+    "@browser-os/network": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.0",

@@ -7,6 +7,7 @@ import type { NotificationManager } from '@browser-os/notifications';
 import type { DialogManager } from '@browser-os/dialogs';
 import type { ClipboardManager } from '@browser-os/clipboard';
 import type { StorageManager } from '@browser-os/storage';
+import type { NetworkManager } from '@browser-os/network';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -18,6 +19,7 @@ import { createDialogSyscalls } from './syscalls/dialog';
 import { createClipboardSyscalls } from './syscalls/clipboard';
 import { createStorageSyscalls } from './syscalls/storage';
 import { createProcessSyscalls } from './syscalls/process';
+import { createNetworkSyscalls } from './syscalls/network';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -31,6 +33,7 @@ export interface KernelOptions {
   dialogManager?: DialogManager;
   clipboardManager?: ClipboardManager;
   storageManager?: StorageManager;
+  networkManager?: NetworkManager;
 }
 
 /**
@@ -46,6 +49,7 @@ export class Kernel {
   private dialogManager?: DialogManager;
   private clipboardManager?: ClipboardManager;
   private storageManager?: StorageManager;
+  private networkManager?: NetworkManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -60,6 +64,7 @@ export class Kernel {
     this.dialogManager = options?.dialogManager;
     this.clipboardManager = options?.clipboardManager;
     this.storageManager = options?.storageManager;
+    this.networkManager = options?.networkManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -307,6 +312,14 @@ export class Kernel {
     for (const [name, handler] of Object.entries(processSyscalls)) {
       this.syscallRouter.register(name, handler);
     }
+
+    // Register network syscalls (if networkManager is provided)
+    if (this.networkManager) {
+      const networkSyscalls = createNetworkSyscalls(this.networkManager);
+      for (const [name, handler] of Object.entries(networkSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -373,6 +386,9 @@ export class Kernel {
         'process.get',
         'process.list',
         'process.getEnv',
+        'network.request',
+        'network.get',
+        'network.post',
       ],
       fsAccess: [
         '/home/user/**',
