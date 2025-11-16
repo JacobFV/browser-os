@@ -5,6 +5,9 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
     "noEmit": false
   },
   "include": ["src/**/*"]

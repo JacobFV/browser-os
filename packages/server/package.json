@@ -1,0 +1,34 @@
+{
+  "name": "@browser-os/server",
+  "version": "0.1.0",
+  "description": "Server for browser-os remote services",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "browser-os-server": "./dist/bin/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "start": "node dist/bin/server.js",
+    "dev": "tsx src/bin/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@browser-os/schemas": "workspace:*",
+    "express": "^4.18.2",
+    "minimist": "^1.2.8",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
+

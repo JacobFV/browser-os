@@ -1,0 +1,23 @@
+{
+  "name": "@browser-os/client",
+  "version": "0.1.0",
+  "description": "Client for connecting browser-os to remote server",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@browser-os/events": "workspace:*",
+    "@browser-os/kernel": "workspace:*",
+    "@browser-os/schemas": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
+
