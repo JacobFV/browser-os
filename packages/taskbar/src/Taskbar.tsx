@@ -3,6 +3,7 @@ import type { Window } from '@browser-os/schemas';
 import type { WindowManager } from '@browser-os/windowing';
 import type { AppRegistry } from '@browser-os/app-registry';
 import type { WorkspaceManager } from '@browser-os/workspace';
+import type { FileSystem } from '@browser-os/fs';
 import { EventBus } from '@browser-os/events';
 import { Shortcuts } from './Shortcuts';
 import { SearchBar } from './SearchBar';
@@ -18,6 +19,7 @@ export interface TaskbarProps {
   workspaceManager: WorkspaceManager;
   eventBus: EventBus;
   activeWorkspaceId: string;
+  fs?: FileSystem;
 }
 
 export const Taskbar: React.FC<TaskbarProps> = ({
@@ -26,13 +28,15 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   workspaceManager,
   eventBus,
   activeWorkspaceId,
+  fs,
 }) => {
   const [showOverview, setShowOverview] = useState(false);
-  const { windows, shortcuts } = useTaskbar({
+  const { windows, shortcuts, recentFilesManager } = useTaskbar({
     windowManager,
     appRegistry,
     eventBus,
     activeWorkspaceId,
+    fs,
   });
 
   const handleWindowClick = (windowId: string) => {
@@ -46,13 +50,13 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     }
   };
 
-  const handleShortcutClick = (appId: string) => {
+  const handleShortcutClick = (appId: string, forceNew?: boolean) => {
     if (!eventBus) {
       console.error('[Taskbar] eventBus is required but not provided');
       return;
     }
-    console.log('[Taskbar] Emitting taskbar:shortcut:clicked event for app:', appId);
-    eventBus.emit('taskbar:shortcut:clicked', { appId }, { source: 'taskbar' });
+    console.log('[Taskbar] Emitting taskbar:shortcut:clicked event for app:', appId, 'forceNew:', forceNew);
+    eventBus.emit('taskbar:shortcut:clicked', { appId, forceNew }, { source: 'taskbar' });
   };
 
   const handleAppSelect = (appId: string) => {
@@ -73,7 +77,32 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   return (
     <>
       <div className="taskbar">
-        <Shortcuts shortcuts={shortcuts} onShortcutClick={handleShortcutClick} />
+        {recentFilesManager ? (
+          <Shortcuts
+            shortcuts={shortcuts}
+            onShortcutClick={handleShortcutClick}
+            windowManager={windowManager}
+            recentFilesManager={recentFilesManager}
+            eventBus={eventBus}
+          />
+        ) : (
+          <div className="taskbar-shortcuts">
+            {shortcuts.map((shortcut) => (
+              <button
+                key={shortcut.appId}
+                className="taskbar-shortcut"
+                onClick={() => handleShortcutClick(shortcut.appId)}
+                title={shortcut.name}
+              >
+                {shortcut.icon ? (
+                  <img src={shortcut.icon} alt={shortcut.name} className="taskbar-shortcut-icon" />
+                ) : (
+                  <span className="taskbar-shortcut-icon-placeholder">{shortcut.name[0]}</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="taskbar-windows">
           {windows.map((window) => (
             <TaskbarButton

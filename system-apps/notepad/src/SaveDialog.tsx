@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import type { FileSystem } from '@browser-os/fs';
 import type { FileMetadata } from '@browser-os/schemas';
+import type { EventBus } from '@browser-os/events';
 import { Dialog } from './Dialog';
 import './Dialog.css';
 
 export interface SaveDialogProps {
   fs: FileSystem;
+  appId: string;
+  eventBus: EventBus;
   currentPath?: string;
   onSave: (path: string) => void;
   onCancel: () => void;
@@ -13,6 +16,8 @@ export interface SaveDialogProps {
 
 export const SaveDialog: React.FC<SaveDialogProps> = ({
   fs,
+  appId,
+  eventBus,
   currentPath,
   onSave,
   onCancel,
@@ -87,6 +92,8 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
         await fs.mkdir(currentDir, { recursive: true });
       }
       onSave(finalPath);
+      // Emit file opened event (for save, we also track it as opened)
+      eventBus.emit('app:file:opened', { appId, filePath: finalPath }, { source: 'notepad' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
     }

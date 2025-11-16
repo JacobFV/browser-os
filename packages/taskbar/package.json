@@ -13,6 +13,7 @@
   "dependencies": {
     "@browser-os/schemas": "workspace:*",
     "@browser-os/events": "workspace:*",
+    "@browser-os/fs": "workspace:*",
     "@browser-os/windowing": "workspace:*",
     "@browser-os/app-registry": "workspace:*",
     "@browser-os/workspace": "workspace:*",

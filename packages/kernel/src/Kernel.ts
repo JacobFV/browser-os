@@ -182,6 +182,7 @@ export class Kernel {
           mounts: [],
           system: {
             hostname: 'browser-os',
+            maxRecentFiles: 10,
           },
         };
         const data = new TextEncoder().encode(JSON.stringify(defaultConfig, null, 2));
@@ -207,6 +208,7 @@ export class Kernel {
         mounts: [],
         system: {
           hostname: 'browser-os',
+          maxRecentFiles: 10,
         },
       };
     }

@@ -224,6 +224,9 @@ importers:
       '@browser-os/events':
         specifier: workspace:*
         version: link:../events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../fs
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../schemas
@@ -358,6 +361,9 @@ importers:
 
   system-apps/notepad:
     dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
       '@browser-os/fs':
         specifier: workspace:*
         version: link:../../packages/fs

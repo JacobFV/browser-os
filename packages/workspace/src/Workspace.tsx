@@ -29,6 +29,8 @@ export const Workspace: React.FC<WorkspaceProps> = ({
       if (AppComponent) {
         const props: AppComponentProps = {
           windowId: window.id,
+          appId: window.appId,
+          eventBus: eventBus,
         };
         return <AppComponent {...props} />;
       }

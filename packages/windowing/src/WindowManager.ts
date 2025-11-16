@@ -140,6 +140,23 @@ export class WindowManager implements IWindowManager {
   }
 
   /**
+   * Get windows by app ID (across all workspaces)
+   */
+  getWindowsByApp(appId: string): Window[] {
+    return this.registry.getAll().filter((w) => w.appId === appId);
+  }
+
+  /**
+   * Close all windows for an app (across all workspaces)
+   */
+  closeAllWindowsForApp(appId: string): void {
+    const windows = this.getWindowsByApp(appId);
+    windows.forEach((window) => {
+      this.destroyWindow(window.id);
+    });
+  }
+
+  /**
    * Get the registry (for internal use)
    */
   getRegistry(): WindowRegistry {

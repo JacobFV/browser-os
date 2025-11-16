@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import type { FileSystem } from '@browser-os/fs';
 import type { FileMetadata } from '@browser-os/schemas';
+import type { EventBus } from '@browser-os/events';
 import { Dialog } from './Dialog';
 import './Dialog.css';
 
 export interface OpenDialogProps {
   fs: FileSystem;
+  appId: string;
+  eventBus: EventBus;
   onOpen: (path: string) => void;
   onCancel: () => void;
 }
 
 export const OpenDialog: React.FC<OpenDialogProps> = ({
   fs,
+  appId,
+  eventBus,
   onOpen,
   onCancel,
 }) => {
@@ -79,6 +84,8 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
   const handleOpen = () => {
     if (selectedFile) {
       onOpen(selectedFile);
+      // Emit file opened event
+      eventBus.emit('app:file:opened', { appId, filePath: selectedFile }, { source: 'notepad' });
     }
   };
 
@@ -87,6 +94,8 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
       handleDirectoryClick(entry.path);
     } else {
       onOpen(entry.path);
+      // Emit file opened event
+      eventBus.emit('app:file:opened', { appId, filePath: entry.path }, { source: 'notepad' });
     }
   };
 

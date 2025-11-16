@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
+import type { EventBus } from '@browser-os/events';
 import { Menubar } from './Menubar';
 import { SaveDialog } from './SaveDialog';
 import { OpenDialog } from './OpenDialog';
@@ -7,9 +8,11 @@ import './Notepad.css';
 
 export interface NotepadProps {
   windowId: string;
+  appId?: string;
+  eventBus?: EventBus;
 }
 
-export const Notepad: React.FC<NotepadProps> = ({ windowId }) => {
+export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', eventBus }) => {
   const [text, setText] = useState('');
   const [currentPath, setCurrentPath] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -42,6 +45,29 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId }) => {
 
     initFS();
   }, []);
+
+  // Listen for file open events from context menu
+  useEffect(() => {
+    if (!eventBus) return;
+
+    const unsubscribe = eventBus.on('app:file:open', async (event: any) => {
+      if (event.payload?.appId === appId && event.payload?.filePath && fs) {
+        try {
+          const data = await fs.read(event.payload.filePath);
+          const content = new TextDecoder().decode(data);
+          setText(content);
+          setCurrentPath(event.payload.filePath);
+          setHasUnsavedChanges(false);
+        } catch (error) {
+          console.error('[Notepad] Failed to open file from context menu:', error);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [eventBus, appId, fs]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
@@ -160,17 +186,21 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId }) => {
           spellCheck={false}
         />
       </div>
-      {showSaveDialog && (
+      {showSaveDialog && eventBus && (
         <SaveDialog
           fs={fs}
+          appId={appId}
+          eventBus={eventBus}
           currentPath={currentPath || undefined}
           onSave={handleSaveFile}
           onCancel={() => setShowSaveDialog(false)}
         />
       )}
-      {showOpenDialog && (
+      {showOpenDialog && eventBus && (
         <OpenDialog
           fs={fs}
+          appId={appId}
+          eventBus={eventBus}
           onOpen={handleOpenFile}
           onCancel={() => setShowOpenDialog(false)}
         />

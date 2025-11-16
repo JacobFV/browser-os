@@ -18,6 +18,7 @@ export const SystemConfigSchema = z.object({
   system: z.object({
     hostname: z.string(),
     timezone: z.string().optional(),
+    maxRecentFiles: z.number().optional().default(10),
   }),
 });
 

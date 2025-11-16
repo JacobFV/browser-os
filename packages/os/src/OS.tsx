@@ -249,6 +249,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
       appRegistry={appRegistry}
       appComponentRegistry={appComponentRegistry}
       desktop={desktop}
+      fs={fs}
     />
   );
 };
@@ -260,6 +261,7 @@ interface DesktopShellProps {
   appRegistry: AppRegistry;
   appComponentRegistry: AppComponentRegistry;
   desktop?: React.ReactNode;
+  fs: FileSystem;
 }
 
 const DesktopShell: React.FC<DesktopShellProps> = ({
@@ -269,6 +271,7 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
   appRegistry,
   appComponentRegistry,
   desktop,
+  fs,
 }) => {
   const { activeWorkspaceId } = useWorkspace({ workspaceManager, eventBus });
   useKeyboardShortcuts({ workspaceManager, enabled: true });
@@ -327,14 +330,14 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
     
     const handleShortcutClick = (event: any) => {
       console.log('[OS] Received taskbar:shortcut:clicked event:', event);
-      const { appId } = event.payload || {};
+      const { appId, forceNew } = event.payload || {};
       
       if (!appId) {
         console.warn('[OS] No appId in event payload:', event);
         return;
       }
 
-      console.log('[OS] Attempting to launch app:', appId);
+      console.log('[OS] Attempting to launch app:', appId, 'forceNew:', forceNew);
 
       // Check if app is installed and enabled
       const app = appRegistry.get(appId);
@@ -352,6 +355,24 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
       }
 
       console.log('[OS] App component is registered');
+
+      // If forceNew is true, always create a new window
+      if (forceNew) {
+        console.log('[OS] Creating new window (forceNew=true) for app:', app.manifest.name);
+        try {
+          const windowId = windowManager.createWindow({
+            title: app.manifest.name,
+            width: 600,
+            height: 500,
+            workspaceId: activeWorkspaceId,
+            appId: appId,
+          });
+          console.log('[OS] Window created successfully:', windowId);
+        } catch (error) {
+          console.error('[OS] Failed to create window:', error);
+        }
+        return;
+      }
 
       // Check if app already has an open window in the active workspace
       const existingWindows = windowManager.getWindowsInWorkspace(activeWorkspaceId);
@@ -407,6 +428,7 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
         workspaceManager={workspaceManager}
         eventBus={eventBus}
         activeWorkspaceId={activeWorkspaceId}
+        fs={fs}
       />
     </div>
   );

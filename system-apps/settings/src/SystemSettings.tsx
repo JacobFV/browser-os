@@ -14,6 +14,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
 }) => {
   const [hostname, setHostname] = useState('');
   const [timezone, setTimezone] = useState('');
+  const [maxRecentFiles, setMaxRecentFiles] = useState(10);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
     if (config?.system) {
       setHostname(config.system.hostname || '');
       setTimezone(config.system.timezone || '');
+      setMaxRecentFiles(config.system.maxRecentFiles ?? 10);
       setHasChanges(false);
     }
   }, [config]);
@@ -37,6 +39,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
         system: {
           hostname: hostname.trim(),
           timezone: timezone.trim() || undefined,
+          maxRecentFiles: maxRecentFiles,
         },
       });
       setHasChanges(false);
@@ -59,6 +62,15 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
     setTimezone(e.target.value);
     setHasChanges(true);
     setSuccess(false);
+  };
+
+  const handleMaxRecentFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value) && value >= 1 && value <= 100) {
+      setMaxRecentFiles(value);
+      setHasChanges(true);
+      setSuccess(false);
+    }
   };
 
   if (loading) {
@@ -89,6 +101,18 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
             placeholder="UTC"
           />
           <small className="settings-form-hint">e.g., America/New_York, Europe/London, UTC</small>
+        </div>
+        <div className="settings-form-group">
+          <label htmlFor="maxRecentFiles">Max Recent Files</label>
+          <input
+            id="maxRecentFiles"
+            type="number"
+            min="1"
+            max="100"
+            value={maxRecentFiles}
+            onChange={handleMaxRecentFilesChange}
+          />
+          <small className="settings-form-hint">Number of recent files to show per app (1-100)</small>
         </div>
         {error && <div className="settings-form-error">{error}</div>}
         {success && <div className="settings-form-success">Settings saved successfully!</div>}

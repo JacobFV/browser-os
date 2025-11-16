@@ -29,6 +29,8 @@ export interface WindowManager {
   getWindow(windowId: string): Window | null;
   getAllWindows(): Window[];
   getWindowsInWorkspace(workspaceId: string): Window[];
+  getWindowsByApp(appId: string): Window[];
+  closeAllWindowsForApp(appId: string): void;
   updateWindow(windowId: string, updates: Partial<Window>): void;
 }
 

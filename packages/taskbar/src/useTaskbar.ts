@@ -4,23 +4,29 @@ import type { Window } from '@browser-os/schemas';
 import type { AppRegistryEntry } from '@browser-os/schemas';
 import type { WindowManager } from '@browser-os/windowing';
 import type { AppRegistry } from '@browser-os/app-registry';
+import type { FileSystem } from '@browser-os/fs';
 import type { TaskbarWindow, TaskbarShortcut } from './types';
+import { RecentFilesManager } from './RecentFilesManager';
 
 export interface UseTaskbarOptions {
   windowManager: WindowManager;
   appRegistry: AppRegistry;
   eventBus?: EventBus;
   activeWorkspaceId: string;
+  fs?: FileSystem;
 }
 
 /**
  * React hook for taskbar state
  */
 export function useTaskbar(options: UseTaskbarOptions) {
-  const { windowManager, appRegistry, eventBus, activeWorkspaceId } = options;
+  const { windowManager, appRegistry, eventBus, activeWorkspaceId, fs } = options;
   const [windows, setWindows] = useState<TaskbarWindow[]>([]);
   const [shortcuts, setShortcuts] = useState<TaskbarShortcut[]>([]);
   const [focusedWindowId, setFocusedWindowId] = useState<string | null>(null);
+  const [recentFilesManager] = useState<RecentFilesManager | null>(() => {
+    return fs ? new RecentFilesManager(fs) : null;
+  });
 
   useEffect(() => {
     const updateWindows = () => {
@@ -57,6 +63,23 @@ export function useTaskbar(options: UseTaskbarOptions) {
 
     const bus = eventBus ?? new EventBus();
 
+    // Initialize RecentFilesManager
+    if (recentFilesManager) {
+      recentFilesManager.init().catch((error) => {
+        console.error('[useTaskbar] Failed to initialize RecentFilesManager:', error);
+      });
+    }
+
+    // Listen for file open events
+    const unsubscribeFileOpened = bus.on('app:file:opened', async (event: any) => {
+      if (recentFilesManager && event.payload) {
+        const { appId, filePath, title } = event.payload;
+        if (appId && filePath) {
+          await recentFilesManager.addRecentFile(appId, filePath, title);
+        }
+      }
+    });
+
     const unsubscribeWindow = bus.on('window:', () => {
       updateWindows();
     });
@@ -66,15 +89,17 @@ export function useTaskbar(options: UseTaskbarOptions) {
     });
 
     return () => {
+      unsubscribeFileOpened();
       unsubscribeWindow();
       unsubscribeRegistry();
     };
-  }, [windowManager, appRegistry, eventBus, activeWorkspaceId]);
+  }, [windowManager, appRegistry, eventBus, activeWorkspaceId, recentFilesManager]);
 
   return {
     windows,
     shortcuts,
     focusedWindowId,
+    recentFilesManager,
   };
 }
 
