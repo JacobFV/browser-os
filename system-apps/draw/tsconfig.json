@@ -8,7 +8,8 @@
       "@browser-os/schemas": ["../../packages/schemas/src"],
       "@browser-os/events": ["../../packages/events/src"],
       "@browser-os/windowing": ["../../packages/windowing/src"],
-      "@browser-os/fs": ["../../packages/fs/src"]
+      "@browser-os/fs": ["../../packages/fs/src"],
+      "@browser-os/dialogs": ["../../packages/dialogs/src"]
     }
   },
   "include": ["src/**/*"]

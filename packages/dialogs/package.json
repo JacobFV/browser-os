@@ -1,0 +1,23 @@
+{
+  "name": "@browser-os/dialogs",
+  "version": "0.1.0",
+  "description": "File dialogs for browser-os",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && npm run copy-css",
+    "copy-css": "node -e \"const fs=require('fs');const path=require('path');['Dialog.css'].forEach(f=>{const src=path.join('src',f);const dst=path.join('dist',f);if(fs.existsSync(src))fs.copyFileSync(src,dst);});\"",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@browser-os/fs": "workspace:*",
+    "@browser-os/events": "workspace:*",
+    "@browser-os/schemas": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.3.0"
+  }
+}
+

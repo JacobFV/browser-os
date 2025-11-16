@@ -10,6 +10,8 @@ export interface SaveDialogProps {
   appId: string;
   eventBus: EventBus;
   currentPath?: string;
+  defaultExtension?: string;
+  fileFilter?: (path: string) => boolean;
   onSave: (path: string) => void;
   onCancel: () => void;
 }
@@ -19,11 +21,15 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
   appId,
   eventBus,
   currentPath,
+  defaultExtension = '.txt',
+  fileFilter,
   onSave,
   onCancel,
 }) => {
   const [currentDir, setCurrentDir] = useState('/home/user/Documents');
-  const [fileName, setFileName] = useState(currentPath?.split('/').pop() || '');
+  const [fileName, setFileName] = useState(
+    currentPath?.split('/').pop()?.replace(new RegExp(`\\${defaultExtension}$`), '') || ''
+  );
   const [entries, setEntries] = useState<FileMetadata[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +42,6 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
     setLoading(true);
     setError(null);
     try {
-      // Ensure directory exists
       if (!(await fs.exists(currentDir))) {
         await fs.mkdir(currentDir, { recursive: true });
       }
@@ -52,13 +57,17 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
       });
 
       const metadataResults = await Promise.all(metadataPromises);
-      const validEntries = metadataResults.filter((m: FileMetadata | null): m is FileMetadata => m !== null);
-      setEntries(validEntries.sort((a: FileMetadata, b: FileMetadata) => {
-        if (a.type !== b.type) {
-          return a.type === 'directory' ? -1 : 1;
-        }
-        return a.path.localeCompare(b.path);
-      }));
+      const validEntries = metadataResults.filter(
+        (m: FileMetadata | null): m is FileMetadata => m !== null
+      );
+      setEntries(
+        validEntries.sort((a: FileMetadata, b: FileMetadata) => {
+          if (a.type !== b.type) {
+            return a.type === 'directory' ? -1 : 1;
+          }
+          return a.path.localeCompare(b.path);
+        })
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load directory');
     } finally {
@@ -84,16 +93,14 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
     }
 
     const fullPath = currentDir === '/' ? `/${fileName}` : `${currentDir}/${fileName}`;
-    const finalPath = fullPath.endsWith('.txt') ? fullPath : `${fullPath}.txt`;
+    const finalPath = fullPath.endsWith(defaultExtension) ? fullPath : `${fullPath}${defaultExtension}`;
 
     try {
-      // Ensure directory exists
       if (!(await fs.exists(currentDir))) {
         await fs.mkdir(currentDir, { recursive: true });
       }
       onSave(finalPath);
-      // Emit file opened event (for save, we also track it as opened)
-      eventBus.emit('app:file:opened', { appId, filePath: finalPath }, { source: 'notepad' });
+      eventBus.emit('app:file:opened', { appId, filePath: finalPath }, { source: appId });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
     }

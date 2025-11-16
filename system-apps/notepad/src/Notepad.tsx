@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
 import type { EventBus } from '@browser-os/events';
+import { SaveDialog, OpenDialog } from '@browser-os/dialogs';
 import { Menubar } from './Menubar';
-import { SaveDialog } from './SaveDialog';
-import { OpenDialog } from './OpenDialog';
 import './Notepad.css';
 
 export interface NotepadProps {
@@ -192,6 +191,8 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
           appId={appId}
           eventBus={eventBus}
           currentPath={currentPath || undefined}
+          defaultExtension=".txt"
+          fileFilter={(path) => path.endsWith('.txt')}
           onSave={handleSaveFile}
           onCancel={() => setShowSaveDialog(false)}
         />
@@ -201,6 +202,7 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
           fs={fs}
           appId={appId}
           eventBus={eventBus}
+          fileFilter={(path) => path.endsWith('.txt')}
           onOpen={handleOpenFile}
           onCancel={() => setShowOpenDialog(false)}
         />

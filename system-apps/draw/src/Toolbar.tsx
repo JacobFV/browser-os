@@ -1,7 +1,7 @@
 import React from 'react';
 import './Toolbar.css';
 
-export type DrawingTool = 'pen' | 'rectangle' | 'circle' | 'line' | 'eraser';
+export type DrawingTool = 'pen' | 'rectangle' | 'circle' | 'line' | 'eraser' | 'text' | 'polygon' | 'arrow' | 'brush';
 
 export interface ToolbarProps {
   currentTool: DrawingTool;
@@ -24,9 +24,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const tools: { id: DrawingTool; label: string; icon: string }[] = [
     { id: 'pen', label: 'Pen', icon: '✏️' },
+    { id: 'brush', label: 'Brush', icon: '🖌️' },
     { id: 'rectangle', label: 'Rectangle', icon: '▭' },
     { id: 'circle', label: 'Circle', icon: '○' },
     { id: 'line', label: 'Line', icon: '─' },
+    { id: 'arrow', label: 'Arrow', icon: '→' },
+    { id: 'polygon', label: 'Polygon', icon: '⬟' },
+    { id: 'text', label: 'Text', icon: 'A' },
     { id: 'eraser', label: 'Eraser', icon: '🧹' },
   ];
 

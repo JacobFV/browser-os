@@ -10,6 +10,7 @@ export default defineConfig({
       '@browser-os/events': path.resolve(__dirname, '../../packages/events/src'),
       '@browser-os/windowing': path.resolve(__dirname, '../../packages/windowing/src'),
       '@browser-os/fs': path.resolve(__dirname, '../../packages/fs/src'),
+      '@browser-os/dialogs': path.resolve(__dirname, '../../packages/dialogs/src'),
     },
   },
   build: {

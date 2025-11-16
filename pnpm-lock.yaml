@@ -81,6 +81,28 @@ importers:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@20.19.24)(jsdom@23.2.0)
 
+  packages/dialogs:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+
   packages/events:
     dependencies:
       '@browser-os/schemas':
@@ -364,6 +386,9 @@ importers:
 
   system-apps/draw:
     dependencies:
+      '@browser-os/dialogs':
+        specifier: workspace:*
+        version: link:../../packages/dialogs
       '@browser-os/events':
         specifier: workspace:*
         version: link:../../packages/events
@@ -429,6 +454,9 @@ importers:
 
   system-apps/notepad:
     dependencies:
+      '@browser-os/dialogs':
+        specifier: workspace:*
+        version: link:../../packages/dialogs
       '@browser-os/events':
         specifier: workspace:*
         version: link:../../packages/events

@@ -123,12 +123,21 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx || !isDrawing) return;
 
-      if (tool === 'pen') {
+      if (tool === 'pen' || tool === 'brush') {
         if (lastPos) {
           ctx.beginPath();
+          if (tool === 'brush') {
+            // Brush uses round line cap for smoother strokes
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.globalAlpha = 0.7; // Slightly transparent for brush effect
+          }
           ctx.moveTo(lastPos.x, lastPos.y);
           ctx.lineTo(x, y);
           ctx.stroke();
+          if (tool === 'brush') {
+            ctx.globalAlpha = 1.0;
+          }
         }
         setLastPos({ x, y });
       } else if (tool === 'eraser') {
@@ -174,6 +183,55 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
           tempCtx.moveTo(startPos.x, startPos.y);
           tempCtx.lineTo(x, y);
           tempCtx.stroke();
+        } else if (tool === 'arrow') {
+          // Draw arrow line
+          tempCtx.beginPath();
+          tempCtx.moveTo(startPos.x, startPos.y);
+          tempCtx.lineTo(x, y);
+          tempCtx.stroke();
+          
+          // Draw arrowhead
+          const angle = Math.atan2(y - startPos.y, x - startPos.x);
+          const arrowLength = 15;
+          const arrowAngle = Math.PI / 6;
+          
+          tempCtx.beginPath();
+          tempCtx.moveTo(x, y);
+          tempCtx.lineTo(
+            x - arrowLength * Math.cos(angle - arrowAngle),
+            y - arrowLength * Math.sin(angle - arrowAngle)
+          );
+          tempCtx.moveTo(x, y);
+          tempCtx.lineTo(
+            x - arrowLength * Math.cos(angle + arrowAngle),
+            y - arrowLength * Math.sin(angle + arrowAngle)
+          );
+          tempCtx.stroke();
+        } else if (tool === 'polygon') {
+          // Draw polygon (triangle for now, can be extended)
+          const sides = 3;
+          const centerX = (startPos.x + x) / 2;
+          const centerY = (startPos.y + y) / 2;
+          const radius = Math.sqrt(
+            Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2)
+          ) / 2;
+          
+          tempCtx.beginPath();
+          for (let i = 0; i <= sides; i++) {
+            const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+            const px = centerX + radius * Math.cos(angle);
+            const py = centerY + radius * Math.sin(angle);
+            if (i === 0) {
+              tempCtx.moveTo(px, py);
+            } else {
+              tempCtx.lineTo(px, py);
+            }
+          }
+          tempCtx.stroke();
+        } else if (tool === 'text') {
+          // Text tool - show placeholder (actual text input would need a separate UI)
+          tempCtx.font = `${brushSize * 3}px Arial`;
+          tempCtx.fillText('Text', startPos.x, startPos.y);
         }
 
         // Copy back to main canvas

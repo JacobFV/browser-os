@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
+import type { EventBus } from '@browser-os/events';
+import { SaveDialog, OpenDialog } from '@browser-os/dialogs';
 import { Toolbar, type DrawingTool } from './Toolbar';
 import { Canvas, type CanvasRef } from './Canvas';
 import { Menubar } from './Menubar';
-import { SaveDialog } from './SaveDialog';
-import { OpenDialog } from './OpenDialog';
 import './Draw.css';
 
 export interface DrawProps {
   windowId: string;
+  appId?: string;
+  eventBus?: EventBus;
 }
 
-export const Draw: React.FC<DrawProps> = ({ windowId }) => {
+export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }) => {
   const [fs, setFs] = useState<FileSystem | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [currentTool, setCurrentTool] = useState<DrawingTool>('pen');
@@ -126,7 +128,9 @@ export const Draw: React.FC<DrawProps> = ({ windowId }) => {
       const data = await fs.read(path);
       
       // Convert Uint8Array to blob, then to data URL
-      const blob = new Blob([data], { type: 'image/png' });
+      // Create a new Uint8Array copy to ensure we have a proper ArrayBuffer
+      const dataCopy = new Uint8Array(data);
+      const blob = new Blob([dataCopy], { type: 'image/png' });
       const reader = new FileReader();
       
       reader.onloadend = () => {
@@ -184,16 +188,27 @@ export const Draw: React.FC<DrawProps> = ({ windowId }) => {
         />
         <Canvas ref={canvasRef} tool={currentTool} color={currentColor} brushSize={brushSize} />
       </div>
-      {showSaveDialog && (
+      {showSaveDialog && eventBus && (
         <SaveDialog
           fs={fs}
+          appId={appId}
+          eventBus={eventBus}
           currentPath={currentPath || undefined}
+          defaultExtension=".png"
+          fileFilter={(path) => path.endsWith('.png')}
           onSave={saveFile}
           onCancel={() => setShowSaveDialog(false)}
         />
       )}
-      {showOpenDialog && (
-        <OpenDialog fs={fs} onOpen={loadFile} onCancel={() => setShowOpenDialog(false)} />
+      {showOpenDialog && eventBus && (
+        <OpenDialog
+          fs={fs}
+          appId={appId}
+          eventBus={eventBus}
+          fileFilter={(path) => path.endsWith('.png')}
+          onOpen={loadFile}
+          onCancel={() => setShowOpenDialog(false)}
+        />
       )}
     </div>
   );

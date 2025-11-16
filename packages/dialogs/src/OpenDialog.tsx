@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import type { FileSystem } from '@browser-os/fs';
 import type { FileMetadata } from '@browser-os/schemas';
+import type { EventBus } from '@browser-os/events';
 import { Dialog } from './Dialog';
 import './Dialog.css';
 
-export interface SaveDialogProps {
+export interface OpenDialogProps {
   fs: FileSystem;
-  currentPath?: string;
-  onSave: (path: string) => void;
+  appId: string;
+  eventBus: EventBus;
+  fileFilter?: (path: string) => boolean;
+  onOpen: (path: string) => void;
   onCancel: () => void;
 }
 
-export const SaveDialog: React.FC<SaveDialogProps> = ({
+export const OpenDialog: React.FC<OpenDialogProps> = ({
   fs,
-  currentPath,
-  onSave,
+  appId,
+  eventBus,
+  fileFilter = (path) => path.endsWith('.txt'),
+  onOpen,
   onCancel,
 }) => {
   const [currentDir, setCurrentDir] = useState('/home/user/Documents');
-  const [fileName, setFileName] = useState(
-    currentPath?.split('/').pop()?.replace(/\.png$/, '') || 'drawing'
-  );
   const [entries, setEntries] = useState<FileMetadata[]>([]);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +41,7 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
       }
 
       const dirEntries = await fs.readdir(currentDir);
-      const metadataPromises = dirEntries.map(async (name: string) => {
+      const metadataPromises = dirEntries.map(async (name) => {
         const fullPath = currentDir === '/' ? `/${name}` : `${currentDir}/${name}`;
         try {
           return await fs.stat(fullPath);
@@ -68,6 +71,7 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
 
   const handleDirectoryClick = (path: string) => {
     setCurrentDir(path);
+    setSelectedFile(null);
   };
 
   const handleParentClick = () => {
@@ -75,29 +79,31 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
     const parts = currentDir.split('/').filter((p) => p);
     parts.pop();
     setCurrentDir(parts.length === 0 ? '/' : '/' + parts.join('/'));
+    setSelectedFile(null);
   };
 
-  const handleSave = async () => {
-    if (!fileName.trim()) {
-      setError('Please enter a file name');
-      return;
+  const handleFileClick = (path: string) => {
+    setSelectedFile(path);
+  };
+
+  const handleOpen = () => {
+    if (selectedFile) {
+      onOpen(selectedFile);
+      eventBus.emit('app:file:opened', { appId, filePath: selectedFile }, { source: appId });
     }
+  };
 
-    const fullPath = currentDir === '/' ? `/${fileName}` : `${currentDir}/${fileName}`;
-    const finalPath = fullPath.endsWith('.png') ? fullPath : `${fullPath}.png`;
-
-    try {
-      if (!(await fs.exists(currentDir))) {
-        await fs.mkdir(currentDir, { recursive: true });
-      }
-      onSave(finalPath);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+  const handleDoubleClick = (entry: FileMetadata) => {
+    if (entry.type === 'directory') {
+      handleDirectoryClick(entry.path);
+    } else {
+      onOpen(entry.path);
+      eventBus.emit('app:file:opened', { appId, filePath: entry.path }, { source: appId });
     }
   };
 
   return (
-    <Dialog title="Save Drawing" onClose={onCancel}>
+    <Dialog title="Open File" onClose={onCancel}>
       <div className="file-dialog">
         <div className="file-dialog-browser">
           <div className="file-dialog-path">
@@ -116,45 +122,42 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({
             ) : entries.length === 0 ? (
               <div className="file-dialog-empty">Empty directory</div>
             ) : (
-              entries.map((entry) => (
-                <div
-                  key={entry.path}
-                  className={`file-dialog-item ${entry.type}`}
-                  onClick={() => {
-                    if (entry.type === 'directory') {
-                      handleDirectoryClick(entry.path);
-                    }
-                  }}
-                >
-                  <span className="file-dialog-icon">
-                    {entry.type === 'directory' ? '📁' : '🖼️'}
-                  </span>
-                  <span className="file-dialog-name">{entry.path.split('/').pop()}</span>
-                </div>
-              ))
+              entries.map((entry) => {
+                if (entry.type === 'directory') {
+                  return (
+                    <div
+                      key={entry.path}
+                      className="file-dialog-item directory"
+                      onClick={() => handleDirectoryClick(entry.path)}
+                      onDoubleClick={() => handleDoubleClick(entry)}
+                    >
+                      <span className="file-dialog-icon">📁</span>
+                      <span className="file-dialog-name">{entry.path.split('/').pop()}</span>
+                    </div>
+                  );
+                } else if (fileFilter(entry.path)) {
+                  return (
+                    <div
+                      key={entry.path}
+                      className={`file-dialog-item file ${selectedFile === entry.path ? 'selected' : ''}`}
+                      onClick={() => handleFileClick(entry.path)}
+                      onDoubleClick={() => handleDoubleClick(entry)}
+                    >
+                      <span className="file-dialog-icon">📄</span>
+                      <span className="file-dialog-name">{entry.path.split('/').pop()}</span>
+                    </div>
+                  );
+                }
+                return null;
+              })
             )}
           </div>
-        </div>
-        <div className="file-dialog-input">
-          <label>File name:</label>
-          <input
-            type="text"
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSave();
-              }
-            }}
-            placeholder="Enter file name"
-            autoFocus
-          />
         </div>
         {error && <div className="file-dialog-error">{error}</div>}
         <div className="file-dialog-actions">
           <button onClick={onCancel}>Cancel</button>
-          <button onClick={handleSave} className="primary">
-            Save
+          <button onClick={handleOpen} className="primary" disabled={!selectedFile}>
+            Open
           </button>
         </div>
       </div>
