@@ -83,12 +83,6 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   return (
     <>
       <div className="taskbar">
-        {notificationManager && (
-          <NotificationBadgeButton
-            notificationManager={notificationManager}
-            onClick={() => setShowNotificationCenter(!showNotificationCenter)}
-          />
-        )}
         {recentFilesManager ? (
           <Shortcuts
             shortcuts={shortcuts}
@@ -129,6 +123,12 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           ))}
         </div>
         <SearchBar apps={appRegistry.getEnabled()} onAppSelect={handleAppSelect} />
+        {notificationManager && (
+          <NotificationBadgeButton
+            notificationManager={notificationManager}
+            onClick={() => setShowNotificationCenter(!showNotificationCenter)}
+          />
+        )}
         <WorkspaceOverviewButton onClick={() => setShowOverview(true)} />
       </div>
       {showOverview && (

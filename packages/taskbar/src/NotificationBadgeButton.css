@@ -1,14 +1,17 @@
 .taskbar-notification-button {
   position: relative;
-  background: none;
+  width: 40px;
+  height: 40px;
+  background: transparent;
   border: none;
-  padding: 8px;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   transition: background 0.2s;
+  margin-left: 4px;
 }
 
 .taskbar-notification-button:hover {
@@ -16,13 +19,15 @@
 }
 
 .taskbar-notification-icon {
-  font-size: 20px;
-  line-height: 1;
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
 }
 
 .taskbar-notification-button .notification-badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
 }
 
