@@ -159,6 +159,9 @@ importers:
       '@browser-os/app-registry':
         specifier: workspace:*
         version: link:../app-registry
+      '@browser-os/dialogs':
+        specifier: workspace:*
+        version: link:../dialogs
       '@browser-os/events':
         specifier: workspace:*
         version: link:../events

@@ -4,4 +4,14 @@ export { SaveDialog } from './SaveDialog';
 export type { SaveDialogProps } from './SaveDialog';
 export { OpenDialog } from './OpenDialog';
 export type { OpenDialogProps } from './OpenDialog';
+export { DialogManager } from './DialogManager';
+export type {
+  DialogManagerOptions,
+  AlertOptions,
+  ConfirmOptions,
+  PromptOptions,
+  FileDialogOptions,
+  DirectoryDialogOptions,
+  FileInfo,
+} from './DialogManager';
 

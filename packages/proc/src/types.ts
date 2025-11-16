@@ -2,6 +2,7 @@ import type { Process } from '@browser-os/schemas';
 import type { Channel } from '@browser-os/events';
 import type { WindowAPI } from './WindowAPI';
 import type { NotificationAPI } from './NotificationAPI';
+import type { DialogAPI } from './DialogAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -17,5 +18,6 @@ export interface OSAPI {
   channel: Channel;
   window: WindowAPI;
   notification: NotificationAPI;
+  dialog: DialogAPI;
 }
 

@@ -4,6 +4,7 @@ import { ProcessManager } from '@browser-os/proc';
 import { AppRegistry } from '@browser-os/app-registry';
 import type { WindowManager } from '@browser-os/windowing';
 import type { NotificationManager } from '@browser-os/notifications';
+import type { DialogManager } from '@browser-os/dialogs';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -11,6 +12,7 @@ import { createProcSyscalls } from './syscalls/proc';
 import { createRegistrySyscalls } from './syscalls/registry';
 import { createWindowSyscalls } from './syscalls/window';
 import { createNotificationSyscalls } from './syscalls/notification';
+import { createDialogSyscalls } from './syscalls/dialog';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -21,6 +23,7 @@ export interface KernelOptions {
   eventBus?: EventBus;
   windowManager?: WindowManager;
   notificationManager?: NotificationManager;
+  dialogManager?: DialogManager;
 }
 
 /**
@@ -33,6 +36,7 @@ export class Kernel {
   private appRegistry: AppRegistry;
   private windowManager?: WindowManager;
   private notificationManager?: NotificationManager;
+  private dialogManager?: DialogManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -44,6 +48,7 @@ export class Kernel {
     this.syscallRouter = new SyscallRouter(this.permissionManager);
     this.windowManager = options?.windowManager;
     this.notificationManager = options?.notificationManager;
+    this.dialogManager = options?.dialogManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -261,6 +266,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register dialog syscalls (if dialogManager is provided)
+    if (this.dialogManager) {
+      const dialogSyscalls = createDialogSyscalls(this.dialogManager);
+      for (const [name, handler] of Object.entries(dialogSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -301,6 +314,12 @@ export class Kernel {
         'notification.markAllAsRead',
         'notification.getUnreadCount',
         'notification.getNotifications',
+        'dialog.alert',
+        'dialog.confirm',
+        'dialog.prompt',
+        'dialog.openFile',
+        'dialog.saveFile',
+        'dialog.selectDirectory',
       ],
       fsAccess: [
         '/home/user/**',
