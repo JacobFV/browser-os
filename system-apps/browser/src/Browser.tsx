@@ -10,6 +10,8 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
   const [currentUrl, setCurrentUrl] = useState('https://www.google.com');
   const [history, setHistory] = useState<string[]>(['https://www.google.com']);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const navigateToUrl = (newUrl: string) => {
@@ -22,6 +24,8 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     try {
       new URL(formattedUrl); // Validate URL
       setCurrentUrl(formattedUrl);
+      setLoading(true);
+      setError(null);
       
       // Update history
       const newHistory = history.slice(0, historyIndex + 1);
@@ -30,6 +34,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
       setHistoryIndex(newHistory.length - 1);
     } catch (error) {
       console.error('Invalid URL:', error);
+      setError('Invalid URL format');
     }
   };
 
@@ -44,6 +49,8 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
       setHistoryIndex(newIndex);
       setCurrentUrl(history[newIndex]);
       setUrl(history[newIndex]);
+      setLoading(true);
+      setError(null);
     }
   };
 
@@ -53,8 +60,62 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
       setHistoryIndex(newIndex);
       setCurrentUrl(history[newIndex]);
       setUrl(history[newIndex]);
+      setLoading(true);
+      setError(null);
     }
   };
+
+  const handleReload = () => {
+    if (iframeRef.current) {
+      iframeRef.current.src = iframeRef.current.src;
+      setLoading(true);
+      setError(null);
+    }
+  };
+
+  // Handle iframe load events
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const handleLoad = () => {
+      setLoading(false);
+      // Check if iframe content is blocked
+      try {
+        // Try to access iframe content - will throw if blocked by CORS/X-Frame-Options
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (!iframeDoc) {
+          // Likely blocked by X-Frame-Options
+          setError('This website cannot be displayed in an iframe due to security restrictions (X-Frame-Options). Many websites like Google, Facebook, and others block iframe embedding to prevent clickjacking attacks.');
+        }
+      } catch (e) {
+        // Cross-origin or blocked
+        setError('This website cannot be displayed in an iframe due to security restrictions. Many websites block iframe embedding to prevent clickjacking attacks.');
+      }
+    };
+
+    const handleError = () => {
+      setLoading(false);
+      setError('Failed to load the webpage. The site may be blocking iframe embedding or there may be a network error.');
+    };
+
+    iframe.addEventListener('load', handleLoad);
+    iframe.addEventListener('error', handleError);
+
+    // Set a timeout to detect if page never loads
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Page load timeout. The site may be blocking iframe embedding.');
+      }
+    }, 10000);
+
+    return () => {
+      iframe.removeEventListener('load', handleLoad);
+      iframe.removeEventListener('error', handleError);
+      clearTimeout(timeout);
+    };
+  }, [currentUrl, loading]);
 
   const canGoBack = historyIndex > 0;
   const canGoForward = historyIndex < history.length - 1;
@@ -79,6 +140,13 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
           >
             →
           </button>
+          <button
+            className="browser-nav-button"
+            onClick={handleReload}
+            title="Reload"
+          >
+            ↻
+          </button>
         </div>
         <form className="browser-url-bar" onSubmit={handleSubmit}>
           <input
@@ -94,12 +162,65 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
         </form>
       </div>
       <div className="browser-content">
+        {loading && (
+          <div className="browser-loading">
+            <div className="browser-loading-spinner"></div>
+            <p>Loading {currentUrl}...</p>
+          </div>
+        )}
+        {error && (
+          <div className="browser-error">
+            <div className="browser-error-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.1"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h2 className="browser-error-title">Unable to Load Page</h2>
+            <p className="browser-error-message">{error}</p>
+            <div className="browser-error-suggestion">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+              </svg>
+              <div>
+                <strong>Tip:</strong> Try opening this URL in a new window or use a site that allows iframe embedding.
+              </div>
+            </div>
+            <div className="browser-error-actions">
+              <button 
+                className="browser-open-external"
+                onClick={() => window.open(currentUrl, '_blank')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" fill="currentColor"/>
+                </svg>
+                Open in New Tab
+              </button>
+              <button 
+                className="browser-retry-button"
+                onClick={() => {
+                  setError(null);
+                  setLoading(true);
+                  if (iframeRef.current) {
+                    iframeRef.current.src = iframeRef.current.src;
+                  }
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/>
+                </svg>
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
         <iframe
           ref={iframeRef}
           src={currentUrl}
           className="browser-iframe"
           title="Browser content"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation"
+          style={{ display: error ? 'none' : 'block' }}
         />
       </div>
     </div>
