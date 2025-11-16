@@ -3,12 +3,14 @@ import { FileSystem, EphemeralBackend } from '@browser-os/fs';
 import { ProcessManager } from '@browser-os/proc';
 import { AppRegistry } from '@browser-os/app-registry';
 import type { WindowManager } from '@browser-os/windowing';
+import type { NotificationManager } from '@browser-os/notifications';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
 import { createProcSyscalls } from './syscalls/proc';
 import { createRegistrySyscalls } from './syscalls/registry';
 import { createWindowSyscalls } from './syscalls/window';
+import { createNotificationSyscalls } from './syscalls/notification';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -18,6 +20,7 @@ const MOUNTS_PATH = '/etc/mounts.json';
 export interface KernelOptions {
   eventBus?: EventBus;
   windowManager?: WindowManager;
+  notificationManager?: NotificationManager;
 }
 
 /**
@@ -29,6 +32,7 @@ export class Kernel {
   private procManager: ProcessManager;
   private appRegistry: AppRegistry;
   private windowManager?: WindowManager;
+  private notificationManager?: NotificationManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -39,6 +43,7 @@ export class Kernel {
     this.permissionManager = new PermissionManager();
     this.syscallRouter = new SyscallRouter(this.permissionManager);
     this.windowManager = options?.windowManager;
+    this.notificationManager = options?.notificationManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -248,6 +253,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register notification syscalls (if notificationManager is provided)
+    if (this.notificationManager) {
+      const notificationSyscalls = createNotificationSyscalls(this.notificationManager, this.procManager);
+      for (const [name, handler] of Object.entries(notificationSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -281,6 +294,13 @@ export class Kernel {
         'window.maximize',
         'window.restore',
         'window.focus',
+        'notification.create',
+        'notification.dismiss',
+        'notification.dismissAll',
+        'notification.markAsRead',
+        'notification.markAllAsRead',
+        'notification.getUnreadCount',
+        'notification.getNotifications',
       ],
       fsAccess: [
         '/home/user/**',

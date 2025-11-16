@@ -165,6 +165,9 @@ importers:
       '@browser-os/fs':
         specifier: workspace:*
         version: link:../fs
+      '@browser-os/notifications':
+        specifier: workspace:*
+        version: link:../notifications
       '@browser-os/proc':
         specifier: workspace:*
         version: link:../proc

@@ -3,6 +3,7 @@ import type { FileSystem } from '@browser-os/fs';
 import { Process } from './Process';
 import { Executor } from './Executor';
 import { WindowAPI } from './WindowAPI';
+import { NotificationAPI } from './NotificationAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -80,6 +81,7 @@ export class ProcessManager {
       syscall: syscallWrapper,
       channel,
       window: new WindowAPI(syscallWrapper),
+      notification: new NotificationAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously

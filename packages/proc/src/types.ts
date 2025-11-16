@@ -1,6 +1,7 @@
 import type { Process } from '@browser-os/schemas';
 import type { Channel } from '@browser-os/events';
 import type { WindowAPI } from './WindowAPI';
+import type { NotificationAPI } from './NotificationAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -15,5 +16,6 @@ export interface OSAPI {
   syscall(name: string, args: Record<string, unknown>): Promise<unknown>;
   channel: Channel;
   window: WindowAPI;
+  notification: NotificationAPI;
 }
 

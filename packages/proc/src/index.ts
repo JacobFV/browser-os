@@ -3,4 +3,5 @@ export * from './Process';
 export * from './Executor';
 export * from './types';
 export * from './WindowAPI';
+export * from './NotificationAPI';
 
