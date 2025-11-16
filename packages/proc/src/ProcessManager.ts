@@ -7,6 +7,7 @@ import { NotificationAPI } from './NotificationAPI';
 import { DialogAPI } from './DialogAPI';
 import { ClipboardAPI } from './ClipboardAPI';
 import { StorageAPI } from './StorageAPI';
+import { ProcessAPI } from './ProcessAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -88,6 +89,7 @@ export class ProcessManager {
       dialog: new DialogAPI(syscallWrapper),
       clipboard: new ClipboardAPI(syscallWrapper),
       storage: new StorageAPI(syscallWrapper),
+      process: new ProcessAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously

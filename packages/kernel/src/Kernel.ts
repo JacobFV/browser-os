@@ -17,6 +17,7 @@ import { createNotificationSyscalls } from './syscalls/notification';
 import { createDialogSyscalls } from './syscalls/dialog';
 import { createClipboardSyscalls } from './syscalls/clipboard';
 import { createStorageSyscalls } from './syscalls/storage';
+import { createProcessSyscalls } from './syscalls/process';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -300,6 +301,12 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register process query syscalls
+    const processSyscalls = createProcessSyscalls(this.procManager);
+    for (const [name, handler] of Object.entries(processSyscalls)) {
+      this.syscallRouter.register(name, handler);
+    }
   }
 
   /**
@@ -362,6 +369,10 @@ export class Kernel {
         'storage.size',
         'storage.getJSON',
         'storage.setJSON',
+        'process.getSelf',
+        'process.get',
+        'process.list',
+        'process.getEnv',
       ],
       fsAccess: [
         '/home/user/**',
