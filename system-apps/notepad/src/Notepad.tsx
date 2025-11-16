@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FileSystem, IndexedDBBackend } from '@browser-os/fs';
 import type { EventBus } from '@browser-os/events';
 import { SaveDialog, OpenDialog } from '@browser-os/dialogs';
@@ -26,6 +26,8 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
   const [history, setHistory] = useState<string[]>(['']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const MAX_HISTORY_SIZE = 50;
+  const HISTORY_DEBOUNCE_MS = 500; // Wait 500ms after typing stops before recording history
+  const historyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize filesystem
   useEffect(() => {
@@ -63,6 +65,8 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
           setText(content);
           setCurrentPath(event.payload.filePath);
           setHasUnsavedChanges(false);
+          setHistory([content]);
+          setHistoryIndex(0);
         } catch (error) {
           console.error('[Notepad] Failed to open file from context menu:', error);
         }
@@ -74,21 +78,117 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
     };
   }, [eventBus, appId, fs]);
 
+  // History management function
+  const addToHistory = useCallback((newText: string) => {
+    setHistory((prevHistory) => {
+      setHistoryIndex((prevIndex) => {
+        const newHistory = prevHistory.slice(0, prevIndex + 1);
+        newHistory.push(newText);
+        if (newHistory.length > MAX_HISTORY_SIZE) {
+          newHistory.shift();
+          return MAX_HISTORY_SIZE - 1;
+        } else {
+          return newHistory.length - 1;
+        }
+      });
+      // Return the new history array
+      const newHistory = prevHistory.slice(0, historyIndex + 1);
+      newHistory.push(newText);
+      if (newHistory.length > MAX_HISTORY_SIZE) {
+        newHistory.shift();
+      }
+      return newHistory;
+    });
+  }, [historyIndex]);
+
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    // Clear any pending history update
+    if (historyTimeoutRef.current) {
+      clearTimeout(historyTimeoutRef.current);
+      historyTimeoutRef.current = null;
+    }
+    
+    // Save current state to history before undoing (if it's different from current history state)
+    if (text !== history[historyIndex]) {
+      addToHistory(text);
+    }
+    
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setText(history[newIndex]);
+      setHasUnsavedChanges(true);
+    }
+  }, [history, historyIndex, text, addToHistory]);
+
+  const handleRedo = useCallback(() => {
+    // Clear any pending history update
+    if (historyTimeoutRef.current) {
+      clearTimeout(historyTimeoutRef.current);
+      historyTimeoutRef.current = null;
+    }
+    
+    // Save current state to history before redoing (if it's different from current history state)
+    if (text !== history[historyIndex]) {
+      addToHistory(text);
+    }
+    
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setText(history[newIndex]);
+      setHasUnsavedChanges(true);
+    }
+  }, [history, historyIndex, text, addToHistory]);
+
+  // Handle keyboard shortcuts for undo/redo when textarea is focused
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          handleUndo();
+        } else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
+          e.preventDefault();
+          handleRedo();
+        }
+      }
+    };
+
+    textarea.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      textarea.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleUndo, handleRedo]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (historyTimeoutRef.current) {
+        clearTimeout(historyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
     setHasUnsavedChanges(true);
     
-    // Update history for undo/redo
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(newText);
-    if (newHistory.length > MAX_HISTORY_SIZE) {
-      newHistory.shift();
-      setHistoryIndex(MAX_HISTORY_SIZE - 1);
-    } else {
-      setHistoryIndex(newHistory.length - 1);
+    // Clear existing timeout
+    if (historyTimeoutRef.current) {
+      clearTimeout(historyTimeoutRef.current);
     }
-    setHistory(newHistory);
+    
+    // Debounce history updates - wait for pause before recording
+    historyTimeoutRef.current = setTimeout(() => {
+      addToHistory(newText);
+    }, HISTORY_DEBOUNCE_MS);
   };
 
   const handleNew = () => {
@@ -184,24 +284,6 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
     setHistoryIndex(0);
   };
 
-  // Undo/Redo handlers
-  const handleUndo = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      setText(history[newIndex]);
-      setHasUnsavedChanges(true);
-    }
-  };
-
-  const handleRedo = () => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      setText(history[newIndex]);
-      setHasUnsavedChanges(true);
-    }
-  };
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -219,16 +301,8 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
         setText(newText);
         setHasUnsavedChanges(true);
         
-        // Update history
-        const newHistory = history.slice(0, historyIndex + 1);
-        newHistory.push(newText);
-        if (newHistory.length > MAX_HISTORY_SIZE) {
-          newHistory.shift();
-          setHistoryIndex(MAX_HISTORY_SIZE - 1);
-        } else {
-          setHistoryIndex(newHistory.length - 1);
-        }
-        setHistory(newHistory);
+        // Update history immediately for cut/paste operations
+        addToHistory(newText);
       } catch (error) {
         console.error('[Notepad] Failed to cut text:', error);
       }
