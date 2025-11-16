@@ -12,6 +12,7 @@ import type { SystemInfoManager } from '@browser-os/system';
 import type { PowerManager } from '@browser-os/power';
 import type { AudioManager } from '@browser-os/audio';
 import type { MediaManager } from '@browser-os/media';
+import type { LocationManager } from '@browser-os/location';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -28,6 +29,7 @@ import { createSystemSyscalls } from './syscalls/system';
 import { createPowerSyscalls } from './syscalls/power';
 import { createAudioSyscalls } from './syscalls/audio';
 import { createMediaSyscalls } from './syscalls/media';
+import { createLocationSyscalls } from './syscalls/location';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -46,6 +48,7 @@ export interface KernelOptions {
   powerManager?: PowerManager;
   audioManager?: AudioManager;
   mediaManager?: MediaManager;
+  locationManager?: LocationManager;
 }
 
 /**
@@ -66,6 +69,7 @@ export class Kernel {
   private powerManager?: PowerManager;
   private audioManager?: AudioManager;
   private mediaManager?: MediaManager;
+  private locationManager?: LocationManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -85,6 +89,7 @@ export class Kernel {
     this.powerManager = options?.powerManager;
     this.audioManager = options?.audioManager;
     this.mediaManager = options?.mediaManager;
+    this.locationManager = options?.locationManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -372,6 +377,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register location syscalls (if locationManager is provided)
+    if (this.locationManager) {
+      const locationSyscalls = createLocationSyscalls(this.locationManager);
+      for (const [name, handler] of Object.entries(locationSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -467,6 +480,7 @@ export class Kernel {
         'media.stopStream',
         'media.stopAllStreams',
         'media.enumerateDevices',
+        'location.getCurrentPosition',
       ],
       fsAccess: [
         '/home/user/**',

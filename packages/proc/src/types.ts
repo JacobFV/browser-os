@@ -11,6 +11,7 @@ import type { SystemInfoAPI } from './SystemInfoAPI';
 import type { PowerAPI } from './PowerAPI';
 import type { AudioAPI } from './AudioAPI';
 import type { MediaAPI } from './MediaAPI';
+import type { LocationAPI } from './LocationAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -35,5 +36,6 @@ export interface OSAPI {
   power: PowerAPI;
   audio: AudioAPI;
   media: MediaAPI;
+  location: LocationAPI;
 }
 
