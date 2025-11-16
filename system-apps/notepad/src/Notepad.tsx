@@ -19,7 +19,13 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
   const [showOpenDialog, setShowOpenDialog] = useState(false);
   const [fs, setFs] = useState<FileSystem | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [wordWrap, setWordWrap] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Undo/Redo history
+  const [history, setHistory] = useState<string[]>(['']);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const MAX_HISTORY_SIZE = 50;
 
   // Initialize filesystem
   useEffect(() => {
@@ -69,8 +75,20 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
   }, [eventBus, appId, fs]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    setText(newText);
     setHasUnsavedChanges(true);
+    
+    // Update history for undo/redo
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newText);
+    if (newHistory.length > MAX_HISTORY_SIZE) {
+      newHistory.shift();
+      setHistoryIndex(MAX_HISTORY_SIZE - 1);
+    } else {
+      setHistoryIndex(newHistory.length - 1);
+    }
+    setHistory(newHistory);
   };
 
   const handleNew = () => {
@@ -79,11 +97,15 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
         setText('');
         setCurrentPath(null);
         setHasUnsavedChanges(false);
+        setHistory(['']);
+        setHistoryIndex(0);
       }
     } else {
       setText('');
       setCurrentPath(null);
       setHasUnsavedChanges(false);
+      setHistory(['']);
+      setHistoryIndex(0);
     }
   };
 
@@ -101,6 +123,8 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
       setCurrentPath(path);
       setHasUnsavedChanges(false);
       setShowOpenDialog(false);
+      setHistory([content]);
+      setHistoryIndex(0);
     } catch (error) {
       console.error('[Notepad] Failed to open file:', error);
       alert('Failed to open file: ' + (error instanceof Error ? error.message : String(error)));
@@ -156,6 +180,118 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
     setText('');
     setCurrentPath(null);
     setHasUnsavedChanges(false);
+    setHistory(['']);
+    setHistoryIndex(0);
+  };
+
+  // Undo/Redo handlers
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setText(history[newIndex]);
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setText(history[newIndex]);
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  // Clipboard handlers
+  const handleCut = async () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const selectedText = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+    if (selectedText) {
+      try {
+        await navigator.clipboard.writeText(selectedText);
+        const newText = text.substring(0, textarea.selectionStart) + text.substring(textarea.selectionEnd);
+        setText(newText);
+        setHasUnsavedChanges(true);
+        
+        // Update history
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push(newText);
+        if (newHistory.length > MAX_HISTORY_SIZE) {
+          newHistory.shift();
+          setHistoryIndex(MAX_HISTORY_SIZE - 1);
+        } else {
+          setHistoryIndex(newHistory.length - 1);
+        }
+        setHistory(newHistory);
+      } catch (error) {
+        console.error('[Notepad] Failed to cut text:', error);
+      }
+    }
+  };
+
+  const handleCopy = async () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const selectedText = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+    if (selectedText) {
+      try {
+        await navigator.clipboard.writeText(selectedText);
+      } catch (error) {
+        console.error('[Notepad] Failed to copy text:', error);
+      }
+    }
+  };
+
+  const handlePaste = async () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newText = text.substring(0, start) + clipboardText + text.substring(end);
+      setText(newText);
+      setHasUnsavedChanges(true);
+      
+      // Update history
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(newText);
+      if (newHistory.length > MAX_HISTORY_SIZE) {
+        newHistory.shift();
+      } else {
+        setHistoryIndex(newHistory.length - 1);
+      }
+      setHistory(newHistory);
+      
+      // Set cursor position after pasted text
+      setTimeout(() => {
+        const newPosition = start + clipboardText.length;
+        textarea.setSelectionRange(newPosition, newPosition);
+        textarea.focus();
+      }, 0);
+    } catch (error) {
+      console.error('[Notepad] Failed to paste text:', error);
+    }
+  };
+
+  const handleSelectAll = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.select();
+      textarea.focus();
+    }
+  };
+
+  const handleToggleWordWrap = () => {
+    setWordWrap(!wordWrap);
   };
 
   if (!isInitialized || !fs) {
@@ -174,11 +310,21 @@ export const Notepad: React.FC<NotepadProps> = ({ windowId, appId = 'notepad', e
         onSave={handleSave}
         onSaveAs={handleSaveAs}
         onExit={handleExit}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        onCut={handleCut}
+        onCopy={handleCopy}
+        onPaste={handlePaste}
+        onSelectAll={handleSelectAll}
+        onToggleWordWrap={handleToggleWordWrap}
+        wordWrap={wordWrap}
+        canUndo={canUndo}
+        canRedo={canRedo}
       />
       <div className="notepad-content">
         <textarea
           ref={textareaRef}
-          className="notepad-textarea"
+          className={`notepad-textarea ${wordWrap ? 'notepad-textarea-wrap' : ''}`}
           value={text}
           onChange={handleTextChange}
           placeholder="Start typing..."
