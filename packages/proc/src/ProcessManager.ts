@@ -12,6 +12,7 @@ import { NetworkAPI } from './NetworkAPI';
 import { SystemInfoAPI } from './SystemInfoAPI';
 import { PowerAPI } from './PowerAPI';
 import { AudioAPI } from './AudioAPI';
+import { MediaAPI } from './MediaAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -98,6 +99,7 @@ export class ProcessManager {
       system: new SystemInfoAPI(syscallWrapper),
       power: new PowerAPI(syscallWrapper),
       audio: new AudioAPI(syscallWrapper),
+      media: new MediaAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously

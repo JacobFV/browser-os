@@ -24,7 +24,8 @@
     "@browser-os/network": "workspace:*",
     "@browser-os/system": "workspace:*",
     "@browser-os/power": "workspace:*",
-    "@browser-os/audio": "workspace:*"
+    "@browser-os/audio": "workspace:*",
+    "@browser-os/media": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.0",

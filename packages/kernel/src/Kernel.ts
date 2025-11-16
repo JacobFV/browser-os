@@ -11,6 +11,7 @@ import type { NetworkManager } from '@browser-os/network';
 import type { SystemInfoManager } from '@browser-os/system';
 import type { PowerManager } from '@browser-os/power';
 import type { AudioManager } from '@browser-os/audio';
+import type { MediaManager } from '@browser-os/media';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
@@ -26,6 +27,7 @@ import { createNetworkSyscalls } from './syscalls/network';
 import { createSystemSyscalls } from './syscalls/system';
 import { createPowerSyscalls } from './syscalls/power';
 import { createAudioSyscalls } from './syscalls/audio';
+import { createMediaSyscalls } from './syscalls/media';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -43,6 +45,7 @@ export interface KernelOptions {
   systemInfoManager?: SystemInfoManager;
   powerManager?: PowerManager;
   audioManager?: AudioManager;
+  mediaManager?: MediaManager;
 }
 
 /**
@@ -62,6 +65,7 @@ export class Kernel {
   private systemInfoManager?: SystemInfoManager;
   private powerManager?: PowerManager;
   private audioManager?: AudioManager;
+  private mediaManager?: MediaManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -80,6 +84,7 @@ export class Kernel {
     this.systemInfoManager = options?.systemInfoManager;
     this.powerManager = options?.powerManager;
     this.audioManager = options?.audioManager;
+    this.mediaManager = options?.mediaManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -359,6 +364,14 @@ export class Kernel {
         this.syscallRouter.register(name, handler);
       }
     }
+
+    // Register media syscalls (if mediaManager is provided)
+    if (this.mediaManager) {
+      const mediaSyscalls = createMediaSyscalls(this.mediaManager);
+      for (const [name, handler] of Object.entries(mediaSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -450,6 +463,10 @@ export class Kernel {
         'audio.setVolume',
         'audio.getVolume',
         'audio.beep',
+        'media.getUserMedia',
+        'media.stopStream',
+        'media.stopAllStreams',
+        'media.enumerateDevices',
       ],
       fsAccess: [
         '/home/user/**',
