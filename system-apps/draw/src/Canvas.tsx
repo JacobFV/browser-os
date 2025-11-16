@@ -19,9 +19,14 @@ export interface CanvasRef {
 export const Canvas = forwardRef<CanvasRef, CanvasProps>(
   ({ tool, color, brushSize, width = 800, height = 600 }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const previewCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
     const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+    
+    // Define vector tools that use preview overlay
+    const vectorTools: DrawingTool[] = ['rectangle', 'circle', 'line', 'arrow', 'polygon', 'text'];
+    const isVectorTool = vectorTools.includes(tool);
 
     useImperativeHandle(ref, () => ({
       clear: () => {
@@ -58,14 +63,19 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
     // Initialize canvas
     useEffect(() => {
       const canvas = canvasRef.current;
+      const previewCanvas = previewCanvasRef.current;
       if (!canvas) return;
 
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Set canvas size
+      // Set canvas internal size
       canvas.width = width;
       canvas.height = height;
+      
+      // Set canvas display size
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
 
       // Set default styles
       ctx.fillStyle = '#ffffff';
@@ -74,11 +84,30 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       ctx.lineWidth = brushSize;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-    }, [width, height]);
+
+      // Initialize preview canvas - must match main canvas exactly
+      if (previewCanvas) {
+        previewCanvas.width = width;
+        previewCanvas.height = height;
+        previewCanvas.style.width = `${width}px`;
+        previewCanvas.style.height = `${height}px`;
+        
+        // Initialize preview canvas context
+        const previewCtx = previewCanvas.getContext('2d');
+        if (previewCtx) {
+          previewCtx.strokeStyle = color;
+          previewCtx.fillStyle = color;
+          previewCtx.lineWidth = brushSize;
+          previewCtx.lineCap = 'round';
+          previewCtx.lineJoin = 'round';
+        }
+      }
+    }, [width, height, color, brushSize]);
 
     // Update drawing styles when color or brush size changes
     useEffect(() => {
       const canvas = canvasRef.current;
+      const previewCanvas = previewCanvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -86,7 +115,56 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       ctx.lineWidth = brushSize;
+
+      // Update preview canvas styles too
+      if (previewCanvas) {
+        const previewCtx = previewCanvas.getContext('2d');
+        if (previewCtx) {
+          previewCtx.strokeStyle = color;
+          previewCtx.fillStyle = color;
+          previewCtx.lineWidth = brushSize;
+        }
+      }
     }, [color, brushSize]);
+
+    // Commit pending vector when tool changes or clear preview if switching away
+    useEffect(() => {
+      const previewCanvas = previewCanvasRef.current;
+      if (!previewCanvas) return;
+      
+      const previewCtx = previewCanvas.getContext('2d');
+      if (!previewCtx) return;
+
+      // If currently drawing and switching tools, commit preview
+      if (isDrawing && startPos) {
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Commit preview to main canvas
+            ctx.drawImage(previewCanvas, 0, 0);
+          }
+        }
+        // Clear preview and reset state
+        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        setIsDrawing(false);
+        setStartPos(null);
+        setLastPos(null);
+      } else {
+        // Just clear preview if not currently drawing
+        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      }
+    }, [tool]);
+
+    // Commit pending vector when canvas loses focus
+    const handleBlur = () => {
+      if (isDrawing && isVectorTool && startPos) {
+        commitPreview();
+        setIsDrawing(false);
+        setStartPos(null);
+        setLastPos(null);
+      }
+    };
 
     const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
       const canvas = canvasRef.current;
@@ -123,6 +201,7 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx || !isDrawing) return;
 
+      // Pixel tools draw directly to main canvas
       if (tool === 'pen' || tool === 'brush') {
         if (lastPos) {
           ctx.beginPath();
@@ -151,62 +230,75 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
         }
         ctx.restore();
         setLastPos({ x, y });
-      } else if (startPos) {
-        // For shapes, redraw everything
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        if (!tempCtx) return;
+      } else if (isVectorTool && startPos) {
+        // Vector tools draw only to preview canvas
+        const previewCanvas = previewCanvasRef.current;
+        if (!previewCanvas) {
+          console.warn('[Canvas] Preview canvas not available');
+          return;
+        }
+        const previewCtx = previewCanvas.getContext('2d');
+        if (!previewCtx) {
+          console.warn('[Canvas] Preview context not available');
+          return;
+        }
 
-        // Copy current canvas to temp
-        tempCtx.drawImage(canvas, 0, 0);
+        // Ensure preview canvas is properly sized
+        if (previewCanvas.width !== canvas.width || previewCanvas.height !== canvas.height) {
+          previewCanvas.width = canvas.width;
+          previewCanvas.height = canvas.height;
+        }
 
-        // Draw preview shape
-        tempCtx.strokeStyle = color;
-        tempCtx.fillStyle = color;
-        tempCtx.lineWidth = brushSize;
+        // Clear preview canvas
+        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+        // Draw preview shape - ensure context is properly configured
+        previewCtx.strokeStyle = color;
+        previewCtx.fillStyle = color;
+        previewCtx.lineWidth = brushSize;
+        previewCtx.lineCap = 'round';
+        previewCtx.lineJoin = 'round';
 
         if (tool === 'rectangle') {
           const width = x - startPos.x;
           const height = y - startPos.y;
-          tempCtx.strokeRect(startPos.x, startPos.y, width, height);
+          previewCtx.strokeRect(startPos.x, startPos.y, width, height);
         } else if (tool === 'circle') {
           const radius = Math.sqrt(
             Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2)
           );
-          tempCtx.beginPath();
-          tempCtx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
-          tempCtx.stroke();
+          previewCtx.beginPath();
+          previewCtx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
+          previewCtx.stroke();
         } else if (tool === 'line') {
-          tempCtx.beginPath();
-          tempCtx.moveTo(startPos.x, startPos.y);
-          tempCtx.lineTo(x, y);
-          tempCtx.stroke();
+          previewCtx.beginPath();
+          previewCtx.moveTo(startPos.x, startPos.y);
+          previewCtx.lineTo(x, y);
+          previewCtx.stroke();
         } else if (tool === 'arrow') {
           // Draw arrow line
-          tempCtx.beginPath();
-          tempCtx.moveTo(startPos.x, startPos.y);
-          tempCtx.lineTo(x, y);
-          tempCtx.stroke();
+          previewCtx.beginPath();
+          previewCtx.moveTo(startPos.x, startPos.y);
+          previewCtx.lineTo(x, y);
+          previewCtx.stroke();
           
           // Draw arrowhead
           const angle = Math.atan2(y - startPos.y, x - startPos.x);
           const arrowLength = 15;
           const arrowAngle = Math.PI / 6;
           
-          tempCtx.beginPath();
-          tempCtx.moveTo(x, y);
-          tempCtx.lineTo(
+          previewCtx.beginPath();
+          previewCtx.moveTo(x, y);
+          previewCtx.lineTo(
             x - arrowLength * Math.cos(angle - arrowAngle),
             y - arrowLength * Math.sin(angle - arrowAngle)
           );
-          tempCtx.moveTo(x, y);
-          tempCtx.lineTo(
+          previewCtx.moveTo(x, y);
+          previewCtx.lineTo(
             x - arrowLength * Math.cos(angle + arrowAngle),
             y - arrowLength * Math.sin(angle + arrowAngle)
           );
-          tempCtx.stroke();
+          previewCtx.stroke();
         } else if (tool === 'polygon') {
           // Draw polygon (triangle for now, can be extended)
           const sides = 3;
@@ -216,28 +308,45 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
             Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2)
           ) / 2;
           
-          tempCtx.beginPath();
+          previewCtx.beginPath();
           for (let i = 0; i <= sides; i++) {
             const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
             const px = centerX + radius * Math.cos(angle);
             const py = centerY + radius * Math.sin(angle);
             if (i === 0) {
-              tempCtx.moveTo(px, py);
+              previewCtx.moveTo(px, py);
             } else {
-              tempCtx.lineTo(px, py);
+              previewCtx.lineTo(px, py);
             }
           }
-          tempCtx.stroke();
+          previewCtx.stroke();
         } else if (tool === 'text') {
           // Text tool - show placeholder (actual text input would need a separate UI)
-          tempCtx.font = `${brushSize * 3}px Arial`;
-          tempCtx.fillText('Text', startPos.x, startPos.y);
+          previewCtx.font = `${brushSize * 3}px Arial`;
+          previewCtx.fillText('Text', startPos.x, startPos.y);
         }
-
-        // Copy back to main canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(tempCanvas, 0, 0);
       }
+    };
+
+    const commitPreview = () => {
+      const canvas = canvasRef.current;
+      const previewCanvas = previewCanvasRef.current;
+      if (!canvas || !previewCanvas) {
+        console.warn('[Canvas] Cannot commit preview - canvas or previewCanvas missing');
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      const previewCtx = previewCanvas.getContext('2d');
+      if (!ctx || !previewCtx) {
+        console.warn('[Canvas] Cannot commit preview - context missing');
+        return;
+      }
+
+      // Copy preview to main canvas
+      ctx.drawImage(previewCanvas, 0, 0);
+      // Clear preview
+      previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     };
 
     const stopDrawing = () => {
@@ -248,10 +357,9 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Finalize shape drawing
-      if (tool === 'rectangle' || tool === 'circle' || tool === 'line') {
-        // Shape is already drawn in draw() function
-        // Just reset state
+      // For vector tools, commit preview to main canvas
+      if (isVectorTool) {
+        commitPreview();
       }
 
       setIsDrawing(false);
@@ -296,17 +404,24 @@ export const Canvas = forwardRef<CanvasRef, CanvasProps>(
 
     return (
       <div className="draw-canvas-container">
-        <canvas
-          ref={canvasRef}
-          className="draw-canvas"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        />
+        <div className="draw-canvas-wrapper">
+          <canvas
+            ref={canvasRef}
+            className="draw-canvas"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            onBlur={handleBlur}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          />
+          <canvas
+            ref={previewCanvasRef}
+            className="draw-canvas-preview"
+          />
+        </div>
       </div>
     );
   }
