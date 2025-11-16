@@ -1,5 +1,6 @@
 import type { Process } from '@browser-os/schemas';
 import type { Channel } from '@browser-os/events';
+import type { WindowAPI } from './WindowAPI';
 
 export interface ProcessOptions {
   cwd?: string;
@@ -13,5 +14,6 @@ export interface OSAPI {
   env: Record<string, string>;
   syscall(name: string, args: Record<string, unknown>): Promise<unknown>;
   channel: Channel;
+  window: WindowAPI;
 }
 

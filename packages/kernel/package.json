@@ -15,7 +15,8 @@
     "@browser-os/events": "workspace:*",
     "@browser-os/fs": "workspace:*",
     "@browser-os/proc": "workspace:*",
-    "@browser-os/app-registry": "workspace:*"
+    "@browser-os/app-registry": "workspace:*",
+    "@browser-os/windowing": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.0",

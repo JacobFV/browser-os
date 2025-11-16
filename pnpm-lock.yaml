@@ -171,6 +171,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../schemas
+      '@browser-os/windowing':
+        specifier: workspace:*
+        version: link:../windowing
     devDependencies:
       typescript:
         specifier: ^5.3.0

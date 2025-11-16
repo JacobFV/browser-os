@@ -2,11 +2,13 @@ import { EventBus } from '@browser-os/events';
 import { FileSystem, EphemeralBackend } from '@browser-os/fs';
 import { ProcessManager } from '@browser-os/proc';
 import { AppRegistry } from '@browser-os/app-registry';
+import type { WindowManager } from '@browser-os/windowing';
 import { PermissionManager } from './PermissionManager';
 import { SyscallRouter } from './SyscallRouter';
 import { createFSSyscalls } from './syscalls/fs';
 import { createProcSyscalls } from './syscalls/proc';
 import { createRegistrySyscalls } from './syscalls/registry';
+import { createWindowSyscalls } from './syscalls/window';
 import type { SystemConfig } from '@browser-os/schemas';
 import { SystemConfigSchema } from '@browser-os/schemas';
 
@@ -15,6 +17,7 @@ const MOUNTS_PATH = '/etc/mounts.json';
 
 export interface KernelOptions {
   eventBus?: EventBus;
+  windowManager?: WindowManager;
 }
 
 /**
@@ -25,6 +28,7 @@ export class Kernel {
   private fs: FileSystem;
   private procManager: ProcessManager;
   private appRegistry: AppRegistry;
+  private windowManager?: WindowManager;
   private permissionManager: PermissionManager;
   private syscallRouter: SyscallRouter;
   private initialized: boolean = false;
@@ -34,6 +38,7 @@ export class Kernel {
     this.fs = new FileSystem({ eventBus: this.eventBus });
     this.permissionManager = new PermissionManager();
     this.syscallRouter = new SyscallRouter(this.permissionManager);
+    this.windowManager = options?.windowManager;
     this.procManager = new ProcessManager({
       eventBus: this.eventBus,
       fs: this.fs,
@@ -235,6 +240,14 @@ export class Kernel {
     for (const [name, handler] of Object.entries(registrySyscalls)) {
       this.syscallRouter.register(name, handler);
     }
+
+    // Register window syscalls (if windowManager is provided)
+    if (this.windowManager) {
+      const windowSyscalls = createWindowSyscalls(this.windowManager, this.procManager);
+      for (const [name, handler] of Object.entries(windowSyscalls)) {
+        this.syscallRouter.register(name, handler);
+      }
+    }
   }
 
   /**
@@ -260,6 +273,14 @@ export class Kernel {
         'registry.list',
         'registry.get',
         'registry.isInstalled',
+        'window.create',
+        'window.get',
+        'window.update',
+        'window.close',
+        'window.minimize',
+        'window.maximize',
+        'window.restore',
+        'window.focus',
       ],
       fsAccess: [
         '/home/user/**',

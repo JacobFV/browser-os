@@ -2,6 +2,7 @@ import { EventBus, Channel } from '@browser-os/events';
 import type { FileSystem } from '@browser-os/fs';
 import { Process } from './Process';
 import { Executor } from './Executor';
+import { WindowAPI } from './WindowAPI';
 import type { ProcessOptions, OSAPI } from './types';
 
 export interface ProcessManagerOptions {
@@ -63,18 +64,22 @@ export class ProcessManager {
       throw new Error(`Failed to load app ${appId}: ${error instanceof Error ? error.message : String(error)}`);
     }
 
+    // Create syscall wrapper
+    const syscallWrapper = async (name: string, syscallArgs: Record<string, unknown>) => {
+      if (!this.syscallHandler) {
+        throw new Error('Syscall handler not configured');
+      }
+      return this.syscallHandler(pid, name, syscallArgs);
+    };
+
     // Create OS API for the process
     const osApi: OSAPI = {
       pid,
       cwd,
       env,
-      syscall: async (name: string, syscallArgs: Record<string, unknown>) => {
-        if (!this.syscallHandler) {
-          throw new Error('Syscall handler not configured');
-        }
-        return this.syscallHandler(pid, name, syscallArgs);
-      },
+      syscall: syscallWrapper,
       channel,
+      window: new WindowAPI(syscallWrapper),
     };
 
     // Execute app code asynchronously
