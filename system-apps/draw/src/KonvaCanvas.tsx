@@ -17,6 +17,11 @@ export interface KonvaCanvasRef {
   getImageData: () => string;
   loadImageData: (dataUrl: string) => Promise<void>;
   resetTransform: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  zoomTo: (scale: number) => void;
+  fitToWindow: () => void;
+  actualSize: () => void;
 }
 
 interface LinePoint {
@@ -27,6 +32,8 @@ interface LinePoint {
 export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
   ({ tool, color, brushSize, width = 800, height = 600 }, ref) => {
     const stageRef = useRef<Konva.Stage>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
     const [lines, setLines] = useState<Array<{ tool: DrawingTool; points: number[]; color: string; strokeWidth: number }>>([]);
     const [shapes, setShapes] = useState<Array<{
       type: DrawingTool;
@@ -57,37 +64,69 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     const [stageX, setStageX] = useState(0);
     const [stageY, setStageY] = useState(0);
     const [stageScale, setStageScale] = useState(1);
-    const [stageRotation, setStageRotation] = useState(0);
     
-    // Pan/Rotate state
-    const [isPanning, setIsPanning] = useState(false);
-    const [isRotating, setIsRotating] = useState(false);
-    const [lastPanPoint, setLastPanPoint] = useState<{ x: number; y: number } | null>(null);
-    const [rotateCenter, setRotateCenter] = useState<{ x: number; y: number } | null>(null);
-    const [lastAngle, setLastAngle] = useState(0);
-    const [spacePressed, setSpacePressed] = useState(false);
-
-    // Track spacebar for panning
+    // Refs to track current transform for imperative methods
+    const stageXRef = useRef(0);
+    const stageYRef = useRef(0);
+    const stageScaleRef = useRef(1);
+    
+    // Keep refs in sync with state
     useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.code === 'Space' || e.key === ' ') {
-          setSpacePressed(true);
-        }
-      };
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.code === 'Space' || e.key === ' ') {
-          setSpacePressed(false);
-        }
+      stageXRef.current = stageX;
+    }, [stageX]);
+    useEffect(() => {
+      stageYRef.current = stageY;
+    }, [stageY]);
+    useEffect(() => {
+      stageScaleRef.current = stageScale;
+    }, [stageScale]);
+    
+    // Pan state
+    const [isPanning, setIsPanning] = useState(false);
+    const [lastPanPoint, setLastPanPoint] = useState<{ x: number; y: number } | null>(null);
+    
+    // Multitouch gesture state
+    const [touchPoints, setTouchPoints] = useState<Map<number, { x: number; y: number }>>(new Map());
+    const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
+    const [lastPinchCenter, setLastPinchCenter] = useState<{ x: number; y: number } | null>(null);
+    const [isGestureMode, setIsGestureMode] = useState(false);
+
+    // Track container size changes
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const updateSize = () => {
+        const rect = container.getBoundingClientRect();
+        setContainerSize({ width: rect.width, height: rect.height });
       };
 
-      window.addEventListener('keydown', handleKeyDown);
-      window.addEventListener('keyup', handleKeyUp);
+      updateSize();
+      const resizeObserver = new ResizeObserver(updateSize);
+      resizeObserver.observe(container);
 
       return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
+        resizeObserver.disconnect();
       };
     }, []);
+
+
+    // Helper function to zoom at a specific point
+    const zoomAtPoint = (scale: number, pointX: number, pointY: number) => {
+      const oldScale = stageScaleRef.current;
+      const oldX = stageXRef.current;
+      const oldY = stageYRef.current;
+      const clampedScale = Math.max(0.1, Math.min(10, scale));
+      
+      const mousePointTo = {
+        x: (pointX - oldX) / oldScale,
+        y: (pointY - oldY) / oldScale,
+      };
+
+      setStageScale(clampedScale);
+      setStageX(pointX - mousePointTo.x * clampedScale);
+      setStageY(pointY - mousePointTo.y * clampedScale);
+    };
 
     useImperativeHandle(ref, () => ({
       clear: () => {
@@ -101,7 +140,63 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
         setStageX(0);
         setStageY(0);
         setStageScale(1);
-        setStageRotation(0);
+      },
+      zoomIn: () => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        const pointer = stage.getPointerPosition();
+        const currentScale = stageScaleRef.current;
+        if (pointer) {
+          zoomAtPoint(currentScale * 1.2, pointer.x, pointer.y);
+        } else {
+          // Zoom at center if no pointer position
+          zoomAtPoint(currentScale * 1.2, containerSize.width / 2, containerSize.height / 2);
+        }
+      },
+      zoomOut: () => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        const pointer = stage.getPointerPosition();
+        const currentScale = stageScaleRef.current;
+        if (pointer) {
+          zoomAtPoint(currentScale / 1.2, pointer.x, pointer.y);
+        } else {
+          // Zoom at center if no pointer position
+          zoomAtPoint(currentScale / 1.2, containerSize.width / 2, containerSize.height / 2);
+        }
+      },
+      zoomTo: (scale: number) => {
+        const clampedScale = Math.max(0.1, Math.min(10, scale));
+        const centerX = containerSize.width / 2;
+        const centerY = containerSize.height / 2;
+        zoomAtPoint(clampedScale, centerX, centerY);
+      },
+      fitToWindow: () => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        
+        // Calculate content bounds
+        const contentWidth = width;
+        const contentHeight = height;
+        
+        // Calculate scale to fit
+        const scaleX = containerSize.width / contentWidth;
+        const scaleY = containerSize.height / contentHeight;
+        const fitScale = Math.min(scaleX, scaleY) * 0.9; // 90% to add some padding
+        
+        // Center the canvas
+        const newScale = Math.max(0.1, Math.min(10, fitScale));
+        const newX = (containerSize.width - contentWidth * newScale) / 2;
+        const newY = (containerSize.height - contentHeight * newScale) / 2;
+        
+        setStageScale(newScale);
+        setStageX(newX);
+        setStageY(newY);
+      },
+      actualSize: () => {
+        const centerX = containerSize.width / 2;
+        const centerY = containerSize.height / 2;
+        zoomAtPoint(1, centerX, centerY);
       },
       getImageData: () => {
         const stage = stageRef.current;
@@ -132,40 +227,28 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     }));
 
     const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
+      // Don't handle if in gesture mode
+      if (isGestureMode) return;
+      
       const stage = e.target.getStage();
       if (!stage) return;
       
       const pos = stage.getPointerPosition();
       if (!pos) return;
 
-      // Check for pan/rotate modifiers
+      // Check for pan modifiers
       const isMiddleButton = e.evt.button === 1;
-      const isRightButton = e.evt.button === 2;
       const isCtrlPressed = e.evt.ctrlKey || e.evt.metaKey;
 
-      // Pan: Middle mouse button or Space + left click
-      if (isMiddleButton || (e.evt.button === 0 && spacePressed)) {
+      // Pan: Middle mouse button or Ctrl + left click
+      if (isMiddleButton || (e.evt.button === 0 && isCtrlPressed)) {
         setIsPanning(true);
         setLastPanPoint(pos);
         e.evt.preventDefault();
         return;
       }
 
-      // Rotate: Right mouse button or Ctrl + drag
-      if (isRightButton || (e.evt.button === 0 && isCtrlPressed)) {
-        setIsRotating(true);
-        const container = stage.container();
-        const stageBox = container.getBoundingClientRect();
-        const centerX = stageBox.left + stageBox.width / 2;
-        const centerY = stageBox.top + stageBox.height / 2;
-        setRotateCenter({ x: centerX, y: centerY });
-        const angle = Math.atan2(pos.y - stageBox.height / 2, pos.x - stageBox.width / 2);
-        setLastAngle(angle);
-        e.evt.preventDefault();
-        return;
-      }
-
-      // Drawing tools - only proceed if not panning/rotating
+      // Drawing tools - only proceed if not panning
       const vectorTools: DrawingTool[] = ['rectangle', 'circle', 'line', 'arrow', 'polygon', 'text'];
       const isVectorTool = vectorTools.includes(tool);
 
@@ -179,6 +262,9 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     };
 
     const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+      // Don't handle if in gesture mode
+      if (isGestureMode) return;
+      
       const stage = e.target.getStage();
       if (!stage) return;
       
@@ -192,23 +278,6 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
         setStageX((prev) => prev + dx);
         setStageY((prev) => prev + dy);
         setLastPanPoint(pos);
-        e.evt.preventDefault();
-        return;
-      }
-
-      // Handle rotating
-      if (isRotating && rotateCenter) {
-        const container = stage.container();
-        const stageBox = container.getBoundingClientRect();
-        const mouseX = e.evt.clientX;
-        const mouseY = e.evt.clientY;
-        const centerX = stageBox.left + stageBox.width / 2;
-        const centerY = stageBox.top + stageBox.height / 2;
-        
-        const angle = Math.atan2(mouseY - centerY, mouseX - centerX);
-        const deltaAngle = angle - lastAngle;
-        setStageRotation((prev) => prev + (deltaAngle * 180) / Math.PI);
-        setLastAngle(angle);
         e.evt.preventDefault();
         return;
       }
@@ -235,15 +304,10 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     };
 
     const handleMouseUp = () => {
-      // End panning/rotating
+      // End panning
       if (isPanning) {
         setIsPanning(false);
         setLastPanPoint(null);
-      }
-      if (isRotating) {
-        setIsRotating(false);
-        setRotateCenter(null);
-        setLastAngle(0);
       }
 
       // Handle drawing completion
@@ -298,16 +362,187 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
       };
 
       const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-      const clampedScale = Math.max(0.1, Math.min(5, newScale));
+      const clampedScale = Math.max(0.1, Math.min(10, newScale));
 
       setStageScale(clampedScale);
       setStageX(pointer.x - mousePointTo.x * clampedScale);
       setStageY(pointer.y - mousePointTo.y * clampedScale);
     };
 
+    // Multitouch gesture handlers
+    const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
+      return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+    };
+
+    const getCenter = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
+      return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    };
+
+    const handleTouchStart = (e: Konva.KonvaEventObject<TouchEvent>) => {
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const touches = e.evt.touches;
+      const newTouchPoints = new Map<number, { x: number; y: number }>();
+      const container = stage.container();
+      const rect = container.getBoundingClientRect();
+
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        newTouchPoints.set(touch.identifier, { x, y });
+      }
+
+      setTouchPoints(newTouchPoints);
+
+      // If two touches, enter gesture mode
+      if (newTouchPoints.size === 2) {
+        setIsGestureMode(true);
+        const points = Array.from(newTouchPoints.values());
+        const distance = getDistance(points[0], points[1]);
+        const center = getCenter(points[0], points[1]);
+        setLastPinchDistance(distance);
+        setLastPinchCenter(center);
+        e.evt.preventDefault();
+      } else if (newTouchPoints.size === 1 && !isGestureMode) {
+        // Single touch - allow drawing
+        const point = Array.from(newTouchPoints.values())[0];
+        // Create a synthetic mouse event for drawing
+        const syntheticEvent = {
+          target: { getStage: () => stage },
+          evt: {
+            ...e.evt,
+            clientX: rect.left + point.x,
+            clientY: rect.top + point.y,
+            button: 0,
+            ctrlKey: false,
+            metaKey: false,
+          },
+        } as any;
+        // Temporarily set pointer position for Konva
+        const oldPos = stage.getPointerPosition();
+        stage.setPointersPositions([{ x: point.x, y: point.y }]);
+        handleMouseDown(syntheticEvent);
+        if (oldPos) {
+          stage.setPointersPositions([{ x: oldPos.x, y: oldPos.y }]);
+        }
+      }
+    };
+
+    const handleTouchMove = (e: Konva.KonvaEventObject<TouchEvent>) => {
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const touches = e.evt.touches;
+      const newTouchPoints = new Map<number, { x: number; y: number }>();
+
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        const container = stage.container();
+        const rect = container.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        newTouchPoints.set(touch.identifier, { x, y });
+      }
+
+      setTouchPoints(newTouchPoints);
+
+      // Handle two-finger gestures
+      if (newTouchPoints.size === 2 && lastPinchDistance !== null && lastPinchCenter) {
+        const points = Array.from(newTouchPoints.values());
+        const distance = getDistance(points[0], points[1]);
+        const center = getCenter(points[0], points[1]);
+
+        // Pinch to zoom
+        if (lastPinchDistance > 0) {
+          const scaleChange = distance / lastPinchDistance;
+          const newScale = stageScale * scaleChange;
+          const clampedScale = Math.max(0.1, Math.min(10, newScale));
+          
+          // Calculate zoom center in stage coordinates
+          const zoomCenterX = center.x;
+          const zoomCenterY = center.y;
+          const mousePointTo = {
+            x: (zoomCenterX - stageX) / stageScale,
+            y: (zoomCenterY - stageY) / stageScale,
+          };
+
+          setStageScale(clampedScale);
+          setStageX(zoomCenterX - mousePointTo.x * clampedScale);
+          setStageY(zoomCenterY - mousePointTo.y * clampedScale);
+        }
+
+        // Two-finger pan
+        const panDx = center.x - lastPinchCenter.x;
+        const panDy = center.y - lastPinchCenter.y;
+        setStageX((prev) => prev + panDx);
+        setStageY((prev) => prev + panDy);
+
+        setLastPinchDistance(distance);
+        setLastPinchCenter(center);
+        e.evt.preventDefault();
+      } else if (newTouchPoints.size === 1 && !isGestureMode) {
+        // Single touch - allow drawing
+        const point = Array.from(newTouchPoints.values())[0];
+        const container = stage.container();
+        const rect = container.getBoundingClientRect();
+        const syntheticEvent = {
+          target: { getStage: () => stage },
+          evt: {
+            ...e.evt,
+            clientX: rect.left + point.x,
+            clientY: rect.top + point.y,
+            button: 0,
+            ctrlKey: false,
+            metaKey: false,
+          },
+        } as any;
+        stage.setPointersPositions([{ x: point.x, y: point.y }]);
+        handleMouseMove(syntheticEvent);
+      }
+    };
+
+    const handleTouchEnd = (e: Konva.KonvaEventObject<TouchEvent>) => {
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const touches = e.evt.touches;
+      const newTouchPoints = new Map<number, { x: number; y: number }>();
+
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        const container = stage.container();
+        const rect = container.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        newTouchPoints.set(touch.identifier, { x, y });
+      }
+
+      setTouchPoints(newTouchPoints);
+
+      // Exit gesture mode if less than 2 touches
+      if (newTouchPoints.size < 2) {
+        setIsGestureMode(false);
+        setLastPinchDistance(null);
+        setLastPinchCenter(null);
+        
+        // End drawing if single touch ended
+        if (newTouchPoints.size === 0) {
+          handleMouseUp();
+        }
+      } else if (newTouchPoints.size === 2) {
+        // Recalculate pinch state for remaining two touches
+        const points = Array.from(newTouchPoints.values());
+        const distance = getDistance(points[0], points[1]);
+        const center = getCenter(points[0], points[1]);
+        setLastPinchDistance(distance);
+        setLastPinchCenter(center);
+      }
+    };
+
     const handleContextMenu = (e: Konva.KonvaEventObject<MouseEvent>) => {
-      // Prevent default context menu when right-clicking for rotate
-      e.evt.preventDefault();
+      // Allow default context menu
     };
 
     const renderShape = (
@@ -392,42 +627,31 @@ export const KonvaCanvas = forwardRef<KonvaCanvasRef, KonvaCanvasProps>(
     };
 
     return (
-      <div className="konva-canvas-container">
+      <div className="konva-canvas-container" ref={containerRef}>
         <Stage
           ref={stageRef}
-          width={width}
-          height={height}
+          width={containerSize.width}
+          height={containerSize.height}
           x={stageX}
           y={stageY}
           scaleX={stageScale}
           scaleY={stageScale}
-          rotation={stageRotation}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
           onContextMenu={handleContextMenu}
-          onTouchStart={(e) => {
-            const touch = e.evt.touches[0];
-            const pos = stageRef.current?.getPointerPosition();
-            if (pos) {
-              handleMouseDown({ target: { getStage: () => stageRef.current }, evt: e.evt } as any);
-            }
-          }}
-          onTouchMove={(e) => {
-            const pos = stageRef.current?.getPointerPosition();
-            if (pos) {
-              handleMouseMove({ target: { getStage: () => stageRef.current }, evt: e.evt } as any);
-            }
-          }}
-          onTouchEnd={handleMouseUp}
-          style={{ cursor: isPanning || spacePressed ? 'grab' : isRotating ? 'crosshair' : 'default' }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ cursor: isPanning ? 'grab' : isGestureMode ? 'move' : 'default' }}
         >
           <Layer>
-            {/* Background */}
-            <Rect x={0} y={0} width={width} height={height} fill="#ffffff" />
+            {/* Background - extend beyond canvas bounds for panning */}
+            <Rect x={-10000} y={-10000} width={20000} height={20000} fill="#ffffff" listening={false} />
             
+            {/* Canvas content area */}
             {/* Background image if loaded */}
             {backgroundImage && (
               <KonvaImage

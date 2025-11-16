@@ -13,6 +13,11 @@ export interface MenubarProps {
   onRedo?: () => void;
   onClear?: () => void;
   onResetView?: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onZoomTo?: (scale: number) => void;
+  onFitToWindow?: () => void;
+  onActualSize?: () => void;
   toolbarPosition: ToolbarPosition;
   onToolbarPositionChange: (position: ToolbarPosition) => void;
 }
@@ -27,6 +32,11 @@ export const Menubar: React.FC<MenubarProps> = ({
   onRedo,
   onClear,
   onResetView,
+  onZoomIn,
+  onZoomOut,
+  onZoomTo,
+  onFitToWindow,
+  onActualSize,
   toolbarPosition,
   onToolbarPositionChange,
 }) => {
@@ -71,6 +81,25 @@ export const Menubar: React.FC<MenubarProps> = ({
               onUndo();
             }
             break;
+          case '=':
+          case '+':
+            event.preventDefault();
+            if (onZoomIn) {
+              onZoomIn();
+            }
+            break;
+          case '-':
+            event.preventDefault();
+            if (onZoomOut) {
+              onZoomOut();
+            }
+            break;
+          case '0':
+            event.preventDefault();
+            if (onFitToWindow) {
+              onFitToWindow();
+            }
+            break;
         }
       }
     };
@@ -84,7 +113,7 @@ export const Menubar: React.FC<MenubarProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFileMenuOpen, isEditMenuOpen, isViewMenuOpen, onNew, onOpen, onSave, onSaveAs, onUndo, onRedo]);
+  }, [isFileMenuOpen, isEditMenuOpen, isViewMenuOpen, onNew, onOpen, onSave, onSaveAs, onUndo, onRedo, onZoomIn, onZoomOut, onFitToWindow]);
 
   return (
     <div className="menubar" ref={menuRef}>
@@ -183,6 +212,57 @@ export const Menubar: React.FC<MenubarProps> = ({
         </button>
         {isViewMenuOpen && (
           <div className="menubar-menu">
+            {onZoomIn && (
+              <button className="menubar-menu-item" onClick={onZoomIn}>
+                Zoom In <span className="menubar-shortcut">Ctrl++</span>
+              </button>
+            )}
+            {onZoomOut && (
+              <button className="menubar-menu-item" onClick={onZoomOut}>
+                Zoom Out <span className="menubar-shortcut">Ctrl+-</span>
+              </button>
+            )}
+            {(onZoomIn || onZoomOut) && <div className="menubar-menu-separator" />}
+            {onFitToWindow && (
+              <button className="menubar-menu-item" onClick={onFitToWindow}>
+                Fit to Window <span className="menubar-shortcut">Ctrl+0</span>
+              </button>
+            )}
+            {onActualSize && (
+              <button className="menubar-menu-item" onClick={onActualSize}>
+                Actual Size (100%)
+              </button>
+            )}
+            {(onFitToWindow || onActualSize) && <div className="menubar-menu-separator" />}
+            {onZoomTo && (
+              <>
+                <div className="menubar-menu-item" style={{ cursor: 'default', fontWeight: 600 }}>
+                  Zoom Level
+                </div>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(0.25)}>
+                  25%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(0.5)}>
+                  50%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(0.75)}>
+                  75%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(1)}>
+                  100%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(1.5)}>
+                  150%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(2)}>
+                  200%
+                </button>
+                <button className="menubar-menu-item" onClick={() => onZoomTo(4)}>
+                  400%
+                </button>
+                <div className="menubar-menu-separator" />
+              </>
+            )}
             {onResetView && (
               <>
                 <button className="menubar-menu-item" onClick={onResetView}>

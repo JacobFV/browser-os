@@ -180,6 +180,21 @@ export const Draw: React.FC<DrawProps> = ({ windowId, appId = 'draw', eventBus }
         onResetView={() => {
           canvasRef.current?.resetTransform();
         }}
+        onZoomIn={() => {
+          canvasRef.current?.zoomIn();
+        }}
+        onZoomOut={() => {
+          canvasRef.current?.zoomOut();
+        }}
+        onZoomTo={(scale) => {
+          canvasRef.current?.zoomTo(scale);
+        }}
+        onFitToWindow={() => {
+          canvasRef.current?.fitToWindow();
+        }}
+        onActualSize={() => {
+          canvasRef.current?.actualSize();
+        }}
         toolbarPosition={toolbarPosition}
         onToolbarPositionChange={setToolbarPosition}
       />
