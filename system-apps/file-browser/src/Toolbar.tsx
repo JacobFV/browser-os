@@ -1,13 +1,14 @@
 import React from 'react';
 import './Toolbar.css';
 
-export type ViewMode = 'list' | 'details';
+export type ViewMode = 'list' | 'details' | 'tile';
 
 export interface ToolbarProps {
   currentPath: string;
   canGoBack: boolean;
   canGoForward: boolean;
   viewMode: ViewMode;
+  itemScale?: number;
   searchQuery: string;
   onBack: () => void;
   onForward: () => void;
@@ -15,6 +16,7 @@ export interface ToolbarProps {
   onPathChange: (path: string) => void;
   onRefresh: () => void;
   onViewModeChange: (mode: ViewMode) => void;
+  onItemScaleChange?: (scale: number) => void;
   onNewFolder: () => void;
   onSearchChange: (query: string) => void;
 }
@@ -24,6 +26,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   canGoBack,
   canGoForward,
   viewMode,
+  itemScale = 1,
   searchQuery,
   onBack,
   onForward,
@@ -31,6 +34,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onPathChange,
   onRefresh,
   onViewModeChange,
+  onItemScaleChange,
   onNewFolder,
   onSearchChange,
 }) => {
@@ -113,13 +117,47 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
         />
-        <button
-          className="toolbar-button"
-          onClick={() => onViewModeChange(viewMode === 'list' ? 'details' : 'list')}
-          title={`Switch to ${viewMode === 'list' ? 'details' : 'list'} view`}
-        >
-          {viewMode === 'list' ? '☰' : '≡'}
-        </button>
+        <div className="toolbar-view-controls">
+          <div className="toolbar-view-toggle">
+            <button
+              className={`toolbar-view-button ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => onViewModeChange('list')}
+              title="List view"
+            >
+              ☰
+            </button>
+            <button
+              className={`toolbar-view-button ${viewMode === 'details' ? 'active' : ''}`}
+              onClick={() => onViewModeChange('details')}
+              title="Details view"
+            >
+              ≡
+            </button>
+            <button
+              className={`toolbar-view-button ${viewMode === 'tile' ? 'active' : ''}`}
+              onClick={() => onViewModeChange('tile')}
+              title="Tile view"
+            >
+              ⊞
+            </button>
+          </div>
+          {viewMode === 'tile' && onItemScaleChange && (
+            <div className="toolbar-scale-control">
+              <span className="toolbar-scale-label">Scale:</span>
+              <input
+                type="range"
+                className="toolbar-scale-slider"
+                min="0.5"
+                max="2"
+                step="0.1"
+                value={itemScale}
+                onChange={(e) => onItemScaleChange(parseFloat(e.target.value))}
+                title={`Scale: ${Math.round(itemScale * 100)}%`}
+              />
+              <span className="toolbar-scale-value">{Math.round(itemScale * 100)}%</span>
+            </div>
+          )}
+        </div>
         <button
           className="toolbar-button"
           onClick={onNewFolder}

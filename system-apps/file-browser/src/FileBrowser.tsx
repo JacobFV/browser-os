@@ -7,6 +7,7 @@ import { ContextMenu } from './ContextMenu';
 import { RenameDialog } from './RenameDialog';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { NewFolderDialog } from './NewFolderDialog';
+import { loadViewMetadata, saveViewMetadata, isHiddenMetadataFile } from './ViewMetadata';
 import './FileBrowser.css';
 
 export interface FileBrowserProps {
@@ -22,9 +23,12 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPaths, setSelectedPaths] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<ViewMode>('details');
+  const [itemScale, setItemScale] = useState<number>(1);
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [itemPositions, setItemPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
   const [searchQuery, setSearchQuery] = useState('');
+  const positionSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Navigation history
   const [history, setHistory] = useState<string[]>(['/home/user/Documents']);
@@ -65,12 +69,38 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
     initFS();
   }, []);
 
-  // Load directory contents
+  // Load directory contents and view metadata
   useEffect(() => {
     if (fs && isInitialized) {
       loadDirectory();
+      loadViewPreferences();
     }
   }, [fs, isInitialized, currentPath]);
+
+  const loadViewPreferences = async () => {
+    if (!fs) return;
+    try {
+      const metadata = await loadViewMetadata(fs, currentPath);
+      if (metadata) {
+        if (metadata.viewMode) setViewMode(metadata.viewMode);
+        if (metadata.itemScale !== undefined) setItemScale(metadata.itemScale);
+        if (metadata.sortField) setSortField(metadata.sortField);
+        if (metadata.sortDirection) setSortDirection(metadata.sortDirection);
+        if (metadata.itemPositions) {
+          setItemPositions(new Map(Object.entries(metadata.itemPositions)));
+        }
+      } else {
+        // Reset to defaults if no metadata
+        setViewMode('details');
+        setItemScale(1);
+        setSortField('name');
+        setSortDirection('asc');
+        setItemPositions(new Map());
+      }
+    } catch (error) {
+      console.error('[FileBrowser] Failed to load view preferences:', error);
+    }
+  };
 
   const loadDirectory = async () => {
     if (!fs) return;
@@ -84,7 +114,9 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
       }
 
       const dirEntries = await fs.readdir(currentPath);
-      const metadataPromises = dirEntries.map(async (name: string) => {
+      // Filter out hidden metadata files
+      const visibleEntries = dirEntries.filter((name: string) => !isHiddenMetadataFile(name));
+      const metadataPromises = visibleEntries.map(async (name: string) => {
         const fullPath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
         try {
           return await fs.stat(fullPath);
@@ -208,11 +240,60 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
   };
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
+    const newDirection = sortField === field ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
+    setSortField(field);
+    setSortDirection(newDirection);
+    saveViewPreferences({ sortField: field, sortDirection: newDirection });
+  };
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    saveViewPreferences({ viewMode: mode });
+  };
+
+  const handleItemScaleChange = (scale: number) => {
+    setItemScale(scale);
+    saveViewPreferences({ itemScale: scale });
+  };
+
+  const handleItemPositionChange = (path: string, x: number, y: number) => {
+    setItemPositions((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(path, { x, y });
+      
+      // Debounce saving positions
+      if (positionSaveTimeoutRef.current) {
+        clearTimeout(positionSaveTimeoutRef.current);
+      }
+      positionSaveTimeoutRef.current = setTimeout(() => {
+        const positions: Record<string, { x: number; y: number }> = {};
+        newMap.forEach((pos, p) => {
+          positions[p] = pos;
+        });
+        saveViewPreferences({ itemPositions: positions });
+      }, 500);
+      
+      return newMap;
+    });
+  };
+
+  const saveViewPreferences = async (updates: Partial<{
+    viewMode: ViewMode;
+    itemScale: number;
+    sortField: SortField;
+    sortDirection: SortDirection;
+    itemPositions: Record<string, { x: number; y: number }>;
+  }>) => {
+    if (!fs) return;
+    try {
+      const currentMetadata = await loadViewMetadata(fs, currentPath) || {};
+      const newMetadata = {
+        ...currentMetadata,
+        ...updates,
+      };
+      await saveViewMetadata(fs, currentPath, newMetadata);
+    } catch (error) {
+      console.error('[FileBrowser] Failed to save view preferences:', error);
     }
   };
 
@@ -337,13 +418,15 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
         canGoBack={historyIndex > 0}
         canGoForward={historyIndex < history.length - 1}
         viewMode={viewMode}
+        itemScale={itemScale}
         searchQuery={searchQuery}
         onBack={handleBack}
         onForward={handleForward}
         onUp={handleUp}
         onPathChange={navigateTo}
         onRefresh={loadDirectory}
-        onViewModeChange={setViewMode}
+        onViewModeChange={handleViewModeChange}
+        onItemScaleChange={handleItemScaleChange}
         onNewFolder={() => setShowNewFolderDialog(true)}
         onSearchChange={setSearchQuery}
       />
@@ -361,10 +444,13 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
           viewMode={viewMode}
           sortField={sortField}
           sortDirection={sortDirection}
+          itemScale={itemScale}
+          itemPositions={itemPositions}
           onSelect={handleSelect}
           onDoubleClick={handleDoubleClick}
           onContextMenu={handleContextMenu}
           onSort={handleSort}
+          onItemPositionChange={handleItemPositionChange}
         />
       )}
       {contextMenuEntry && (

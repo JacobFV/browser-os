@@ -114,6 +114,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
             <TaskbarButton
               key={window.windowId}
               window={window}
+              appRegistry={appRegistry}
               onClick={() => handleWindowClick(window.windowId)}
               onContextMenu={(e) => {
                 e.preventDefault();

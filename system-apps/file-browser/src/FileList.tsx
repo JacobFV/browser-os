@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { FileMetadata } from '@browser-os/schemas';
 import './FileList.css';
 
@@ -8,13 +8,16 @@ export type SortDirection = 'asc' | 'desc';
 export interface FileListProps {
   entries: FileMetadata[];
   selectedPaths: Set<string>;
-  viewMode: 'list' | 'details';
+  viewMode: 'list' | 'details' | 'tile';
   sortField: SortField;
   sortDirection: SortDirection;
+  itemScale?: number;
+  itemPositions?: Map<string, { x: number; y: number }>;
   onSelect: (path: string, multiSelect: boolean) => void;
   onDoubleClick: (entry: FileMetadata) => void;
   onContextMenu: (entry: FileMetadata, x: number, y: number) => void;
   onSort: (field: SortField) => void;
+  onItemPositionChange?: (path: string, x: number, y: number) => void;
 }
 
 export const FileList: React.FC<FileListProps> = ({
@@ -23,10 +26,13 @@ export const FileList: React.FC<FileListProps> = ({
   viewMode,
   sortField,
   sortDirection,
+  itemScale = 1,
+  itemPositions,
   onSelect,
   onDoubleClick,
   onContextMenu,
   onSort,
+  onItemPositionChange,
 }) => {
   const formatSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
@@ -91,6 +97,99 @@ export const FileList: React.FC<FileListProps> = ({
             >
               <span className="file-list-icon">{getFileIcon(entry)}</span>
               <span className="file-list-name">{name}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (viewMode === 'tile') {
+    const [dragging, setDragging] = useState<string | null>(null);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleTileMouseDown = (e: React.MouseEvent, entry: FileMetadata) => {
+      if (e.button !== 0) return; // Only left mouse button
+      e.preventDefault();
+      setDragging(entry.path);
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    };
+
+    useEffect(() => {
+      if (!dragging || !onItemPositionChange || !containerRef.current) return;
+
+      const handleMouseMove = (e: MouseEvent) => {
+        const container = containerRef.current;
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left - dragOffset.x;
+        const y = e.clientY - rect.top - dragOffset.y;
+        onItemPositionChange(dragging, Math.max(0, x), Math.max(0, y));
+      };
+
+      const handleMouseUp = () => {
+        setDragging(null);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }, [dragging, dragOffset, onItemPositionChange]);
+
+    const baseTileSize = 80;
+    const tileSize = baseTileSize * itemScale;
+
+    return (
+      <div
+        ref={containerRef}
+        className="file-list tile-view"
+      >
+        {entries.map((entry) => {
+          const isSelected = selectedPaths.has(entry.path);
+          const name = entry.path.split('/').pop() || entry.path;
+          const savedPosition = itemPositions?.get(entry.path);
+          const position = savedPosition || { x: 0, y: 0 };
+          const isDragging = dragging === entry.path;
+
+          return (
+            <div
+              key={entry.path}
+              className={`file-list-tile ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''}`}
+              style={{
+                position: 'absolute',
+                left: `${position.x}px`,
+                top: `${position.y}px`,
+                width: `${tileSize}px`,
+                transform: isDragging ? 'scale(1.1)' : 'scale(1)',
+                zIndex: isDragging ? 1000 : 1,
+                cursor: 'move',
+              }}
+              onMouseDown={(e) => handleTileMouseDown(e, entry)}
+              onClick={(e) => {
+                if (!isDragging) {
+                  handleClick(e, entry);
+                }
+              }}
+              onDoubleClick={() => {
+                if (!isDragging) {
+                  onDoubleClick(entry);
+                }
+              }}
+              onContextMenu={(e) => handleContextMenu(e, entry)}
+            >
+              <div className="file-list-tile-icon" style={{ fontSize: `${tileSize * 0.4}px` }}>
+                {getFileIcon(entry)}
+              </div>
+              <div className="file-list-tile-name">{name}</div>
             </div>
           );
         })}

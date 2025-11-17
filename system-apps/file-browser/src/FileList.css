@@ -122,3 +122,57 @@
   color: #666;
 }
 
+.file-list.tile-view {
+  position: relative;
+  padding: 16px;
+  min-height: 100%;
+}
+
+.file-list-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: white;
+  cursor: move;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.file-list-tile:hover {
+  background: #f5f5f5;
+  border-color: #c0c0c0;
+}
+
+.file-list-tile.selected {
+  background: #e8f4fd;
+  border-color: #0066cc;
+}
+
+.file-list-tile.dragging {
+  opacity: 0.8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.file-list-tile-icon {
+  font-size: 32px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.file-list-tile-name {
+  font-size: 11px;
+  text-align: center;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
