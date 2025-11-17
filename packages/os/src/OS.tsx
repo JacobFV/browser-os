@@ -15,6 +15,7 @@ import { Settings } from '@browser-os/settings';
 import { Draw } from '@browser-os/draw';
 import { Desktop } from './Desktop';
 import { NotificationManager } from '@browser-os/notifications';
+import { appIcons } from './appIcons';
 import './OS.css';
 
 export interface OSProps {
@@ -65,14 +66,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('browser', Browser);
         console.log('[OS] Browser app component registered');
 
-        // Register browser app in registry if not already registered
-        if (!appRegistry.isInstalled('browser')) {
-          console.log('[OS] Registering browser app in registry...');
+        // Register or update browser app in registry
+        const existingBrowser = appRegistry.get('browser');
+        if (!existingBrowser || !existingBrowser.manifest.icon) {
+          console.log('[OS] Registering/updating browser app in registry...');
           const browserEntry = {
             id: 'browser',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingBrowser?.installedAt || Date.now(),
+            installedBy: existingBrowser?.installedBy || 'system',
+            enabled: existingBrowser?.enabled ?? true,
             manifest: {
               id: 'browser',
               name: 'Browser',
@@ -80,12 +82,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'Web browser',
               entrypoint: '/bin/browser.js',
               permissions: [],
+              icon: appIcons.browser,
               showInTaskbar: true,
             },
           };
           appRegistry.add(browserEntry);
           await appRegistry.save();
-          console.log('[OS] Browser app registered in registry');
+          console.log('[OS] Browser app registered/updated in registry');
         }
 
         // Register terminal app component
@@ -97,14 +100,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('terminal', Terminal);
         console.log('[OS] Terminal app component registered');
 
-        // Register terminal app in registry if not already registered
-        if (!appRegistry.isInstalled('terminal')) {
-          console.log('[OS] Registering terminal app in registry...');
+        // Register or update terminal app in registry
+        const existingTerminal = appRegistry.get('terminal');
+        if (!existingTerminal || !existingTerminal.manifest.icon) {
+          console.log('[OS] Registering/updating terminal app in registry...');
           const terminalEntry = {
             id: 'terminal',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingTerminal?.installedAt || Date.now(),
+            installedBy: existingTerminal?.installedBy || 'system',
+            enabled: existingTerminal?.enabled ?? true,
             manifest: {
               id: 'terminal',
               name: 'Terminal',
@@ -112,12 +116,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'Terminal emulator',
               entrypoint: '/bin/terminal.js',
               permissions: [],
+              icon: appIcons.terminal,
               showInTaskbar: true,
             },
           };
           appRegistry.add(terminalEntry);
           await appRegistry.save();
-          console.log('[OS] Terminal app registered in registry');
+          console.log('[OS] Terminal app registered/updated in registry');
         }
 
         // Register notepad app component
@@ -129,14 +134,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('notepad', Notepad);
         console.log('[OS] Notepad app component registered');
 
-        // Register notepad app in registry if not already registered
-        if (!appRegistry.isInstalled('notepad')) {
-          console.log('[OS] Registering notepad app in registry...');
+        // Register or update notepad app in registry
+        const existingNotepad = appRegistry.get('notepad');
+        if (!existingNotepad || !existingNotepad.manifest.icon) {
+          console.log('[OS] Registering/updating notepad app in registry...');
           const notepadEntry = {
             id: 'notepad',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingNotepad?.installedAt || Date.now(),
+            installedBy: existingNotepad?.installedBy || 'system',
+            enabled: existingNotepad?.enabled ?? true,
             manifest: {
               id: 'notepad',
               name: 'Notepad',
@@ -144,12 +150,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'Text editor',
               entrypoint: '/bin/notepad.js',
               permissions: [],
+              icon: appIcons.notepad,
               showInTaskbar: true,
             },
           };
           appRegistry.add(notepadEntry);
           await appRegistry.save();
-          console.log('[OS] Notepad app registered in registry');
+          console.log('[OS] Notepad app registered/updated in registry');
         }
 
         // Register file browser app component
@@ -161,14 +168,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('file-browser', FileBrowser);
         console.log('[OS] FileBrowser app component registered');
 
-        // Register file browser app in registry if not already registered
-        if (!appRegistry.isInstalled('file-browser')) {
-          console.log('[OS] Registering file browser app in registry...');
+        // Register or update file browser app in registry
+        const existingFileBrowser = appRegistry.get('file-browser');
+        if (!existingFileBrowser || !existingFileBrowser.manifest.icon) {
+          console.log('[OS] Registering/updating file browser app in registry...');
           const fileBrowserEntry = {
             id: 'file-browser',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingFileBrowser?.installedAt || Date.now(),
+            installedBy: existingFileBrowser?.installedBy || 'system',
+            enabled: existingFileBrowser?.enabled ?? true,
             manifest: {
               id: 'file-browser',
               name: 'File Browser',
@@ -176,12 +184,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'File browser',
               entrypoint: '/bin/file-browser.js',
               permissions: [],
+              icon: appIcons['file-browser'],
               showInTaskbar: true,
             },
           };
           appRegistry.add(fileBrowserEntry);
           await appRegistry.save();
-          console.log('[OS] FileBrowser app registered in registry');
+          console.log('[OS] FileBrowser app registered/updated in registry');
         }
 
         // Register settings app component
@@ -193,14 +202,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('settings', Settings);
         console.log('[OS] Settings app component registered');
 
-        // Register settings app in registry if not already registered
-        if (!appRegistry.isInstalled('settings')) {
-          console.log('[OS] Registering settings app in registry...');
+        // Register or update settings app in registry
+        const existingSettings = appRegistry.get('settings');
+        if (!existingSettings || !existingSettings.manifest.icon) {
+          console.log('[OS] Registering/updating settings app in registry...');
           const settingsEntry = {
             id: 'settings',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingSettings?.installedAt || Date.now(),
+            installedBy: existingSettings?.installedBy || 'system',
+            enabled: existingSettings?.enabled ?? true,
             manifest: {
               id: 'settings',
               name: 'Settings',
@@ -208,12 +218,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'System settings',
               entrypoint: '/bin/settings.js',
               permissions: [],
+              icon: appIcons.settings,
               showInTaskbar: true,
             },
           };
           appRegistry.add(settingsEntry);
           await appRegistry.save();
-          console.log('[OS] Settings app registered in registry');
+          console.log('[OS] Settings app registered/updated in registry');
         }
 
         // Register draw app component
@@ -225,14 +236,15 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         appComponentRegistry.registerAppComponent('draw', Draw);
         console.log('[OS] Draw app component registered');
 
-        // Register draw app in registry if not already registered
-        if (!appRegistry.isInstalled('draw')) {
-          console.log('[OS] Registering draw app in registry...');
+        // Register or update draw app in registry
+        const existingDraw = appRegistry.get('draw');
+        if (!existingDraw || !existingDraw.manifest.icon) {
+          console.log('[OS] Registering/updating draw app in registry...');
           const drawEntry = {
             id: 'draw',
-            installedAt: Date.now(),
-            installedBy: 'system',
-            enabled: true,
+            installedAt: existingDraw?.installedAt || Date.now(),
+            installedBy: existingDraw?.installedBy || 'system',
+            enabled: existingDraw?.enabled ?? true,
             manifest: {
               id: 'draw',
               name: 'Draw',
@@ -240,12 +252,13 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
               description: 'Drawing app',
               entrypoint: '/bin/draw.js',
               permissions: [],
+              icon: appIcons.draw,
               showInTaskbar: true,
             },
           };
           appRegistry.add(drawEntry);
           await appRegistry.save();
-          console.log('[OS] Draw app registered in registry');
+          console.log('[OS] Draw app registered/updated in registry');
         }
 
         // Initialize workspace manager
