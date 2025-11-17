@@ -38,7 +38,7 @@ The kernel is the central orchestrator that:
 2. Create default directory structure (`/bin`, `/etc`, `/home/user`, etc.)
 3. Load system configuration from `/etc/config.json`
 4. Load app registry from `/etc/registry.json`
-5. Register syscall handlers (fs, proc, registry)
+5. Register syscall handlers (fs, proc, registry, window, clipboard, power, audio, media, location, sensor, print, etc.)
 6. Set up default permissions
 7. Emit `kernel:ready` event
 
@@ -49,6 +49,14 @@ Syscalls are the interface between processes and the kernel:
 - **Filesystem**: `fs.read`, `fs.write`, `fs.delete`, `fs.mkdir`, `fs.readdir`, `fs.stat`, `fs.exists`
 - **Process**: `proc.spawn`, `proc.kill`, `proc.list`, `proc.get`
 - **Registry**: `registry.list`, `registry.get`, `registry.isInstalled`
+- **Window**: `window.create`, `window.get`, `window.update`, `window.close`, `window.minimize`, `window.maximize`, `window.restore`, `window.focus`
+- **Clipboard**: `clipboard.readText`, `clipboard.writeText`, `clipboard.read`, `clipboard.write`, `clipboard.clear`, `clipboard.hasText`, `clipboard.hasImage`
+- **Power**: `power.requestWakeLock`, `power.releaseWakeLock`, `power.isWakeLockActive`, `power.getBatteryStatus`, `power.isOnBattery`, `power.getBatteryLevel`
+- **Audio**: `audio.play`, `audio.stop`, `audio.pause`, `audio.resume`, `audio.setVolume`, `audio.getVolume`, `audio.beep`
+- **Media**: `media.getUserMedia`, `media.stopStream`, `media.stopAllStreams`, `media.enumerateDevices`
+- **Location**: `location.getCurrentPosition`
+- **Sensor**: `sensor.isSupported`, `sensor.startAccelerometer`, `sensor.stopAccelerometer`, `sensor.startGyroscope`, `sensor.stopGyroscope`, `sensor.startMagnetometer`, `sensor.stopMagnetometer`, `sensor.stopAll`
+- **Print**: `print.html`, `print.window`, `print.url`
 
 All syscalls are permission-checked before execution.
 
@@ -98,6 +106,22 @@ When a process is spawned:
 3. IPC channel is created
 4. Code is executed in sandboxed environment with `os` API
 5. Process runs until termination
+
+The `os` API provides access to:
+- **Window API**: Create and manage windows with object-oriented interface
+- **Clipboard API**: Read/write clipboard data
+- **Power API**: Wake locks and battery status
+- **Audio API**: Play audio files and generate beep sounds
+- **Media API**: Access camera and microphone
+- **Location API**: Get geolocation information
+- **Sensor API**: Access device sensors (accelerometer, gyroscope, magnetometer)
+- **Print API**: Print HTML content, windows, or URLs
+- **Notification API**: Show system notifications
+- **Dialog API**: Display modal dialogs
+- **Storage API**: LocalStorage and sessionStorage access
+- **Process API**: Spawn and manage child processes
+- **Network API**: HTTP requests via fetch
+- **System Info API**: Get system information
 
 ### App Registry (`@browser-os/app-registry`)
 

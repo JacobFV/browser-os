@@ -43,7 +43,14 @@ browser-os/
 │   ├── schemas/            # Zod schemas and TypeScript types
 │   ├── taskbar/            # Taskbar component with shortcuts
 │   ├── windowing/          # Window management system
-│   └── workspace/          # Workspace management with keyboard shortcuts
+│   ├── workspace/          # Workspace management with keyboard shortcuts
+│   ├── clipboard/          # Clipboard management
+│   ├── power/              # Power management (wake locks, battery)
+│   ├── audio/              # Audio playback and beep sounds
+│   ├── media/              # Camera and microphone access
+│   ├── location/           # Geolocation services
+│   ├── sensor/             # Device sensors (accelerometer, gyroscope, magnetometer)
+│   └── print/              # Print functionality
 └── system-apps/            # System applications (placeholder)
 ```
 
@@ -95,7 +102,18 @@ See individual package READMEs for detailed API documentation.
 
 ## Documentation
 
+### Getting Started
+- [Getting Started Guide](./docs/GETTING_STARTED.md) - Quick start guide for new developers
+- [API Usage Guide](./docs/API_USAGE.md) - Comprehensive API examples and usage
+- [App Development Guide](./docs/APP_DEVELOPMENT.md) - Complete guide to building apps
+
+### Reference
+- [Quick Reference](./docs/QUICK_REFERENCE.md) - API cheat sheet
 - [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system architecture and design
+- [Best Practices](./docs/BEST_PRACTICES.md) - Recommended patterns and practices
+- [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) - Common issues and solutions
+
+### Development
 - [Developing Guide](./docs/DEVELOPING.md) - Development setup and contributing
 
 ## Packages
@@ -108,6 +126,13 @@ Each package has its own README with detailed API documentation:
 - [@browser-os/proc](./packages/proc/README.md) - Process management
 - [@browser-os/app-registry](./packages/app-registry/README.md) - App registry
 - [@browser-os/schemas](./packages/schemas/README.md) - Type schemas
+- [@browser-os/clipboard](./packages/clipboard/README.md) - Clipboard management
+- [@browser-os/power](./packages/power/README.md) - Power management
+- [@browser-os/audio](./packages/audio/README.md) - Audio playback
+- [@browser-os/media](./packages/media/README.md) - Media access
+- [@browser-os/location](./packages/location/README.md) - Geolocation
+- [@browser-os/sensor](./packages/sensor/README.md) - Device sensors
+- [@browser-os/print](./packages/print/README.md) - Print functionality
 
 ## License
 
