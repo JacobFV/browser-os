@@ -235,11 +235,27 @@ export const EmailClient: React.FC<EmailClientProps> = ({
         throw new Error('Services not initialized');
       }
 
-      // Set OAuth client IDs (these should come from environment or config)
-      // For now, we'll need them to be set externally
-      const clientId = (window as any).EMAIL_OAUTH_CLIENT_IDS?.[provider];
+      // Get OAuth client ID from environment variables
+      const getClientId = (provider: EmailProvider): string | undefined => {
+        const env = import.meta.env;
+        switch (provider) {
+          case 'gmail':
+            return env.VITE_EMAIL_OAUTH_GMAIL_CLIENT_ID;
+          case 'outlook':
+            return env.VITE_EMAIL_OAUTH_OUTLOOK_CLIENT_ID;
+          case 'yahoo':
+            return env.VITE_EMAIL_OAUTH_YAHOO_CLIENT_ID;
+          default:
+            return undefined;
+        }
+      };
+
+      const clientId = getClientId(provider);
       if (!clientId) {
-        throw new Error(`OAuth client ID not configured for ${provider}. Please set EMAIL_OAUTH_CLIENT_IDS.${provider}`);
+        throw new Error(
+          `OAuth client ID not configured for ${provider}. ` +
+          `Please set VITE_EMAIL_OAUTH_${provider.toUpperCase()}_CLIENT_ID in your .env.local file.`
+        );
       }
 
       oauthManager.setClientId(provider, clientId);
