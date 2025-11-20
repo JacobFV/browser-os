@@ -1,0 +1,161 @@
+.system-monitor-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #202020;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.monitor-tabs {
+  display: flex;
+  background: #333;
+  border-bottom: 1px solid #444;
+}
+
+.monitor-tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #aaa;
+  border-bottom: 2px solid transparent;
+}
+
+.monitor-tab:hover {
+  background: #3a3a3a;
+  color: #fff;
+}
+
+.monitor-tab.active {
+  color: #4285F4;
+  border-bottom-color: #4285F4;
+}
+
+.monitor-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.process-table-container {
+  flex: 1;
+  overflow: auto;
+}
+
+.process-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.process-table th {
+  background: #2a2a2a;
+  padding: 8px 12px;
+  font-weight: 500;
+  color: #aaa;
+  position: sticky;
+  top: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.process-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+  font-size: 14px;
+}
+
+.process-table tr:hover {
+  background: #2a2a2a;
+}
+
+.process-table tr.selected {
+  background: #1a3a5a;
+}
+
+.monitor-toolbar {
+  padding: 10px;
+  background: #2a2a2a;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.monitor-btn {
+  padding: 6px 12px;
+  background: #444;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.monitor-btn:hover {
+  background: #555;
+}
+
+.monitor-btn:active {
+  background: #333;
+}
+
+.monitor-btn.danger {
+  background: #d32f2f;
+}
+
+.monitor-btn.danger:hover {
+  background: #b71c1c;
+}
+
+.monitor-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.performance-view {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: #333;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-title {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 300;
+  color: #4285F4;
+}
+
+.stat-detail {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #888;
+}
+
+.graph-placeholder {
+  height: 100px;
+  background: #2a2a2a;
+  margin-top: 15px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 12px;
+}
+
