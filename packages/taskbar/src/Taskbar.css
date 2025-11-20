@@ -1,12 +1,5 @@
 .taskbar {
   position: fixed;
-  bottom: 20px; /* Floating slightly higher */
-  left: 50%;
-  transform: translateX(-50%);
-  width: auto;
-  min-width: auto;
-  max-width: 90vw;
-  height: 68px; /* Slightly taller for more breathing room */
 
   /* Enhanced Glassmorphism */
   background: var(--glass-surface);
@@ -21,10 +14,99 @@
 
   display: flex;
   align-items: center;
-  padding: 6px 16px; /* More padding */
-  gap: 12px;
+  padding: 6px 0; /* Vertical padding only */
   z-index: 10000;
+  overflow: hidden; /* Prevent container overflow */
   transition: width 0.3s var(--ease-bounce), background 0.3s ease;
+}
+
+/* New scrollable content wrapper */
+.taskbar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px; /* Horizontal padding here */
+  gap: 12px;
+  
+  /* Scroll handling */
+  overflow-x: auto;
+  overflow-y: hidden;
+  
+  /* Drag cursor */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* Scrollbar hiding */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.taskbar-content::-webkit-scrollbar {
+  display: none;
+}
+
+.taskbar-content:active {
+  cursor: grabbing;
+}
+
+/* Vertical adjustments for content */
+.taskbar.left .taskbar-content,
+.taskbar.right .taskbar-content {
+  flex-direction: column;
+  padding: 16px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Horizontal: Bottom (default) or Top */
+.taskbar.bottom,
+.taskbar.top {
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: auto;
+  max-width: 90vw;
+  height: 68px;
+  flex-direction: row;
+}
+
+.taskbar.bottom {
+  bottom: 20px;
+}
+
+.taskbar.top {
+  top: 20px;
+}
+
+/* Vertical: Left or Right */
+.taskbar.left,
+.taskbar.right {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 68px;
+  height: auto;
+  min-height: auto;
+  max-height: 90vh;
+  flex-direction: column;
+  padding: 0 6px; /* Horizontal padding on container */
+}
+
+.taskbar.left {
+  left: 20px;
+}
+
+.taskbar.right {
+  right: 20px;
+}
+
+/* Taskbar shortcuts container adjustments */
+.taskbar.left .taskbar-shortcuts,
+.taskbar.right .taskbar-shortcuts {
+  flex-direction: column;
+  padding: 8px 0;
 }
 
 .taskbar:hover {
@@ -36,10 +118,22 @@
 .taskbar-windows {
   display: flex;
   align-items: center;
-  gap: 10px; /* Increased gap */
-  flex: 0 1 auto;
+  gap: 10px;
+  flex: 0 0 auto; /* Don't shrink, just be part of the flow */
   height: 100%;
-  overflow: visible; /* Allow hover effects to escape */
+}
+
+/* Vertical adjustments for windows */
+.taskbar.left .taskbar-windows,
+.taskbar.right .taskbar-windows {
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+
+/* Removed scroll styles from windows container as parent handles it */
+.taskbar-windows::-webkit-scrollbar {
+  display: none;
 }
 
 /* Separator */
@@ -48,4 +142,12 @@
   height: 36px;
   background: var(--glass-border-subtle);
   margin: 0 8px;
+}
+
+/* Vertical Separator */
+.taskbar.left .taskbar-separator,
+.taskbar.right .taskbar-separator {
+  width: 36px;
+  height: 1px;
+  margin: 8px 0;
 }
