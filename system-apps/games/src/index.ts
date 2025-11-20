@@ -1,0 +1,2 @@
+export { Games } from './Games';
+
