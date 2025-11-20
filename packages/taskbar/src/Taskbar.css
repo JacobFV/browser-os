@@ -1,37 +1,153 @@
 .taskbar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
+
+  /* Enhanced Glassmorphism */
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+
+  /* Deep, layered shadow */
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  z-index: 1000;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 0; /* Vertical padding only */
+  z-index: 10000;
+  overflow: hidden; /* Prevent container overflow */
+  transition: width 0.3s var(--ease-bounce), background 0.3s ease;
+}
+
+/* New scrollable content wrapper */
+.taskbar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px; /* Horizontal padding here */
+  gap: 12px;
+  
+  /* Scroll handling */
+  overflow-x: auto;
+  overflow-y: hidden;
+  
+  /* Drag cursor */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* Scrollbar hiding */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.taskbar-content::-webkit-scrollbar {
+  display: none;
+}
+
+.taskbar-content:active {
+  cursor: grabbing;
+}
+
+/* Vertical adjustments for content */
+.taskbar.left .taskbar-content,
+.taskbar.right .taskbar-content {
+  flex-direction: column;
+  padding: 16px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Horizontal: Bottom (default) or Top */
+.taskbar.bottom,
+.taskbar.top {
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: auto;
+  max-width: 90vw;
+  height: 68px;
+  flex-direction: row;
+}
+
+.taskbar.bottom {
+  bottom: 20px;
+}
+
+.taskbar.top {
+  top: 20px;
+}
+
+/* Vertical: Left or Right */
+.taskbar.left,
+.taskbar.right {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 68px;
+  height: auto;
+  min-height: auto;
+  max-height: 90vh;
+  flex-direction: column;
+  padding: 0 6px; /* Horizontal padding on container */
+}
+
+.taskbar.left {
+  left: 20px;
+}
+
+.taskbar.right {
+  right: 20px;
+}
+
+/* Taskbar shortcuts container adjustments */
+.taskbar.left .taskbar-shortcuts,
+.taskbar.right .taskbar-shortcuts {
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.taskbar:hover {
+  background: var(--glass-surface-hover);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .taskbar-windows {
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
+  gap: 10px;
+  flex: 0 0 auto; /* Don't shrink, just be part of the flow */
+  height: 100%;
 }
 
+/* Vertical adjustments for windows */
+.taskbar.left .taskbar-windows,
+.taskbar.right .taskbar-windows {
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+
+/* Removed scroll styles from windows container as parent handles it */
 .taskbar-windows::-webkit-scrollbar {
-  height: 2px;
+  display: none;
 }
 
-.taskbar-windows::-webkit-scrollbar-track {
-  background: transparent;
+/* Separator */
+.taskbar-separator {
+  width: 1px;
+  height: 36px;
+  background: var(--glass-border-subtle);
+  margin: 0 8px;
 }
 
-.taskbar-windows::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 1px;
+/* Vertical Separator */
+.taskbar.left .taskbar-separator,
+.taskbar.right .taskbar-separator {
+  width: 36px;
+  height: 1px;
+  margin: 8px 0;
 }
-

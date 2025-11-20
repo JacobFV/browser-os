@@ -1,3 +1,50 @@
+:root {
+  /* Colors */
+  --glass-surface: rgba(255, 255, 255, 0.65);
+  --glass-surface-hover: rgba(255, 255, 255, 0.8);
+  --glass-surface-active: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-subtle: rgba(255, 255, 255, 0.3);
+
+  --glass-dark-surface: rgba(30, 30, 30, 0.6);
+  --glass-dark-border: rgba(255, 255, 255, 0.15);
+
+  /* Text */
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-light: #ffffff;
+
+  /* Effects */
+  --blur-md: 25px;
+  --blur-lg: 50px;
+
+  /* Spacing & Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.14), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 40px rgba(255, 255, 255, 0.6);
+
+  /* Animations */
+  --ease-bounce: cubic-bezier(0.25, 1.4, 0.5, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  background: #000; /* Fallback */
+}
+
 .os-loading {
   display: flex;
   align-items: center;
@@ -5,7 +52,8 @@
   width: 100vw;
   height: 100vh;
   font-size: 18px;
-  color: #666;
+  color: var(--text-secondary);
+  background: #f5f5f5;
 }
 
 .os {
@@ -13,5 +61,5 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Nice default gradient */
 }
-

@@ -39,6 +39,9 @@ export const Window: React.FC<WindowProps> = ({
       if (onFocus) onFocus();
       if (!window.movable) return;
 
+      // Only drag if clicked on titlebar itself, not controls
+      if ((e.target as HTMLElement).closest('.window-control')) return;
+
       setIsDragging(true);
       setDragStart({
         x: e.clientX - window.x,
@@ -144,7 +147,7 @@ export const Window: React.FC<WindowProps> = ({
   return (
     <div
       ref={windowRef}
-      className="window"
+      className={`window ${window.isFocused ? 'active' : ''}`}
       style={style}
       onClick={onFocus}
       onMouseDown={onFocus}
@@ -154,33 +157,30 @@ export const Window: React.FC<WindowProps> = ({
         className="window-titlebar"
         onMouseDown={handleMouseDown}
         style={{ cursor: window.movable ? 'move' : 'default' }}
+        onDoubleClick={window.maximizable ? (isMaximized ? onRestore : onMaximize) : undefined}
       >
-        <span className="window-title">{window.title}</span>
+        {/* Mac-style control order: Close, Minimize, Maximize. CSS order: -1 puts it to the left */}
         <div className="window-controls">
+           {window.closable && (
+            <button className="window-control close" onClick={onClose} title="Close" />
+          )}
           {window.minimizable && (
-            <button className="window-control minimize" onClick={onMinimize} title="Minimize">
-              −
-            </button>
+            <button className="window-control minimize" onClick={onMinimize} title="Minimize" />
           )}
           {window.maximizable && (
             <button
               className="window-control maximize"
               onClick={isMaximized ? onRestore : onMaximize}
               title={isMaximized ? 'Restore' : 'Maximize'}
-            >
-              {isMaximized ? '❐' : '□'}
-            </button>
-          )}
-          {window.closable && (
-            <button className="window-control close" onClick={onClose} title="Close">
-              ×
-            </button>
+            />
           )}
         </div>
+        <span className="window-title">{window.title}</span>
+        {/* Empty div for balance if needed, or rely on margin in CSS */}
       </div>
 
       {/* Content area */}
-      <div className="window-content" style={{ flex: 1, overflow: 'auto' }}>
+      <div className="window-content">
         {children}
       </div>
 
@@ -200,4 +200,3 @@ export const Window: React.FC<WindowProps> = ({
     </div>
   );
 };
-

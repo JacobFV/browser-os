@@ -5,6 +5,6 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
-  background: #f5f5f5;
+  /* Background is now handled by OS.css body gradient or wallpaper app, but we can set a transparent one here */
+  background: transparent;
 }
-

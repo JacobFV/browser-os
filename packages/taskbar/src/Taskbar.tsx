@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Window } from '@browser-os/schemas';
 import type { WindowManager } from '@browser-os/windowing';
 import type { AppRegistry } from '@browser-os/app-registry';
@@ -23,6 +23,7 @@ export interface TaskbarProps {
   activeWorkspaceId: string;
   fs?: FileSystem;
   notificationManager?: import('@browser-os/notifications').NotificationManager;
+  position?: 'bottom' | 'top' | 'left' | 'right';
 }
 
 export const Taskbar: React.FC<TaskbarProps> = ({
@@ -33,6 +34,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   activeWorkspaceId,
   fs,
   notificationManager,
+  position = 'bottom',
 }) => {
   const [showOverview, setShowOverview] = useState(false);
   const { windows, shortcuts, recentFilesManager } = useTaskbar({
@@ -43,7 +45,19 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     fs,
   });
 
+  const dragStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0, hasMoved: false });
+  const isVertical = position === 'left' || position === 'right';
+
+  console.log('[Taskbar] Component rendering:', {
+    windowsCount: windows.length,
+    position,
+    isVertical,
+  });
+
   const handleWindowClick = (windowId: string) => {
+    // Prevent click if we just finished dragging
+    if (dragStartRef.current.hasMoved) return;
+
     const window = windowManager.getWindow(windowId);
     if (window) {
       if (window.state === 'minimized') {
@@ -79,58 +93,188 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   });
 
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Handle mouse drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    // We allow dragging from buttons now
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: scrollContainerRef.current.scrollLeft,
+      scrollTop: scrollContainerRef.current.scrollTop,
+      hasMoved: false,
+    };
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!scrollContainerRef.current || dragStartRef.current.x === 0) return;
+    
+    const deltaX = Math.abs(dragStartRef.current.x - e.clientX);
+    const deltaY = Math.abs(dragStartRef.current.y - e.clientY);
+    const moveThreshold = 5;
+
+    // Check if moved enough to start dragging
+    if (!dragStartRef.current.hasMoved && (deltaX > moveThreshold || deltaY > moveThreshold)) {
+      setIsDragging(true);
+      dragStartRef.current.hasMoved = true;
+    }
+
+    if (dragStartRef.current.hasMoved) {
+      if (isVertical) {
+        const scrollDelta = dragStartRef.current.y - e.clientY;
+        scrollContainerRef.current.scrollTop = dragStartRef.current.scrollTop + scrollDelta;
+      } else {
+        const scrollDelta = dragStartRef.current.x - e.clientX;
+        scrollContainerRef.current.scrollLeft = dragStartRef.current.scrollLeft + scrollDelta;
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    // Note: We don't reset hasMoved here so onClick can check it. 
+    // It will be reset on next mouseDown.
+    dragStartRef.current.x = 0; // Reset drag start
+  };
+
+  // Handle mouse wheel
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!scrollContainerRef.current) {
+      return;
+    }
+    
+    // For horizontal taskbar, map vertical scroll to horizontal scroll
+    if (!isVertical) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = e.deltaY;
+      container.scrollLeft += scrollAmount;
+    }
+  };
+
+  // Handle touch swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!scrollContainerRef.current) return;
+    const touch = e.touches[0];
+    dragStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      scrollLeft: scrollContainerRef.current.scrollLeft,
+      scrollTop: scrollContainerRef.current.scrollTop,
+      hasMoved: false,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!scrollContainerRef.current) return;
+    const touch = e.touches[0];
+    const deltaX = dragStartRef.current.x - touch.clientX;
+    const deltaY = dragStartRef.current.y - touch.clientY;
+    
+    // Start dragging immediately on touch move
+    if (!dragStartRef.current.hasMoved) {
+      dragStartRef.current.hasMoved = true;
+    }
+    
+    if (isVertical) {
+      scrollContainerRef.current.scrollTop = dragStartRef.current.scrollTop + deltaY;
+    } else {
+      scrollContainerRef.current.scrollLeft = dragStartRef.current.scrollLeft + deltaX;
+    }
+    
+    e.preventDefault(); // Prevent scrolling the page
+  };
+
+  useEffect(() => {
+    const handleMouseMoveGlobal = (e: MouseEvent) => {
+      // Only handle if we have a starting position
+      if (dragStartRef.current.x !== 0) {
+        handleMouseMove(e);
+      }
+    };
+    const handleMouseUpGlobal = () => {
+      if (dragStartRef.current.x !== 0) {
+        handleMouseUp();
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    window.addEventListener('mouseup', handleMouseUpGlobal);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMoveGlobal);
+      window.removeEventListener('mouseup', handleMouseUpGlobal);
+    };
+  }, [isVertical]); // Re-bind if orientation changes
+
+  // Log critical errors only
+  useEffect(() => {
+    if (!scrollContainerRef.current && windows.length > 0) {
+      console.error('[Taskbar] Scroll container ref is null!');
+    }
+  }, [windows]);
 
   return (
     <>
-      <div className="taskbar">
-        {recentFilesManager ? (
-          <Shortcuts
-            shortcuts={shortcuts}
-            onShortcutClick={handleShortcutClick}
-            windowManager={windowManager}
-            recentFilesManager={recentFilesManager}
-            eventBus={eventBus}
-          />
-        ) : (
-          <div className="taskbar-shortcuts">
-            {shortcuts.map((shortcut) => (
-              <button
-                key={shortcut.appId}
-                className="taskbar-shortcut"
-                onClick={() => handleShortcutClick(shortcut.appId)}
-                title={shortcut.name}
-              >
-                {shortcut.icon ? (
-                  <img src={shortcut.icon} alt={shortcut.name} className="taskbar-shortcut-icon" />
-                ) : (
-                  <span className="taskbar-shortcut-icon-placeholder">{shortcut.name[0]}</span>
-                )}
-              </button>
+      <div className={`taskbar ${position}`}>
+        <div
+          ref={scrollContainerRef}
+          className="taskbar-content"
+          onMouseDown={handleMouseDown}
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+        >
+          {recentFilesManager ? (
+            <Shortcuts
+              shortcuts={shortcuts}
+              onShortcutClick={handleShortcutClick}
+              windowManager={windowManager}
+              recentFilesManager={recentFilesManager}
+              eventBus={eventBus}
+            />
+          ) : (
+            <div className="taskbar-shortcuts">
+              {shortcuts.map((shortcut) => (
+                <button
+                  key={shortcut.appId}
+                  className="taskbar-shortcut"
+                  onClick={() => handleShortcutClick(shortcut.appId)}
+                  title={shortcut.name}
+                >
+                  {shortcut.icon ? (
+                    <img src={shortcut.icon} alt={shortcut.name} className="taskbar-shortcut-icon" />
+                  ) : (
+                    <span className="taskbar-shortcut-icon-placeholder">{shortcut.name[0]}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="taskbar-windows">
+            {windows.map((window) => (
+              <TaskbarButton
+                key={window.windowId}
+                window={window}
+                appRegistry={appRegistry}
+                onClick={() => handleWindowClick(window.windowId)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  // TODO: Show context menu
+                }}
+              />
             ))}
           </div>
-        )}
-        <div className="taskbar-windows">
-          {windows.map((window) => (
-            <TaskbarButton
-              key={window.windowId}
-              window={window}
-              appRegistry={appRegistry}
-              onClick={() => handleWindowClick(window.windowId)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                // TODO: Show context menu
-              }}
+          <SearchBar apps={appRegistry.getEnabled()} onAppSelect={handleAppSelect} />
+          {notificationManager && (
+            <NotificationBadgeButton
+              notificationManager={notificationManager}
+              onClick={() => setShowNotificationCenter(!showNotificationCenter)}
             />
-          ))}
+          )}
+          <WorkspaceOverviewButton onClick={() => setShowOverview(true)} />
         </div>
-        <SearchBar apps={appRegistry.getEnabled()} onAppSelect={handleAppSelect} />
-        {notificationManager && (
-          <NotificationBadgeButton
-            notificationManager={notificationManager}
-            onClick={() => setShowNotificationCenter(!showNotificationCenter)}
-          />
-        )}
-        <WorkspaceOverviewButton onClick={() => setShowOverview(true)} />
       </div>
       {showOverview && (
         <WorkspaceOverview

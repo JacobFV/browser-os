@@ -150,18 +150,11 @@ export const Desktop: React.FC<DesktopProps> = ({
     <>
       <div className="os-desktop" onContextMenu={handleContextMenu}>
       <div className="os-desktop-background">
-        <div className="os-desktop-branding">
-          <img src="/favicon.svg" alt="Browser OS Icon" className="os-desktop-icon" />
-          <span className="os-desktop-title">BROWSER-OS</span>
-        </div>
-        <div className="os-desktop-blurstorm">
-          <div className="blur-blob blob-1"></div>
-          <div className="blur-blob blob-2"></div>
-          <div className="blur-blob blob-3"></div>
-          <div className="blur-blob blob-4"></div>
-          <div className="blur-blob blob-5"></div>
-          <div className="blur-blob blob-6"></div>
-        </div>
+        {/*
+            Cleaned up: Removed branding and blurstorm divs as they are no longer needed
+            with the new CSS background mesh. The CSS class .os-desktop-background
+            now handles the entire visual presentation.
+        */}
       </div>
       <div className="os-desktop-content">
         {/* Desktop icons, widgets, etc. can go here */}
@@ -191,4 +184,3 @@ export const Desktop: React.FC<DesktopProps> = ({
     </>
   );
 };
-
