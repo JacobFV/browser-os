@@ -316,6 +316,21 @@ importers:
       '@browser-os/browser':
         specifier: workspace:*
         version: link:../../system-apps/browser
+      '@browser-os/calculator':
+        specifier: workspace:*
+        version: link:../../system-apps/calculator
+      '@browser-os/calendar':
+        specifier: workspace:*
+        version: link:../../system-apps/calendar
+      '@browser-os/camera':
+        specifier: workspace:*
+        version: link:../../system-apps/camera
+      '@browser-os/clock':
+        specifier: workspace:*
+        version: link:../../system-apps/clock
+      '@browser-os/contacts':
+        specifier: workspace:*
+        version: link:../../system-apps/contacts
       '@browser-os/draw':
         specifier: workspace:*
         version: link:../../system-apps/draw
@@ -325,27 +340,69 @@ importers:
       '@browser-os/file-browser':
         specifier: workspace:*
         version: link:../../system-apps/file-browser
+      '@browser-os/file-search':
+        specifier: workspace:*
+        version: link:../../system-apps/file-search
       '@browser-os/fs':
         specifier: workspace:*
         version: link:../fs
+      '@browser-os/games':
+        specifier: workspace:*
+        version: link:../../system-apps/games
+      '@browser-os/image-viewer':
+        specifier: workspace:*
+        version: link:../../system-apps/image-viewer
+      '@browser-os/markdown-editor':
+        specifier: workspace:*
+        version: link:../../system-apps/markdown-editor
+      '@browser-os/music':
+        specifier: workspace:*
+        version: link:../../system-apps/music
       '@browser-os/notepad':
         specifier: workspace:*
         version: link:../../system-apps/notepad
+      '@browser-os/notes':
+        specifier: workspace:*
+        version: link:../../system-apps/notes
       '@browser-os/notifications':
         specifier: workspace:*
         version: link:../notifications
+      '@browser-os/password-manager':
+        specifier: workspace:*
+        version: link:../../system-apps/password-manager
+      '@browser-os/pdf-viewer':
+        specifier: workspace:*
+        version: link:../../system-apps/pdf-viewer
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../schemas
+      '@browser-os/screenshot':
+        specifier: workspace:*
+        version: link:../../system-apps/screenshot
       '@browser-os/settings':
         specifier: workspace:*
         version: link:../../system-apps/settings
+      '@browser-os/system-monitor':
+        specifier: workspace:*
+        version: link:../../system-apps/system-monitor
       '@browser-os/taskbar':
         specifier: workspace:*
         version: link:../taskbar
       '@browser-os/terminal':
         specifier: workspace:*
         version: link:../../system-apps/terminal
+      '@browser-os/todo':
+        specifier: workspace:*
+        version: link:../../system-apps/todo
+      '@browser-os/video-player':
+        specifier: workspace:*
+        version: link:../../system-apps/video-player
+      '@browser-os/voice-recorder':
+        specifier: workspace:*
+        version: link:../../system-apps/voice-recorder
+      '@browser-os/weather':
+        specifier: workspace:*
+        version: link:../../system-apps/weather
       '@browser-os/windowing':
         specifier: workspace:*
         version: link:../windowing
@@ -618,6 +675,170 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.24)
 
+  system-apps/calculator:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/calendar:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/camera:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/clock:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/contacts:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
   system-apps/draw:
     dependencies:
       '@browser-os/dialogs':
@@ -692,6 +913,185 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.24)
 
+  system-apps/file-search:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/games:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/image-viewer:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/markdown-editor:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      marked:
+        specifier: ^11.1.1
+        version: 11.2.0
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/music:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
   system-apps/notepad:
     dependencies:
       '@browser-os/dialogs':
@@ -729,6 +1129,154 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.24)
 
+  system-apps/notes:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/password-manager:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/pdf-viewer:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/screenshot:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
   system-apps/settings:
     dependencies:
       '@browser-os/fs':
@@ -737,6 +1285,40 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/system-monitor:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -814,6 +1396,151 @@ importers:
       vitest:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@20.19.24)(jsdom@23.2.0)
+
+  system-apps/todo:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/video-player:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/voice-recorder:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/fs':
+        specifier: workspace:*
+        version: link:../../packages/fs
+      '@browser-os/media':
+        specifier: workspace:*
+        version: link:../../packages/media
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
+
+  system-apps/weather:
+    dependencies:
+      '@browser-os/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@browser-os/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      lucide-react:
+        specifier: ^0.294.0
+        version: 0.294.0(react@18.3.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.26)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.24)
 
 packages:
 
@@ -2101,12 +2828,22 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lucide-react@0.294.0:
+    resolution: {integrity: sha512-V7o0/VECSGbLHn3/1O67FUgBwWB+hmzshrgDVRJQhMh8uj5D3HBuIvhuAmQTtlupILSplwIZg5FTc4tTKMA2SA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
+
+  marked@11.2.0:
+    resolution: {integrity: sha512-HR0m3bvu0jAPYiIvLUUQtdg1g6D247//lvcekpHO1WMvbwDlwSkZAX9Lw4F4YHE1T0HaaNve0tuAWuV1UJ6vtw==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -4066,11 +4803,17 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lucide-react@0.294.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   lz-string@1.5.0: {}
 
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  marked@11.2.0: {}
 
   math-intrinsics@1.1.0: {}
 

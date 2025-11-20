@@ -23,6 +23,25 @@
     "@browser-os/file-browser": "workspace:*",
     "@browser-os/settings": "workspace:*",
     "@browser-os/draw": "workspace:*",
+    "@browser-os/calculator": "workspace:*",
+    "@browser-os/clock": "workspace:*",
+    "@browser-os/system-monitor": "workspace:*",
+    "@browser-os/camera": "workspace:*",
+    "@browser-os/music": "workspace:*",
+    "@browser-os/calendar": "workspace:*",
+    "@browser-os/image-viewer": "workspace:*",
+    "@browser-os/video-player": "workspace:*",
+    "@browser-os/contacts": "workspace:*",
+    "@browser-os/weather": "workspace:*",
+    "@browser-os/games": "workspace:*",
+    "@browser-os/screenshot": "workspace:*",
+    "@browser-os/voice-recorder": "workspace:*",
+    "@browser-os/notes": "workspace:*",
+    "@browser-os/todo": "workspace:*",
+    "@browser-os/file-search": "workspace:*",
+    "@browser-os/markdown-editor": "workspace:*",
+    "@browser-os/password-manager": "workspace:*",
+    "@browser-os/pdf-viewer": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -30,4 +49,3 @@
     "typescript": "^5.3.0"
   }
 }
-

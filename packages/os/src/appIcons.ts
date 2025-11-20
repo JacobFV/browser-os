@@ -67,5 +67,215 @@ export const appIcons = {
       <circle cx="12" cy="3" r="2" fill="#fff"/>
     </svg>
   `),
-};
 
+  calculator: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF9800">
+      <rect x="4" y="2" width="16" height="20" rx="2" fill="#333"/>
+      <rect x="6" y="4" width="12" height="4" fill="#A5D6A7"/>
+      <circle cx="7" cy="11" r="1" fill="#fff"/>
+      <circle cx="10" cy="11" r="1" fill="#fff"/>
+      <circle cx="13" cy="11" r="1" fill="#fff"/>
+      <circle cx="16" cy="11" r="1" fill="#FF9800"/>
+      <circle cx="7" cy="14" r="1" fill="#fff"/>
+      <circle cx="10" cy="14" r="1" fill="#fff"/>
+      <circle cx="13" cy="14" r="1" fill="#fff"/>
+      <circle cx="16" cy="14" r="1" fill="#FF9800"/>
+      <circle cx="7" cy="17" r="1" fill="#fff"/>
+      <circle cx="10" cy="17" r="1" fill="#fff"/>
+      <circle cx="13" cy="17" r="1" fill="#fff"/>
+      <circle cx="16" cy="17" r="1" fill="#FF9800"/>
+      <rect x="6" y="19" width="13" height="1" fill="#fff"/>
+    </svg>
+  `),
+
+  clock: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#E91E63">
+      <circle cx="12" cy="12" r="9" fill="#E91E63"/>
+      <circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <line x1="12" y1="12" x2="12" y2="6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="12" x2="16" y2="12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="1" fill="#fff"/>
+      <line x1="12" y1="3" x2="12" y2="4" stroke="#fff" stroke-width="1.5"/>
+      <line x1="12" y1="20" x2="12" y2="21" stroke="#fff" stroke-width="1.5"/>
+      <line x1="3" y1="12" x2="4" y2="12" stroke="#fff" stroke-width="1.5"/>
+      <line x1="20" y1="12" x2="21" y2="12" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'system-monitor': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#607D8B">
+      <rect x="2" y="4" width="20" height="16" rx="2" fill="#607D8B"/>
+      <path d="M4 8h16" stroke="#fff" stroke-width="1" stroke-opacity="0.3"/>
+      <path d="M4 12h16" stroke="#fff" stroke-width="1" stroke-opacity="0.3"/>
+      <path d="M4 16h16" stroke="#fff" stroke-width="1" stroke-opacity="0.3"/>
+      <path d="M6 12l2-3 2 6 2-4 2 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    </svg>
+  `),
+
+  camera: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#795548">
+      <rect x="4" y="6" width="16" height="14" rx="2" fill="#795548"/>
+      <circle cx="12" cy="13" r="4" fill="#3E2723"/>
+      <circle cx="12" cy="13" r="2" fill="#212121"/>
+      <rect x="9" y="3" width="6" height="3" rx="1" fill="#795548"/>
+      <circle cx="17" cy="9" r="1.5" fill="#fff" opacity="0.8"/>
+      <path d="M12 11a2 2 0 0 1 2 2" stroke="#fff" stroke-width="1" fill="none" opacity="0.5"/>
+    </svg>
+  `),
+
+  music: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#E040FB">
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#E040FB"/>
+      <circle cx="12" cy="14" r="4" fill="#fff" opacity="0.2"/>
+      <path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" fill="#fff"/>
+      <path d="M14 14V8h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  `),
+
+  calendar: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1976D2">
+      <rect x="3" y="4" width="18" height="18" rx="2" fill="#1976D2"/>
+      <rect x="3" y="7" width="18" height="2" fill="#fff" opacity="0.3"/>
+      <circle cx="7" cy="12" r="1" fill="#fff"/>
+      <circle cx="12" cy="12" r="1" fill="#fff"/>
+      <circle cx="17" cy="12" r="1" fill="#fff"/>
+      <circle cx="7" cy="16" r="1" fill="#fff"/>
+      <circle cx="12" cy="16" r="1" fill="#fff"/>
+      <line x1="3" y1="9" x2="21" y2="9" stroke="#fff" stroke-width="1"/>
+      <rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'image-viewer': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#00BCD4">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#00BCD4"/>
+      <circle cx="8" cy="8" r="2" fill="#fff"/>
+      <path d="M3 18l5-5 4 4 6-6 3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'video-player': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#D32F2F">
+      <rect x="2" y="4" width="20" height="16" rx="2" fill="#D32F2F"/>
+      <polygon points="10 8 10 16 16 12" fill="#fff"/>
+      <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  contacts: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#009688">
+      <circle cx="12" cy="8" r="4" fill="#009688"/>
+      <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" fill="#009688"/>
+      <circle cx="18" cy="6" r="2" fill="#fff" opacity="0.8"/>
+      <path d="M20 12v2a2 2 0 0 1-2 2h-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+    </svg>
+  `),
+
+  weather: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFA726">
+      <circle cx="12" cy="12" r="8" fill="#FFA726"/>
+      <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="3" fill="#fff" opacity="0.3"/>
+      <path d="M8 8l2 2M16 8l-2 2M8 16l2-2M16 16l-2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  `),
+
+  games: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#673AB7">
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#673AB7"/>
+      <circle cx="8" cy="8" r="2" fill="#fff"/>
+      <circle cx="16" cy="8" r="2" fill="#fff"/>
+      <circle cx="8" cy="16" r="2" fill="#fff"/>
+      <circle cx="16" cy="16" r="2" fill="#fff"/>
+      <circle cx="12" cy="12" r="3" fill="#fff" opacity="0.3"/>
+      <path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `),
+
+  screenshot: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9E9E9E">
+      <rect x="2" y="4" width="20" height="16" rx="2" fill="#9E9E9E"/>
+      <circle cx="12" cy="12" r="4" fill="#fff" opacity="0.2"/>
+      <circle cx="12" cy="12" r="2" fill="#fff"/>
+      <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <path d="M8 2h8v2H8z" fill="#fff"/>
+      <path d="M18 6h2v2h-2z" fill="#fff"/>
+    </svg>
+  `),
+
+  'voice-recorder': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#E91E63">
+      <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" fill="#E91E63"/>
+      <path d="M19 10v1a7 7 0 0 1-14 0v-1" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <line x1="12" y1="18" x2="12" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="8" y1="22" x2="16" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="2" r="1.5" fill="#fff"/>
+    </svg>
+  `),
+
+  notes: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFC107">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#FFC107"/>
+      <line x1="7" y1="8" x2="17" y2="8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="7" y1="12" x2="17" y2="12" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="7" y1="16" x2="14" y2="16" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="18" cy="6" r="2" fill="#fff" opacity="0.8"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  todo: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#667eea"/>
+      <circle cx="7" cy="9" r="1.5" fill="#fff" opacity="0.8"/>
+      <line x1="10" y1="9" x2="17" y2="9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="7" cy="12" r="1.5" fill="#fff" opacity="0.8"/>
+      <line x1="10" y1="12" x2="17" y2="12" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="7" cy="15" r="1.5" fill="#fff" opacity="0.8"/>
+      <line x1="10" y1="15" x2="14" y2="15" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M6 9l1 1 2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'file-search': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4CAF50">
+      <circle cx="11" cy="11" r="7" fill="#4CAF50"/>
+      <path d="M16 16l4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <rect x="2" y="4" width="8" height="10" rx="1" fill="#fff" opacity="0.3"/>
+      <line x1="4" y1="7" x2="8" y2="7" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+      <line x1="4" y1="10" x2="7" y2="10" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+  `),
+
+  'markdown-editor': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#2196F3">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#2196F3"/>
+      <line x1="7" y1="7" x2="17" y2="7" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="7" y1="11" x2="17" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="7" y1="15" x2="14" y2="15" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M17 9l-2 2-2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'password-manager': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9C27B0">
+      <rect x="4" y="6" width="16" height="14" rx="2" fill="#9C27B0"/>
+      <circle cx="12" cy="13" r="3" fill="#fff" opacity="0.3"/>
+      <path d="M12 10v6M10 12h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <rect x="7" y="2" width="10" height="4" rx="1" fill="#9C27B0"/>
+      <rect x="4" y="6" width="16" height="14" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'pdf-viewer': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#DC143C">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#DC143C"/>
+      <path d="M7 7h10M7 11h10M7 15h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="2" fill="#fff" opacity="0.8"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+};
