@@ -3,6 +3,7 @@ import type { Kernel } from '@browser-os/kernel';
 import { ConnectionManager } from './ConnectionManager';
 import { TelemetryCollector } from './TelemetryCollector';
 import { ServiceRegistry } from './ServiceRegistry';
+import { MessagingClient } from './MessagingClient';
 import type { ClientOptions, ClientMetadata, TelemetryData, ServiceDefinition } from './types';
 
 /**
@@ -12,6 +13,7 @@ export class Client {
   private connectionManager: ConnectionManager;
   private telemetryCollector: TelemetryCollector;
   private serviceRegistry: ServiceRegistry;
+  private messagingClient: MessagingClient | null = null;
   private clientId: string;
   private telemetryTimer: NodeJS.Timeout | null = null;
   private options: Required<ClientOptions>;
@@ -32,6 +34,10 @@ export class Client {
     this.connectionManager = new ConnectionManager(this.options);
     this.telemetryCollector = new TelemetryCollector(eventBus, kernel);
     this.serviceRegistry = new ServiceRegistry();
+    this.messagingClient = new MessagingClient({
+      connectionManager: this.connectionManager,
+      clientId: this.clientId,
+    });
 
     // Handle incoming messages
     this.connectionManager.onMessage((message) => {
@@ -90,6 +96,20 @@ export class Client {
    */
   getConnectionManager(): ConnectionManager {
     return this.connectionManager;
+  }
+
+  /**
+   * Get messaging client
+   */
+  getMessagingClient(): MessagingClient | null {
+    return this.messagingClient;
+  }
+
+  /**
+   * Get client ID
+   */
+  getClientId(): string {
+    return this.clientId;
   }
 
   private async sendConnect(): Promise<void> {

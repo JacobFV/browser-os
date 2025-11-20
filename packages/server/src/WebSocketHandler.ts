@@ -2,12 +2,14 @@ import { WebSocket } from 'ws';
 import { TelemetryService } from './TelemetryService';
 import { ServiceRegistry } from './ServiceRegistry';
 import { ChessService } from './services/chess/ChessService';
-import type { WebSocketMessage, ClientMetadata, TelemetryData } from './types';
+import { MessageService } from './services/MessageService';
+import type { WebSocketMessage, ClientMetadata, TelemetryData, Message, Conversation } from './types';
 
 export interface WebSocketHandlerOptions {
   telemetryService: TelemetryService;
   serviceRegistry: ServiceRegistry;
   chessService?: ChessService;
+  messageService?: MessageService;
   pingInterval?: number;
 }
 
@@ -40,6 +42,12 @@ export class WebSocketHandler {
         this.clients.delete(clientId);
         this.wsToClientId.delete(ws);
         this.options.telemetryService.unregisterClient(clientId);
+        
+        // Update presence if message service is available
+        if (this.options.messageService) {
+          this.options.messageService.updatePresence(clientId, 'offline');
+          this.broadcast('presence:changed', { userId: clientId, status: 'offline' });
+        }
       }
     });
 
@@ -115,6 +123,15 @@ export class WebSocketHandler {
     // Handle chess messages if chess service is available
     if (this.options.chessService && message.type.startsWith('chess:')) {
       this.handleChessMessage(ws, message);
+      return;
+    }
+
+    // Handle messaging messages if message service is available
+    if (this.options.messageService && message.type.startsWith('message:') || 
+        message.type.startsWith('conversation:') || 
+        message.type.startsWith('presence:') || 
+        message.type.startsWith('typing:')) {
+      this.handleMessagingMessage(ws, message);
       return;
     }
 
@@ -236,6 +253,11 @@ export class WebSocketHandler {
     this.wsToClientId.set(ws, clientId);
     this.options.telemetryService.registerClient(clientId, metadata);
 
+    // Update presence if message service is available
+    if (this.options.messageService) {
+      this.options.messageService.updatePresence(clientId, 'online');
+    }
+
     // Send available services to client
     const services = this.options.serviceRegistry.getEnabled();
     this.send(ws, 'server:service:register', services);
@@ -251,6 +273,179 @@ export class WebSocketHandler {
     }
 
     this.options.telemetryService.storeTelemetry(clientId, data);
+  }
+
+  private handleMessagingMessage(ws: WebSocket, message: WebSocketMessage): void {
+    if (!this.options.messageService) return;
+
+    const clientId = this.wsToClientId.get(ws);
+    if (!clientId) {
+      this.send(ws, 'message:error', { message: 'Not connected' });
+      return;
+    }
+
+    const payload = message.payload as any;
+
+    switch (message.type) {
+      case 'message:send': {
+        const { conversationId, content, type, attachments, replyTo } = payload;
+        
+        if (!conversationId || !content) {
+          this.send(ws, 'message:error', { message: 'conversationId and content required' });
+          return;
+        }
+
+        const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const newMessage: Message = {
+          id: messageId,
+          conversationId,
+          senderId: clientId,
+          content,
+          timestamp: Date.now(),
+          type: type || 'text',
+          attachments,
+          replyTo,
+          status: 'sent',
+        };
+
+        this.options.messageService.sendMessage(newMessage).then((sentMessage) => {
+          // Confirm to sender
+          this.send(ws, 'message:sent', { messageId: sentMessage.id, timestamp: sentMessage.timestamp });
+
+          // Deliver to recipients
+          const conversation = this.options.messageService!.getConversation(conversationId);
+          if (conversation) {
+            conversation.participants.forEach((participantId) => {
+              if (participantId !== clientId) {
+                const recipientWs = this.clients.get(participantId);
+                if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+                  this.send(recipientWs, 'message:received', sentMessage);
+                }
+              }
+            });
+
+            // Broadcast conversation update
+            conversation.participants.forEach((participantId) => {
+              const participantWs = this.clients.get(participantId);
+              if (participantWs && participantWs.readyState === WebSocket.OPEN) {
+                this.send(participantWs, 'conversation:updated', conversation);
+              }
+            });
+          }
+        });
+        break;
+      }
+
+      case 'conversation:list': {
+        const conversations = this.options.messageService.getConversations(clientId);
+        this.send(ws, 'conversation:list', conversations);
+        break;
+      }
+
+      case 'conversation:create': {
+        const { participants } = payload;
+        if (!participants || !Array.isArray(participants) || participants.length === 0) {
+          this.send(ws, 'conversation:error', { message: 'participants array required' });
+          return;
+        }
+
+        // Ensure current user is included
+        const allParticipants = [...new Set([clientId, ...participants])];
+        const conversation = this.options.messageService.createConversation(allParticipants);
+        
+        // Notify all participants
+        allParticipants.forEach((participantId) => {
+          const participantWs = this.clients.get(participantId);
+          if (participantWs && participantWs.readyState === WebSocket.OPEN) {
+            this.send(participantWs, 'conversation:created', conversation);
+          }
+        });
+        break;
+      }
+
+      case 'message:get': {
+        const { conversationId, limit } = payload;
+        if (!conversationId) {
+          this.send(ws, 'message:error', { message: 'conversationId required' });
+          return;
+        }
+
+        const messages = this.options.messageService.getMessages(conversationId, limit);
+        this.send(ws, 'message:history', { conversationId, messages });
+        break;
+      }
+
+      case 'presence:update': {
+        const { status } = payload;
+        if (status !== 'online' && status !== 'offline') {
+          this.send(ws, 'presence:error', { message: 'Invalid status' });
+          return;
+        }
+
+        this.options.messageService.updatePresence(clientId, status);
+        
+        // Broadcast presence change to all clients
+        this.broadcast('presence:changed', { userId: clientId, status });
+        break;
+      }
+
+      case 'typing:start': {
+        const { conversationId } = payload;
+        if (!conversationId) {
+          return;
+        }
+
+        this.options.messageService.setTyping(conversationId, clientId, true);
+        
+        // Broadcast typing indicator
+        const conversation = this.options.messageService.getConversation(conversationId);
+        if (conversation) {
+          conversation.participants.forEach((participantId) => {
+            if (participantId !== clientId) {
+              const participantWs = this.clients.get(participantId);
+              if (participantWs && participantWs.readyState === WebSocket.OPEN) {
+                this.send(participantWs, 'typing:indicator', {
+                  conversationId,
+                  userId: clientId,
+                  isTyping: true,
+                });
+              }
+            }
+          });
+        }
+        break;
+      }
+
+      case 'typing:stop': {
+        const { conversationId } = payload;
+        if (!conversationId) {
+          return;
+        }
+
+        this.options.messageService.setTyping(conversationId, clientId, false);
+        
+        // Broadcast typing indicator
+        const conversation = this.options.messageService.getConversation(conversationId);
+        if (conversation) {
+          conversation.participants.forEach((participantId) => {
+            if (participantId !== clientId) {
+              const participantWs = this.clients.get(participantId);
+              if (participantWs && participantWs.readyState === WebSocket.OPEN) {
+                this.send(participantWs, 'typing:indicator', {
+                  conversationId,
+                  userId: clientId,
+                  isTyping: false,
+                });
+              }
+            }
+          });
+        }
+        break;
+      }
+
+      default:
+        console.warn('[WebSocketHandler] Unknown messaging message type:', message.type);
+    }
   }
 
   private send(ws: WebSocket, type: string, payload?: unknown): void {

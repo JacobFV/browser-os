@@ -1152,9 +1152,15 @@ importers:
 
   system-apps/messaging-client:
     dependencies:
+      '@browser-os/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@browser-os/events':
         specifier: workspace:*
         version: link:../../packages/events
+      '@browser-os/proc':
+        specifier: workspace:*
+        version: link:../../packages/proc
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

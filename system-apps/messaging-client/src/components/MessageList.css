@@ -1,0 +1,152 @@
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  padding: 16px;
+}
+
+.message-list-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.message-wrapper {
+  margin-bottom: 8px;
+}
+
+.message-wrapper.own {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.message-wrapper.other {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message-timestamp-divider {
+  text-align: center;
+  margin: 16px 0;
+  color: #757575;
+  font-size: 12px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 70%;
+}
+
+.message.own {
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #2196f3;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-sender {
+  font-size: 12px;
+  font-weight: 600;
+  color: #424242;
+  margin-bottom: 4px;
+  padding-left: 4px;
+}
+
+.message-bubble {
+  background-color: white;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message-wrapper.own .message-bubble {
+  background-color: #2196f3;
+  color: white;
+}
+
+.message-reply {
+  font-size: 12px;
+  color: #757575;
+  padding-bottom: 4px;
+  border-left: 3px solid #2196f3;
+  padding-left: 8px;
+  margin-bottom: 4px;
+}
+
+.message-wrapper.own .message-reply {
+  border-left-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.message-text {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.message-attachments {
+  margin-top: 8px;
+}
+
+.message-attachment {
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.message-wrapper.own .message-attachment {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.message-time {
+  font-size: 11px;
+}
+
+.message-status {
+  font-size: 12px;
+}
+
+.empty-messages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #757575;
+  font-size: 14px;
+}
+
+.typing-indicator {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #757575;
+  font-style: italic;
+}
+

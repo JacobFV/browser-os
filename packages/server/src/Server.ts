@@ -5,6 +5,7 @@ import { TelemetryService } from './TelemetryService';
 import { ServiceRegistry } from './ServiceRegistry';
 import { WebSocketHandler } from './WebSocketHandler';
 import { ChessService } from './services/chess/ChessService';
+import { MessageService } from './services/MessageService';
 import { createTelemetryRoutes } from './routes/telemetry';
 import { createProxyRoutes } from './routes/proxy';
 import { createChessRoutes } from './routes/chess';
@@ -20,6 +21,7 @@ export class Server {
   private telemetryService: TelemetryService;
   private serviceRegistry: ServiceRegistry;
   private chessService: ChessService;
+  private messageService: MessageService;
   private wsHandler: WebSocketHandler;
   private options: Required<ServerOptions>;
 
@@ -34,10 +36,12 @@ export class Server {
     this.telemetryService = new TelemetryService();
     this.serviceRegistry = new ServiceRegistry();
     this.chessService = new ChessService();
+    this.messageService = new MessageService();
     this.wsHandler = new WebSocketHandler({
       telemetryService: this.telemetryService,
       serviceRegistry: this.serviceRegistry,
       chessService: this.chessService,
+      messageService: this.messageService,
       pingInterval: this.options.pingInterval,
     });
 
@@ -50,6 +54,12 @@ export class Server {
 
     this.serviceRegistry.register({
       name: 'chess',
+      version: '1.0.0',
+      enabled: true,
+    });
+
+    this.serviceRegistry.register({
+      name: 'messaging',
       version: '1.0.0',
       enabled: true,
     });
@@ -166,6 +176,13 @@ export class Server {
    */
   getChessService(): ChessService {
     return this.chessService;
+  }
+
+  /**
+   * Get message service
+   */
+  getMessageService(): MessageService {
+    return this.messageService;
   }
 }
 
