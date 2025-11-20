@@ -1,0 +1,91 @@
+.calculator-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #202020;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  user-select: none;
+}
+
+.calculator-display {
+  background: #333;
+  padding: 20px;
+  text-align: right;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-bottom: 1px solid #444;
+}
+
+.calculator-equation {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+  min-height: 20px;
+}
+
+.calculator-current {
+  font-size: 48px;
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calculator-keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1px;
+  background: #444;
+  padding: 1px;
+  flex: 3;
+}
+
+.calculator-key {
+  background: #3a3a3a;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+}
+
+.calculator-key:hover {
+  background: #4a4a4a;
+}
+
+.calculator-key:active {
+  background: #2a2a2a;
+}
+
+.calculator-key.operator {
+  background: #2d2d2d;
+  color: #4caf50;
+}
+
+.calculator-key.operator:hover {
+  background: #3d3d3d;
+}
+
+.calculator-key.equals {
+  background: #4caf50;
+  color: white;
+}
+
+.calculator-key.equals:hover {
+  background: #5cb860;
+}
+
+.calculator-key.clear {
+  color: #ff5252;
+}
+
+.calculator-key.zero {
+  grid-column: span 2;
+}
+
