@@ -56,16 +56,20 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     setDraggedPiece({ square, piece });
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', square);
+    e.dataTransfer.setData('application/json', JSON.stringify({ from: square }));
   }, [disabled, engine, turn]);
 
   const handleDragOver = useCallback((e: React.DragEvent, square: Square) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     
     if (draggedPiece) {
       const legalMovesForPiece = engine.getLegalMoves(draggedPiece.square);
       if (legalMovesForPiece.includes(square)) {
         setDragOverSquare(square);
+      } else {
+        setDragOverSquare(null);
       }
     }
   }, [draggedPiece, engine]);
@@ -76,6 +80,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   const handleDrop = useCallback((e: React.DragEvent, square: Square) => {
     e.preventDefault();
+    e.stopPropagation();
     setDragOverSquare(null);
 
     if (!draggedPiece) return;
@@ -123,9 +128,25 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           isLastMoveFrom || isLastMoveTo ? 'last-move' : ''
         } ${isInCheck ? 'check' : ''} ${isDragOver ? 'drag-over' : ''}`}
         onClick={() => handleSquareClick(square)}
-        onDragOver={(e) => handleDragOver(e, square)}
-        onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, square)}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleDragOver(e, square);
+        }}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleDragLeave();
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleDrop(e, square);
+        }}
         data-square={square}
       >
         {displayFile === 0 && (
@@ -137,8 +158,27 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         {piece && (
           <div
             draggable={!disabled && piece.color === turn}
-            onDragStart={(e) => handleDragStart(e, square)}
-            onDragEnd={handleDragEnd}
+            onDragStart={(e) => {
+              handleDragStart(e, square);
+            }}
+            onDragEnd={(e) => {
+              e.stopPropagation();
+              handleDragEnd();
+            }}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              cursor: (!disabled && piece.color === turn) ? 'grab' : 'default',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              MozUserSelect: 'none',
+              msUserSelect: 'none',
+              touchAction: 'none',
+              WebkitTouchCallout: 'none',
+            }}
           >
             <Piece
               piece={piece}

@@ -1,7 +1,7 @@
 import React from 'react';
 import './SettingsSidebar.css';
 
-export type SettingsCategory = 'system' | 'users' | 'mounts' | 'apps' | 'other';
+export type SettingsCategory = 'system' | 'users' | 'mounts' | 'apps' | 'chess' | 'other';
 
 export interface SettingsSidebarProps {
   currentCategory: SettingsCategory;
@@ -17,6 +17,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
     { id: 'users', label: 'Users', icon: '👤' },
     { id: 'mounts', label: 'Mounts', icon: '💾' },
     { id: 'apps', label: 'Apps', icon: '📱' },
+    { id: 'chess', label: 'Chess', icon: '♟️' },
     { id: 'other', label: 'Other', icon: '📄' },
   ];
 

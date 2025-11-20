@@ -1,0 +1,90 @@
+.matchmaking-window {
+  padding: 2em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.matchmaking-window h1 {
+  margin: 0 0 2em 0;
+  font-size: 2em;
+}
+
+.matchmaking-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+  max-width: 400px;
+  width: 100%;
+}
+
+.matchmaking-form {
+  width: 100%;
+}
+
+.matchmaking-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-weight: 500;
+}
+
+.matchmaking-form input {
+  padding: 0.75em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.matchmaking-button {
+  padding: 0.75em 2em;
+  border: 1px solid #2196f3;
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+}
+
+.matchmaking-button:hover {
+  background-color: #1976d2;
+}
+
+.matchmaking-button.primary {
+  width: 100%;
+}
+
+.matchmaking-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.matchmaking-error {
+  text-align: center;
+  color: #f44336;
+}
+
+.matchmaking-error p {
+  margin-bottom: 1em;
+}
+

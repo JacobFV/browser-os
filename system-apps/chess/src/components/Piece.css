@@ -5,11 +5,15 @@
   align-items: center;
   justify-content: center;
   font-size: 3em;
-  cursor: grab;
+  cursor: inherit;
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   transition: transform 0.2s ease;
   position: relative;
   z-index: 10;
+  pointer-events: auto;
 }
 
 .chess-piece.white {

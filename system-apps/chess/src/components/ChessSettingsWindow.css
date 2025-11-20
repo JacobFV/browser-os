@@ -1,0 +1,11 @@
+.chess-settings-window {
+  padding: 2em;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chess-settings-window h1 {
+  margin: 0 0 1.5em 0;
+  font-size: 1.8em;
+}
+

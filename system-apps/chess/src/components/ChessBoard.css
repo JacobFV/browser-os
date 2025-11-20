@@ -23,6 +23,13 @@
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .chess-square.light {
