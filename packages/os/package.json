@@ -12,6 +12,7 @@
     "@browser-os/schemas": "workspace:*",
     "@browser-os/events": "workspace:*",
     "@browser-os/fs": "workspace:*",
+    "@browser-os/proc": "workspace:*",
     "@browser-os/app-registry": "workspace:*",
     "@browser-os/windowing": "workspace:*",
     "@browser-os/workspace": "workspace:*",

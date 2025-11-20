@@ -7,6 +7,7 @@ import { WorkspaceManager, Workspace, useWorkspace, useKeyboardShortcuts } from 
 import { Taskbar } from '@browser-os/taskbar';
 import type { Window } from '@browser-os/schemas';
 import { AppComponentRegistry } from './AppComponentRegistry';
+import { ProcessManager as ProcManager } from '@browser-os/proc';
 import { Browser } from '@browser-os/browser';
 import { Terminal } from '@browser-os/terminal';
 import { Notepad } from '@browser-os/notepad';
@@ -58,6 +59,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
   const [appComponentRegistry] = useState(() => new AppComponentRegistry(eventBus));
   const [workspaceManager, setWorkspaceManager] = useState<WorkspaceManager | null>(null);
   const [notificationManager] = useState(() => new NotificationManager({ eventBus }));
+  const [procManager] = useState(() => new ProcManager({ eventBus, fs }));
   const [initialized, setInitialized] = useState(false);
 
   // Initialize filesystem and app registry
@@ -1075,6 +1077,49 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
         });
         setWorkspaceManager(wm);
         console.log('[OS] Workspace manager initialized');
+
+        // Set up eventBus request handlers for process manager access
+        console.log('[OS] Setting up process manager eventBus handlers...');
+        eventBus.respond('process-manager:list', async () => {
+          const processes = procManager.list();
+          return processes.map((p) => ({
+            pid: p.pid,
+            ppid: p.ppid,
+            name: p.name,
+            status: p.status,
+            cwd: p.cwd,
+            env: p.env,
+          }));
+        });
+
+        eventBus.respond('process-manager:get', async (event: any) => {
+          const { pid } = event.payload || {};
+          if (typeof pid !== 'number') {
+            throw new Error('pid must be a number');
+          }
+          const process = procManager.get(pid);
+          if (!process) {
+            return null;
+          }
+          return {
+            pid: process.pid,
+            ppid: process.ppid,
+            name: process.name,
+            status: process.status,
+            cwd: process.cwd,
+            env: process.env,
+          };
+        });
+
+        eventBus.respond('process-manager:kill', async (event: any) => {
+          const { pid, signal } = event.payload || {};
+          if (typeof pid !== 'number') {
+            throw new Error('pid must be a number');
+          }
+          await procManager.kill(pid, signal || 'SIGTERM');
+          return null;
+        });
+        console.log('[OS] Process manager eventBus handlers set up');
 
         setInitialized(true);
         console.log('[OS] Initialization complete!');

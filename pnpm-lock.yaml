@@ -382,6 +382,9 @@ importers:
       '@browser-os/pdf-viewer':
         specifier: workspace:*
         version: link:../../system-apps/pdf-viewer
+      '@browser-os/proc':
+        specifier: workspace:*
+        version: link:../proc
       '@browser-os/process-manager':
         specifier: workspace:*
         version: link:../../system-apps/process-manager
