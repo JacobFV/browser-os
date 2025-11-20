@@ -1,0 +1,151 @@
+.clock-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #202020;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  user-select: none;
+}
+
+.clock-tabs {
+  display: flex;
+  background: #333;
+  border-bottom: 1px solid #444;
+}
+
+.clock-tab {
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  color: #aaa;
+  transition: background 0.2s, color 0.2s;
+}
+
+.clock-tab:hover {
+  background: #3a3a3a;
+  color: #fff;
+}
+
+.clock-tab.active {
+  color: #4285F4;
+  border-bottom: 2px solid #4285F4;
+}
+
+.clock-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.clock-display {
+  font-size: 64px;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
+.clock-date {
+  font-size: 18px;
+  color: #888;
+}
+
+.stopwatch-display {
+  font-size: 64px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-display {
+  font-size: 64px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-controls {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+}
+
+.clock-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.clock-button:hover {
+  opacity: 0.9;
+}
+
+.clock-button:active {
+  transform: scale(0.95);
+}
+
+.clock-button.start {
+  background: #4CAF50;
+}
+
+.clock-button.stop {
+  background: #F44336;
+}
+
+.clock-button.reset {
+  background: #757575;
+}
+
+.timer-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 48px;
+  font-weight: 300;
+}
+
+.timer-input input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 48px;
+  width: 80px;
+  text-align: center;
+  font-weight: 300;
+  border-bottom: 1px solid #444;
+}
+
+.timer-input input:focus {
+  outline: none;
+  border-bottom-color: #4285F4;
+}
+
+.laps-list {
+  margin-top: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 300px;
+}
+
+.lap-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #333;
+  color: #aaa;
+}
+
+.lap-number {
+  color: #666;
+}
+
