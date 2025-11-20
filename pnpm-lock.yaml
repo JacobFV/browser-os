@@ -514,6 +514,9 @@ importers:
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
+      chess.js:
+        specifier: ^1.0.0-beta.8
+        version: 1.4.0
       express:
         specifier: ^4.18.2
         version: 4.21.2
@@ -791,18 +794,27 @@ importers:
 
   system-apps/chess:
     dependencies:
+      '@browser-os/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@browser-os/events':
         specifier: workspace:*
         version: link:../../packages/events
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      chess.js:
+        specifier: ^1.0.0-beta.8
+        version: 1.4.0
       react:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      stockfish.js:
+        specifier: ^10.0.2
+        version: 10.0.2
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -2482,6 +2494,9 @@ packages:
     resolution: {integrity: sha512-IkxPpb5rS/d1IiLbHMgfPuS0FgiWTtFIm/Nj+2woXDLTZ7fOT2eqzgYbdMlLweqlHbsZjxEChoVK+7iph7jyQg==}
     engines: {node: '>=20.18.1'}
 
+  chess.js@1.4.0:
+    resolution: {integrity: sha512-BBJgrrtKQOzFLonR0l+k64A98NLemPwNsCskwb+29bRwobUa4iTm51E1kwGPbWXAcfdDa18nad6vpPPKPWarqw==}
+
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
@@ -3328,6 +3343,9 @@ packages:
 
   std-env@3.10.0:
     resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
+
+  stockfish.js@10.0.2:
+    resolution: {integrity: sha512-treB3AYcdvRJ9SDPOyL0R2NcEAtQgG432nStfRzR4wzVELGQ6iVoeBHwvirHTfocNOTims7XNkK3SADaocsJmQ==}
 
   stop-iteration-iterator@1.1.0:
     resolution: {integrity: sha512-eLoXW/DHyl62zxY4SCaIgnRhuMr6ri4juEYARS8E6sCEqzKpOiE521Ucofdx+KnDZl5xmvGYaaKCk5FEOxJCoQ==}
@@ -4341,6 +4359,8 @@ snapshots:
       undici: 7.16.0
       whatwg-mimetype: 4.0.0
 
+  chess.js@1.4.0: {}
+
   cliui@8.0.1:
     dependencies:
       string-width: 4.2.3
@@ -5325,6 +5345,8 @@ snapshots:
   statuses@2.0.1: {}
 
   std-env@3.10.0: {}
+
+  stockfish.js@10.0.2: {}
 
   stop-iteration-iterator@1.1.0:
     dependencies:

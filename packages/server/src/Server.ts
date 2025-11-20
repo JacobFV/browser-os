@@ -4,8 +4,10 @@ import { WebSocketServer } from 'ws';
 import { TelemetryService } from './TelemetryService';
 import { ServiceRegistry } from './ServiceRegistry';
 import { WebSocketHandler } from './WebSocketHandler';
+import { ChessService } from './services/chess/ChessService';
 import { createTelemetryRoutes } from './routes/telemetry';
 import { createProxyRoutes } from './routes/proxy';
+import { createChessRoutes } from './routes/chess';
 import type { ServerOptions } from './types';
 
 /**
@@ -17,6 +19,7 @@ export class Server {
   private wss: WebSocketServer | null = null;
   private telemetryService: TelemetryService;
   private serviceRegistry: ServiceRegistry;
+  private chessService: ChessService;
   private wsHandler: WebSocketHandler;
   private options: Required<ServerOptions>;
 
@@ -30,15 +33,23 @@ export class Server {
     this.app = express();
     this.telemetryService = new TelemetryService();
     this.serviceRegistry = new ServiceRegistry();
+    this.chessService = new ChessService();
     this.wsHandler = new WebSocketHandler({
       telemetryService: this.telemetryService,
       serviceRegistry: this.serviceRegistry,
+      chessService: this.chessService,
       pingInterval: this.options.pingInterval,
     });
 
-    // Register proxy service
+    // Register services
     this.serviceRegistry.register({
       name: 'proxy',
+      version: '1.0.0',
+      enabled: true,
+    });
+
+    this.serviceRegistry.register({
+      name: 'chess',
       version: '1.0.0',
       enabled: true,
     });
@@ -140,11 +151,21 @@ export class Server {
     // Proxy routes
     this.app.use('/proxy', createProxyRoutes());
 
+    // Chess routes
+    this.app.use('/api/chess', createChessRoutes(this.chessService));
+
     // Service routes
     this.app.get('/services', (req, res) => {
       const services = this.serviceRegistry.getEnabled();
       res.json(services);
     });
+  }
+
+  /**
+   * Get chess service
+   */
+  getChessService(): ChessService {
+    return this.chessService;
   }
 }
 

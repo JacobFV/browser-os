@@ -1,11 +1,13 @@
 import { WebSocket } from 'ws';
 import { TelemetryService } from './TelemetryService';
 import { ServiceRegistry } from './ServiceRegistry';
+import { ChessService } from './services/chess/ChessService';
 import type { WebSocketMessage, ClientMetadata, TelemetryData } from './types';
 
 export interface WebSocketHandlerOptions {
   telemetryService: TelemetryService;
   serviceRegistry: ServiceRegistry;
+  chessService?: ChessService;
   pingInterval?: number;
 }
 
@@ -110,6 +112,12 @@ export class WebSocketHandler {
   }
 
   private handleMessage(ws: WebSocket, message: WebSocketMessage): void {
+    // Handle chess messages if chess service is available
+    if (this.options.chessService && message.type.startsWith('chess:')) {
+      this.handleChessMessage(ws, message);
+      return;
+    }
+
     switch (message.type) {
       case 'client:connect':
         this.handleConnect(ws, message.payload as ClientMetadata);
@@ -125,6 +133,100 @@ export class WebSocketHandler {
 
       default:
         console.warn('[WebSocketHandler] Unknown message type:', message.type);
+    }
+  }
+
+  private handleChessMessage(ws: WebSocket, message: WebSocketMessage): void {
+    if (!this.options.chessService) return;
+
+    const clientId = this.wsToClientId.get(ws);
+    if (!clientId) {
+      this.send(ws, 'chess:error', { message: 'Not connected' });
+      return;
+    }
+
+    const payload = message.payload as any;
+
+    switch (message.type) {
+      case 'chess:join': {
+        const { gameId, playerId } = payload;
+        const player = {
+          id: playerId || clientId,
+          ws,
+          color: 'w' as const,
+          name: payload.name,
+        };
+
+        let room = this.options.chessService.getRoom(gameId);
+        
+        if (!room) {
+          // Create new room
+          room = this.options.chessService.createRoom(player);
+          this.send(ws, 'chess:joined', {
+            gameId: room.getId(),
+            color: 'w',
+          });
+        } else if (!room.isFull()) {
+          // Join existing room
+          const blackPlayer = {
+            ...player,
+            color: 'b' as const,
+          };
+          room.addBlackPlayer(blackPlayer);
+          this.send(ws, 'chess:joined', {
+            gameId: room.getId(),
+            color: 'b',
+          });
+        } else {
+          this.send(ws, 'chess:error', { message: 'Room is full' });
+        }
+        break;
+      }
+
+      case 'chess:move': {
+        const { gameId, move } = payload;
+        const room = this.options.chessService.getRoom(gameId);
+        
+        if (!room) {
+          this.send(ws, 'chess:error', { message: 'Game not found' });
+          return;
+        }
+
+        const success = room.handleMove(clientId, move);
+        if (!success) {
+          this.send(ws, 'chess:error', { message: 'Invalid move' });
+        }
+        break;
+      }
+
+      case 'chess:chat': {
+        const { gameId, message: chatMessage } = payload;
+        const room = this.options.chessService.getRoom(gameId);
+        
+        if (!room) {
+          this.send(ws, 'chess:error', { message: 'Game not found' });
+          return;
+        }
+
+        room.handleChat(clientId, chatMessage);
+        break;
+      }
+
+      case 'chess:resign': {
+        const { gameId } = payload;
+        const room = this.options.chessService.getRoom(gameId);
+        
+        if (!room) {
+          this.send(ws, 'chess:error', { message: 'Game not found' });
+          return;
+        }
+
+        room.handleResign(clientId);
+        break;
+      }
+
+      default:
+        console.warn('[WebSocketHandler] Unknown chess message type:', message.type);
     }
   }
 

@@ -1,0 +1,54 @@
+.game-status {
+  padding: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.status-text {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+.game-status.active .status-text {
+  color: #333;
+}
+
+.game-status.check .status-text {
+  color: #f44336;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.game-status.game-over .status-text {
+  color: #2196f3;
+  font-size: 1.2em;
+}
+
+.connection-status {
+  font-size: 0.85em;
+  margin-top: 0.5em;
+}
+
+.connection-status.connected {
+  color: #4caf50;
+}
+
+.connection-status.connecting {
+  color: #ff9800;
+}
+
+.connection-status.disconnected {
+  color: #f44336;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+

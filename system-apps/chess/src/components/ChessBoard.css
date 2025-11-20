@@ -1,0 +1,125 @@
+.chess-board {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+  border: 2px solid #8b4513;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chess-square.light {
+  background-color: #f0d9b5;
+}
+
+.chess-square.dark {
+  background-color: #b58863;
+}
+
+.chess-square.selected {
+  background-color: #baca44 !important;
+}
+
+.chess-square.legal-move {
+  position: relative;
+}
+
+.chess-square.legal-move::before {
+  content: '';
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+.chess-square.last-move {
+  background-color: #cdd26a !important;
+}
+
+.chess-square.check {
+  background-color: #ff6b6b !important;
+  animation: check-pulse 1s ease-in-out infinite;
+}
+
+.chess-square.drag-over {
+  background-color: #a8d5ba !important;
+}
+
+.legal-move-indicator {
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+.rank-label,
+.file-label {
+  position: absolute;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.rank-label {
+  left: 4px;
+  top: 4px;
+}
+
+.file-label {
+  right: 4px;
+  bottom: 4px;
+}
+
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.game-over-message {
+  background-color: white;
+  padding: 2em;
+  border-radius: 8px;
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+}
+
+@keyframes check-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
