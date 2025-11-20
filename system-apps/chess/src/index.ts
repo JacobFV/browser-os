@@ -1,0 +1,2 @@
+export { Chess } from './Chess';
+
