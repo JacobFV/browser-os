@@ -42,6 +42,10 @@
     "@browser-os/markdown-editor": "workspace:*",
     "@browser-os/password-manager": "workspace:*",
     "@browser-os/pdf-viewer": "workspace:*",
+    "@browser-os/process-manager": "workspace:*",
+    "@browser-os/chess": "workspace:*",
+    "@browser-os/messaging-client": "workspace:*",
+    "@browser-os/email-client": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {

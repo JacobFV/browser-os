@@ -32,6 +32,10 @@ import { FileSearch } from '@browser-os/file-search';
 import { MarkdownEditor } from '@browser-os/markdown-editor';
 import { PasswordManager } from '@browser-os/password-manager';
 import { PDFViewer } from '@browser-os/pdf-viewer';
+import { ProcessManager } from '@browser-os/process-manager';
+import { Chess } from '@browser-os/chess';
+import { MessagingClient } from '@browser-os/messaging-client';
+import { EmailClient } from '@browser-os/email-client';
 import { Desktop } from './Desktop';
 import { NotificationManager } from '@browser-os/notifications';
 import { appIcons } from './appIcons';
@@ -924,6 +928,142 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
           appRegistry.add(pdfViewerEntry);
           await appRegistry.save();
           console.log('[OS] PDFViewer app registered/updated in registry');
+        }
+
+        // Register process-manager app component
+        console.log('[OS] Registering process-manager app component...');
+        console.log('[OS] ProcessManager component:', ProcessManager);
+        if (!ProcessManager) {
+          throw new Error('ProcessManager component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('process-manager', ProcessManager);
+        console.log('[OS] ProcessManager app component registered');
+
+        // Register or update process-manager app in registry
+        const existingProcessManager = appRegistry.get('process-manager');
+        if (!existingProcessManager || !existingProcessManager.manifest.icon) {
+          console.log('[OS] Registering/updating process-manager app in registry...');
+          const processManagerEntry = {
+            id: 'process-manager',
+            installedAt: existingProcessManager?.installedAt || Date.now(),
+            installedBy: existingProcessManager?.installedBy || 'system',
+            enabled: existingProcessManager?.enabled ?? true,
+            manifest: {
+              id: 'process-manager',
+              name: 'Process Manager',
+              version: '0.1.0',
+              description: 'Manage system processes',
+              entrypoint: '/bin/process-manager.js',
+              permissions: ['proc.list', 'proc.get', 'proc.kill'],
+              icon: appIcons['process-manager'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(processManagerEntry);
+          await appRegistry.save();
+          console.log('[OS] ProcessManager app registered/updated in registry');
+        }
+
+        // Register chess app component
+        console.log('[OS] Registering chess app component...');
+        console.log('[OS] Chess component:', Chess);
+        if (!Chess) {
+          throw new Error('Chess component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('chess', Chess);
+        console.log('[OS] Chess app component registered');
+
+        // Register or update chess app in registry
+        const existingChess = appRegistry.get('chess');
+        if (!existingChess || !existingChess.manifest.icon) {
+          console.log('[OS] Registering/updating chess app in registry...');
+          const chessEntry = {
+            id: 'chess',
+            installedAt: existingChess?.installedAt || Date.now(),
+            installedBy: existingChess?.installedBy || 'system',
+            enabled: existingChess?.enabled ?? true,
+            manifest: {
+              id: 'chess',
+              name: 'Chess',
+              version: '0.1.0',
+              description: 'Play chess against AI',
+              entrypoint: '/bin/chess.js',
+              permissions: ['fs.read', 'fs.write'],
+              icon: appIcons['chess'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(chessEntry);
+          await appRegistry.save();
+          console.log('[OS] Chess app registered/updated in registry');
+        }
+
+        // Register messaging-client app component
+        console.log('[OS] Registering messaging-client app component...');
+        console.log('[OS] MessagingClient component:', MessagingClient);
+        if (!MessagingClient) {
+          throw new Error('MessagingClient component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('messaging-client', MessagingClient);
+        console.log('[OS] MessagingClient app component registered');
+
+        // Register or update messaging-client app in registry
+        const existingMessagingClient = appRegistry.get('messaging-client');
+        if (!existingMessagingClient || !existingMessagingClient.manifest.icon) {
+          console.log('[OS] Registering/updating messaging-client app in registry...');
+          const messagingClientEntry = {
+            id: 'messaging-client',
+            installedAt: existingMessagingClient?.installedAt || Date.now(),
+            installedBy: existingMessagingClient?.installedBy || 'system',
+            enabled: existingMessagingClient?.enabled ?? true,
+            manifest: {
+              id: 'messaging-client',
+              name: 'Messaging',
+              version: '0.1.0',
+              description: 'Real-time messaging client',
+              entrypoint: '/bin/messaging-client.js',
+              permissions: ['fs.read', 'fs.write', 'network.*'],
+              icon: appIcons['messaging-client'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(messagingClientEntry);
+          await appRegistry.save();
+          console.log('[OS] MessagingClient app registered/updated in registry');
+        }
+
+        // Register email-client app component
+        console.log('[OS] Registering email-client app component...');
+        console.log('[OS] EmailClient component:', EmailClient);
+        if (!EmailClient) {
+          throw new Error('EmailClient component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('email-client', EmailClient);
+        console.log('[OS] EmailClient app component registered');
+
+        // Register or update email-client app in registry
+        const existingEmailClient = appRegistry.get('email-client');
+        if (!existingEmailClient || !existingEmailClient.manifest.icon) {
+          console.log('[OS] Registering/updating email-client app in registry...');
+          const emailClientEntry = {
+            id: 'email-client',
+            installedAt: existingEmailClient?.installedAt || Date.now(),
+            installedBy: existingEmailClient?.installedBy || 'system',
+            enabled: existingEmailClient?.enabled ?? true,
+            manifest: {
+              id: 'email-client',
+              name: 'Email',
+              version: '0.1.0',
+              description: 'Email client with OAuth integration',
+              entrypoint: '/bin/email-client.js',
+              permissions: ['fs.read', 'fs.write', 'network.*', 'window.create'],
+              icon: appIcons['email-client'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(emailClientEntry);
+          await appRegistry.save();
+          console.log('[OS] EmailClient app registered/updated in registry');
         }
 
         // Initialize workspace manager

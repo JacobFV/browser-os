@@ -278,4 +278,57 @@ export const appIcons = {
       <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
     </svg>
   `),
+
+  'process-manager': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF5722">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#FF5722"/>
+      <rect x="5" y="6" width="14" height="2" rx="0.5" fill="#fff"/>
+      <rect x="5" y="10" width="12" height="2" rx="0.5" fill="#fff"/>
+      <rect x="5" y="14" width="10" height="2" rx="0.5" fill="#fff"/>
+      <circle cx="18" cy="7" r="1.5" fill="#fff"/>
+      <circle cx="18" cy="11" r="1.5" fill="#fff"/>
+      <circle cx="18" cy="15" r="1.5" fill="#fff"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  chess: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#795548">
+      <rect x="2" y="2" width="20" height="20" rx="2" fill="#795548"/>
+      <rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <rect x="3" y="3" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="8.5" y="3" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="14" y="3" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="19.5" y="3" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="5.75" y="5.75" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="11.25" y="5.75" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <rect x="16.75" y="5.75" width="2.5" height="2.5" fill="#fff" opacity="0.3"/>
+      <circle cx="4.25" cy="4.25" r="1" fill="#fff"/>
+      <circle cx="9.75" cy="4.25" r="1" fill="#fff"/>
+      <circle cx="15.25" cy="4.25" r="1" fill="#fff"/>
+      <circle cx="20.75" cy="4.25" r="1" fill="#fff"/>
+      <circle cx="7" cy="7" r="0.8" fill="#fff"/>
+      <circle cx="12.5" cy="7" r="0.8" fill="#fff"/>
+      <circle cx="18" cy="7" r="0.8" fill="#fff"/>
+    </svg>
+  `),
+
+  'messaging-client': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#00BCD4">
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="#00BCD4"/>
+      <path d="M6 8h12M6 12h10M6 16h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="18" cy="7" r="2" fill="#fff"/>
+      <path d="M17 7l1 1 2-2" stroke="#00BCD4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  `),
+
+  'email-client': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF9800">
+      <rect x="3" y="4" width="18" height="16" rx="2" fill="#FF9800"/>
+      <path d="M3 7l9 6 9-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="18" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
+    </svg>
+  `),
 };
