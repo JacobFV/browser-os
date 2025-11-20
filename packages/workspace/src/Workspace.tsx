@@ -11,6 +11,7 @@ export interface WorkspaceProps {
   windowManager: WindowManager;
   appComponentRegistry?: AppComponentRegistry;
   eventBus?: any;
+  os?: any; // Can be a function that creates os API per appId, or the os API object itself
   children?: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
   windowManager,
   appComponentRegistry,
   eventBus,
+  os,
   children,
 }) => {
   const renderWindowContent = (window: Window) => {
@@ -27,10 +29,13 @@ export const Workspace: React.FC<WorkspaceProps> = ({
     if (window.appId && appComponentRegistry) {
       const AppComponent = appComponentRegistry.getAppComponent(window.appId);
       if (AppComponent) {
+        // Create os API for this specific app/window
+        const osAPI = typeof os === 'function' ? os(window.appId) : os;
         const props: AppComponentProps = {
           windowId: window.id,
           appId: window.appId,
           eventBus: eventBus,
+          os: osAPI,
         };
         return <AppComponent {...props} />;
       }

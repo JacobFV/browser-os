@@ -1,0 +1,138 @@
+.inbox-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+.inbox-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.inbox-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.sort-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.email-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.email-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.email-item:hover {
+  background: #f5f5f5;
+}
+
+.email-item.selected {
+  background: #e3f2fd;
+}
+
+.email-item.unread {
+  font-weight: 500;
+}
+
+.email-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.email-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.email-star {
+  font-size: 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.email-sender {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.email-item-center {
+  flex: 1;
+  min-width: 0;
+  margin: 0 16px;
+}
+
+.email-subject {
+  font-weight: 500;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-indicator {
+  margin-left: 6px;
+  opacity: 0.6;
+}
+
+.email-preview {
+  font-size: 13px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-item-right {
+  min-width: 80px;
+  text-align: right;
+}
+
+.email-date {
+  font-size: 13px;
+  color: #999;
+}
+
+.empty-state {
+  padding: 64px 16px;
+  text-align: center;
+  color: #999;
+}
+

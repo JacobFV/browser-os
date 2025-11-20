@@ -1,0 +1,148 @@
+.email-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  overflow-y: auto;
+}
+
+.email-detail-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.email-detail-subject {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.email-detail-subject h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.email-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.action-button:hover {
+  background: #f0f0f0;
+}
+
+.email-detail-meta {
+  margin-bottom: 16px;
+}
+
+.email-meta-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.meta-label {
+  font-weight: 500;
+  min-width: 60px;
+  color: #666;
+}
+
+.meta-value {
+  flex: 1;
+  color: #333;
+  word-break: break-word;
+}
+
+.email-detail-toolbar {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-button {
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toolbar-button:hover {
+  background: #1976d2;
+}
+
+.toolbar-button.delete {
+  background: #f44336;
+}
+
+.toolbar-button.delete:hover {
+  background: #d32f2f;
+}
+
+.email-detail-body {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.email-attachments {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.email-attachments h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.attachment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.attachment-item:hover {
+  background: #f0f0f0;
+}
+
+.attachment-icon {
+  font-size: 20px;
+}
+
+.attachment-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.attachment-size {
+  font-size: 12px;
+  color: #999;
+}
+

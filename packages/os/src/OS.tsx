@@ -39,6 +39,8 @@ import { MessagingClient } from '@browser-os/messaging-client';
 import { EmailClient } from '@browser-os/email-client';
 import { Desktop } from './Desktop';
 import { NotificationManager } from '@browser-os/notifications';
+import { NotificationAPI } from '@browser-os/proc';
+import { NetworkManager } from '@browser-os/network';
 import { appIcons } from './appIcons';
 import './OS.css';
 
@@ -59,6 +61,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
   const [appComponentRegistry] = useState(() => new AppComponentRegistry(eventBus));
   const [workspaceManager, setWorkspaceManager] = useState<WorkspaceManager | null>(null);
   const [notificationManager] = useState(() => new NotificationManager({ eventBus }));
+  const [networkManager] = useState(() => new NetworkManager({ eventBus }));
   const [procManager] = useState(() => new ProcManager({ eventBus, fs }));
   const [initialized, setInitialized] = useState(false);
 
@@ -1149,6 +1152,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
       desktop={desktop}
       fs={fs}
       notificationManager={notificationManager}
+      networkManager={networkManager}
     />
   );
 };
@@ -1162,6 +1166,7 @@ interface DesktopShellProps {
   desktop?: React.ReactNode;
   fs: FileSystem;
   notificationManager: NotificationManager;
+  networkManager: NetworkManager;
 }
 
 const DesktopShell: React.FC<DesktopShellProps> = ({
@@ -1173,7 +1178,164 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
   desktop,
   fs,
   notificationManager,
+  networkManager,
 }) => {
+  // Create OS API object for system apps
+  // This provides syscall and notification APIs that apps can use
+  const createOSAPI = (appId: string) => {
+    // Syscall wrapper that uses eventBus to request syscalls
+    // For system apps, we'll use PID 0 (system PID) or create a direct wrapper
+    const syscallWrapper = async (name: string, args: Record<string, unknown> = {}): Promise<unknown> => {
+      // For filesystem operations, use fs directly
+      if (name.startsWith('fs.')) {
+        const fsOp = name.substring(3);
+        switch (fsOp) {
+          case 'read':
+            const readData = await fs.read(args.path as string);
+            return Array.from(readData);
+          case 'write':
+            const writeData = args.data as number[] | Uint8Array;
+            const writeBytes = Array.isArray(writeData) ? new Uint8Array(writeData) : writeData;
+            await fs.write(args.path as string, writeBytes, { create: args.create as boolean | undefined });
+            return null;
+          case 'exists':
+            return await fs.exists(args.path as string);
+          case 'mkdir':
+            await fs.mkdir(args.path as string, { recursive: args.recursive as boolean | undefined });
+            return null;
+          case 'readdir':
+            return await fs.readdir(args.path as string);
+          case 'delete':
+            await fs.delete(args.path as string);
+            return null;
+          case 'rmdir':
+            await fs.rmdir(args.path as string, { recursive: args.recursive as boolean | undefined });
+            return null;
+          case 'stat':
+            return await fs.stat(args.path as string);
+          default:
+            throw new Error(`Unknown filesystem operation: ${fsOp}`);
+        }
+      }
+
+      // For network operations, use networkManager directly
+      if (name.startsWith('network.')) {
+        const networkOp = name.substring(8);
+        switch (networkOp) {
+          case 'request':
+            return await networkManager.request(args.url as string, args.options as any);
+          case 'get':
+            return await networkManager.get(args.url as string, args.options as any);
+          case 'post':
+            return await networkManager.post(args.url as string, args.body as string | Uint8Array | undefined, args.options as any);
+          default:
+            throw new Error(`Unknown network operation: ${networkOp}`);
+        }
+      }
+
+      // For notification operations, use notificationManager directly with appId
+      if (name.startsWith('notification.')) {
+        const notifOp = name.substring(13);
+        switch (notifOp) {
+          case 'create':
+            const notifOptions = args.options as any;
+            const notification = notificationManager.createNotification({
+              ...notifOptions,
+              appId,
+            });
+            return {
+              id: notification.id,
+              title: notification.title,
+              message: notification.message,
+              priority: notification.priority,
+              status: notification.status,
+              createdAt: notification.createdAt,
+              appId: notification.appId,
+              actions: notification.actions,
+            };
+          case 'dismiss':
+            notificationManager.dismissNotification(args.id as string);
+            return null;
+          case 'dismissAll':
+            const allNotifs = notificationManager.getNotifications().filter((n) => n.appId === appId);
+            allNotifs.forEach((n) => notificationManager.dismissNotification(n.id));
+            return null;
+          case 'markAsRead':
+            notificationManager.markAsRead(args.id as string);
+            return null;
+          case 'markAllAsRead':
+            const unreadNotifs = notificationManager
+              .getNotifications()
+              .filter((n) => n.appId === appId && n.status === 'pending');
+            unreadNotifs.forEach((n) => notificationManager.markAsRead(n.id));
+            return null;
+          case 'getUnreadCount':
+            return notificationManager
+              .getNotifications()
+              .filter((n) => n.appId === appId && n.status === 'pending').length;
+          case 'getNotifications':
+            const filter = (args.filter as 'all' | 'unread' | 'dismissed') ?? 'all';
+            let notifs = notificationManager.getNotifications().filter((n) => n.appId === appId);
+            if (filter === 'unread') {
+              notifs = notifs.filter((n) => n.status === 'pending');
+            } else if (filter === 'dismissed') {
+              notifs = notifs.filter((n) => n.status === 'dismissed');
+            }
+            return notifs.map((n) => ({
+              id: n.id,
+              title: n.title,
+              message: n.message,
+              priority: n.priority,
+              status: n.status,
+              createdAt: n.createdAt,
+              appId: n.appId,
+              actions: n.actions,
+              readAt: n.readAt,
+              dismissedAt: n.dismissedAt,
+            }));
+          default:
+            throw new Error(`Unknown notification operation: ${notifOp}`);
+        }
+      }
+
+      // For other syscalls, try eventBus request
+      try {
+        const response = await eventBus.request('syscall:request', {
+          syscall: name,
+          args,
+          pid: 0, // Use PID 0 for system apps
+        }, { timeout: 5000 });
+        return response;
+      } catch (error) {
+        console.error(`[OS] Syscall ${name} failed:`, error);
+        throw error;
+      }
+    };
+
+    // Create notification API wrapper
+    const notificationAPI = {
+      show: async (options: any) => {
+        const notification = notificationManager.createNotification({
+          ...options,
+          appId,
+        });
+        return {
+          id: notification.id,
+          dismiss: async () => {
+            notificationManager.dismissNotification(notification.id);
+          },
+        };
+      },
+      dismiss: async (id: string) => {
+        notificationManager.dismissNotification(id);
+      },
+    };
+
+    return {
+      syscall: syscallWrapper,
+      notification: notificationAPI,
+    };
+  };
   const { activeWorkspaceId } = useWorkspace({ workspaceManager, eventBus });
   useKeyboardShortcuts({ workspaceManager, enabled: true });
 
@@ -1320,6 +1482,7 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
         windowManager={windowManager}
         appComponentRegistry={appComponentRegistry}
         eventBus={eventBus}
+        os={createOSAPI}
       >
         {desktop ?? (
           <Desktop

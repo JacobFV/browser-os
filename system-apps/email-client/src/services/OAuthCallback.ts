@@ -1,0 +1,36 @@
+/**
+ * OAuth callback page handler
+ * This page receives the OAuth redirect and posts the result back to the parent window
+ */
+
+// Extract code and state from URL
+const urlParams = new URLSearchParams(window.location.search);
+const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+const code = urlParams.get('code') || hashParams.get('code');
+const state = urlParams.get('state') || hashParams.get('state');
+const error = urlParams.get('error') || hashParams.get('error');
+const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+
+if (window.opener) {
+  // Post message to parent window
+  window.opener.postMessage({
+    type: 'oauth-callback',
+    code,
+    state,
+    error: error || errorDescription,
+  }, window.location.origin);
+
+  // Close popup
+  window.close();
+} else {
+  // If no opener, display error
+  document.body.innerHTML = `
+    <div style="padding: 20px; font-family: sans-serif;">
+      <h1>OAuth Callback</h1>
+      <p>This window should have been opened as a popup. Please close this window and try again.</p>
+      ${error ? `<p style="color: red;">Error: ${error}</p>` : ''}
+    </div>
+  `;
+}
+

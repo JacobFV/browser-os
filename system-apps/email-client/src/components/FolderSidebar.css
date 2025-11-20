@@ -1,0 +1,55 @@
+.folder-sidebar {
+  width: 200px;
+  background: #f9f9f9;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.folder-list {
+  padding: 8px;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.folder-item:hover {
+  background: #f0f0f0;
+}
+
+.folder-item.active {
+  background: #e3f2fd;
+  font-weight: 500;
+}
+
+.folder-icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.folder-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-unread-count {
+  background: #2196f3;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+

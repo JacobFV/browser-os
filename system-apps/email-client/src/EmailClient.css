@@ -1,4 +1,85 @@
 .email-client-app {
-  padding: 20px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
 }
 
+.email-client-app.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666;
+}
+
+.email-layout {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.email-sidebar {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  border-right: 1px solid #ddd;
+}
+
+.email-folders {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+  border-right: 1px solid #ddd;
+}
+
+.email-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  overflow: hidden;
+}
+
+.email-toolbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.compose-button {
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.compose-button:hover {
+  background: #1976d2;
+}
+
+.email-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.email-empty-state h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+.email-empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
