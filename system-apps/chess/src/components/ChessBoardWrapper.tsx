@@ -114,11 +114,6 @@ export const ChessBoardWrapper: React.FC<ChessBoardWrapperProps> = ({
     return false;
   };
 
-  // Handle onDrop for v4 API - it receives an object with sourceSquare and targetSquare
-  const handleDrop = (move: { sourceSquare: Square; targetSquare: Square }): boolean => {
-    return handlePieceDrop(move.sourceSquare, move.targetSquare);
-  };
-
   const handleSquareClick = (square: Square) => {
     if (disabled) return;
     onSquareClick(square);
@@ -128,7 +123,7 @@ export const ChessBoardWrapper: React.FC<ChessBoardWrapperProps> = ({
     <div className="chess-board-wrapper">
       <Chessboard
         position={fen}
-        onPieceDrop={handleDrop}
+        onPieceDrop={handlePieceDrop}
         onSquareClick={handleSquareClick}
         boardOrientation={orientation}
         arePiecesDraggable={!disabled && (gameMode === 'local' || (gameMode === 'online' && turn === 'w') || (gameMode === 'ai' && turn === 'w'))}
