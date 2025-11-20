@@ -1,0 +1,394 @@
+.voice-recorder-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1a1a1a;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.voice-recorder-header {
+  padding: 20px;
+  background: #2a2a2a;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.voice-recorder-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.voice-recorder-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  overflow-y: auto;
+  align-items: center;
+}
+
+.recorder-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+.recorder-display {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.waveform-container {
+  width: 100%;
+  height: 150px;
+  background: #222;
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.waveform {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.waveform-bar {
+  background: #4285F4;
+  width: 4px;
+  min-height: 4px;
+  border-radius: 2px;
+  transition: height 0.1s ease;
+}
+
+.waveform-bar.active {
+  background: #4CAF50;
+}
+
+.time-display {
+  font-size: 48px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  color: #4285F4;
+  margin-bottom: 10px;
+}
+
+.time-label {
+  font-size: 14px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.recorder-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.record-btn.recording {
+  background: #F44336;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.record-btn.stopped {
+  background: #4285F4;
+}
+
+.record-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.record-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(244, 67, 54, 0.8);
+  }
+}
+
+.control-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: #444;
+  transform: scale(1.1);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.play {
+  background: #4CAF50;
+}
+
+.control-btn.play:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.control-btn.pause {
+  background: #FF9800;
+}
+
+.control-btn.pause:hover:not(:disabled) {
+  background: #f57c00;
+}
+
+.control-btn.stop {
+  background: #F44336;
+}
+
+.control-btn.stop:hover:not(:disabled) {
+  background: #d32f2f;
+}
+
+.recording-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.recording-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #888;
+}
+
+.recording-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #F44336;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.recordings-section {
+  width: 100%;
+  max-width: 800px;
+}
+
+.recordings-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.recordings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recording-item {
+  background: #222;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 2px solid #333;
+  transition: border-color 0.2s;
+}
+
+.recording-item:hover {
+  border-color: #4285F4;
+}
+
+.recording-item.active {
+  border-color: #4CAF50;
+}
+
+.recording-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recording-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.recording-name {
+  font-weight: 500;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recording-meta {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  gap: 15px;
+}
+
+.recording-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #444;
+}
+
+.action-btn.play {
+  background: #4CAF50;
+}
+
+.action-btn.play:hover {
+  background: #45a049;
+}
+
+.action-btn.delete {
+  background: #F44336;
+}
+
+.action-btn.delete:hover {
+  background: #d32f2f;
+}
+
+.action-btn.download {
+  background: #2196F3;
+}
+
+.action-btn.download:hover {
+  background: #1976D2;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.empty-state-text {
+  font-size: 18px;
+}
+
+.status-message {
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.status-message.success {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.status-message.error {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+  border: 1px solid #F44336;
+}
+
+.status-message.info {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+  border: 1px solid #2196F3;
+}
+
+.audio-player {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.audio-player audio {
+  width: 100%;
+  outline: none;
+}
+
