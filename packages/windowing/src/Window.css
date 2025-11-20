@@ -1,133 +1,147 @@
 .window {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(120%);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  user-select: none;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  /* Improve resizing performance */
+  will-change: transform, width, height;
+}
+
+.window.active {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.window.minimized {
+  transform: scale(0.8);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .window-titlebar {
-  background: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-  padding: 4px 8px;
+  background: transparent; /* Fully transparent to let the blur shine through */
+  border-bottom: 1px solid var(--glass-border-subtle);
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 32px;
+  height: 44px;
   flex-shrink: 0;
+  user-select: none;
 }
 
 .window-title {
   flex: 1;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: -0.01em;
+  /* Shift title to compensate for controls if we want centered title */
+  margin-right: 52px;
 }
 
 .window-controls {
   display: flex;
-  gap: 4px;
-  margin-left: 8px;
+  gap: 8px;
+  order: -1; /* Move controls to the left (Mac style) */
 }
 
 .window-control {
-  width: 24px;
-  height: 24px;
+  width: 12px;
+  height: 12px;
   border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 1;
+  border-radius: 50%;
   padding: 0;
+  cursor: pointer;
+  font-size: 0; /* Hide text */
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+  transition: transform 0.1s ease, filter 0.1s ease;
 }
 
 .window-control:hover {
-  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
 }
 
-.window-control.close:hover {
-  background: #e81123;
-  color: white;
+.window-control:active {
+  transform: scale(0.95);
+  filter: brightness(0.9);
 }
+
+/* Mac-like traffic lights */
+.window-control.close {
+  background-color: #ff5f57;
+}
+
+.window-control.minimize {
+  background-color: #febc2e;
+}
+
+.window-control.maximize {
+  background-color: #28c840;
+}
+
+/* Hover symbols */
+.window-controls:hover .window-control.close::after {
+  content: '×';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: rgba(0,0,0,0.6);
+  line-height: 1;
+}
+
+.window-controls:hover .window-control.minimize::after {
+  content: '−';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: rgba(0,0,0,0.6);
+  line-height: 1;
+}
+
+.window-controls:hover .window-control.maximize::after {
+  content: '+';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px;
+  color: rgba(0,0,0,0.6);
+  line-height: 1;
+}
+
 
 .window-content {
-  background: white;
+  background: rgba(255, 255, 255, 0.85); /* Slightly opaque white */
+  flex: 1;
   overflow: auto;
+  position: relative;
 }
 
+/* Resize handles */
 .resize-handle {
   position: absolute;
   background: transparent;
+  z-index: 10;
 }
 
-.resize-n {
-  top: 0;
-  left: 4px;
-  right: 4px;
-  height: 4px;
-  cursor: ns-resize;
-}
+.resize-n { top: 0; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.resize-s { bottom: 0; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.resize-e { top: 8px; right: 0; bottom: 8px; width: 6px; cursor: ew-resize; }
+.resize-w { top: 8px; left: 0; bottom: 8px; width: 6px; cursor: ew-resize; }
 
-.resize-s {
-  bottom: 0;
-  left: 4px;
-  right: 4px;
-  height: 4px;
-  cursor: ns-resize;
-}
-
-.resize-e {
-  top: 4px;
-  right: 0;
-  bottom: 4px;
-  width: 4px;
-  cursor: ew-resize;
-}
-
-.resize-w {
-  top: 4px;
-  left: 0;
-  bottom: 4px;
-  width: 4px;
-  cursor: ew-resize;
-}
-
-.resize-ne {
-  top: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
-  cursor: nesw-resize;
-}
-
-.resize-nw {
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  cursor: nwse-resize;
-}
-
-.resize-se {
-  bottom: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
-  cursor: nwse-resize;
-}
-
-.resize-sw {
-  bottom: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  cursor: nesw-resize;
-}
-
+.resize-ne { top: 0; right: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.resize-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.resize-se { bottom: 0; right: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.resize-sw { bottom: 0; left: 0; width: 12px; height: 12px; cursor: nesw-resize; }
