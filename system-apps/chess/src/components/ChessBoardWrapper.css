@@ -1,0 +1,39 @@
+.chess-board-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.game-over-message {
+  background-color: white;
+  padding: 2em;
+  border-radius: 8px;
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+}
+
+@keyframes check-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+

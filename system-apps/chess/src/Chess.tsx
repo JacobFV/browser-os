@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Square } from 'chess.js';
-import { ChessBoard } from './components/ChessBoard';
+import { ChessBoardWrapper } from './components/ChessBoardWrapper';
 import { MoveList } from './components/MoveList';
 import { GameControls } from './components/GameControls';
 import { GameStatusComponent } from './components/GameStatus';
@@ -59,14 +59,32 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
   } = useChessGame({
     mode: gameMode || 'local',
     onMove: (move) => {
-      if (gameMode === 'online' && onlineGame.sendMove) {
-        onlineGame.sendMove(move.from, move.to);
-      }
+      // This will be handled by the effect below
     },
     onGameOver: (result) => {
       console.log('Game over:', result);
     },
   });
+
+  // Initialize onlineGame
+  const onlineGame = useOnlineGame({
+    engine,
+    gameId,
+    playerId,
+    playerColor: 'w',
+    onMove: (from, to) => {
+      makeMoveFromNotation(`${from}${to}`);
+    },
+    enabled: gameMode === 'online' && !!gameId,
+  });
+
+  // Send moves to online game
+  useEffect(() => {
+    if (gameMode === 'online' && onlineGame.sendMove && lastMove) {
+      // Move was already made, just notify the server
+      // The actual sending happens in handlePieceMoveWithMode
+    }
+  }, [gameMode, lastMove, onlineGame]);
 
   const aiOpponent = useAIOpponent({
     engine,
@@ -77,24 +95,12 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
     },
   });
 
-  // Initialize online game when gameId is set
-  const onlineGame = useOnlineGame({
-    engine,
-    gameId,
-    playerId,
-    playerColor: 'w', // TODO: Get from server
-    onMove: (from, to) => {
-      makeMoveFromNotation(`${from}${to}`);
-    },
-    enabled: gameMode === 'online' && !!gameId,
-  });
-
   // Connect when gameId is available
   useEffect(() => {
-    if (gameMode === 'online' && gameId && !onlineGame.connectionStatus) {
+    if (gameMode === 'online' && gameId && onlineGame.connectionStatus === 'disconnected') {
       onlineGame.connect(serverUrl);
     }
-  }, [gameMode, gameId, serverUrl]);
+  }, [gameMode, gameId, serverUrl, onlineGame]);
 
   const handleNewGame = () => {
     reset();
@@ -169,7 +175,17 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
     if (gameMode === 'ai' && turn === 'b') {
       return;
     }
+    
+    // Make the move
     handlePieceMove(from, to);
+    
+    // Send to online game if needed
+    if (gameMode === 'online' && onlineGame.sendMove) {
+      // Small delay to ensure move is processed
+      setTimeout(() => {
+        onlineGame.sendMove(from, to);
+      }, 0);
+    }
   };
 
   const openSettingsWindow = () => {
@@ -289,17 +305,19 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
       <div className="chess-content">
         <div className="chess-main">
           <div className="board-container">
-            <ChessBoard
+            <ChessBoardWrapper
               engine={engine}
               selectedSquare={selectedSquare}
               legalMoves={legalMoves}
               lastMove={lastMove}
               onSquareClick={handleSquareClickWithMode}
               onPieceMove={handlePieceMoveWithMode}
+              orientation="white"
+              gameMode={gameMode}
               disabled={
                 (gameMode === 'online' && turn !== 'w') ||
                 (gameMode === 'ai' && turn === 'b') ||
-                status !== 'active' && status !== 'check'
+                (status !== 'active' && status !== 'check')
               }
             />
             {aiOpponent.isThinking && (
