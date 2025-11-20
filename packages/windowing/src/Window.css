@@ -3,37 +3,44 @@
   backdrop-filter: blur(var(--blur-lg)) saturate(120%);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(120%);
 
-  border: 1px solid var(--glass-border);
+  /* Border is handled by box-shadow for better blending */
+  border: 1px solid var(--glass-border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+
+  /* Multi-layered shadow for depth and inner glow for glass edge */
+  box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth), opacity 0.2s ease;
 
   /* Improve resizing performance */
-  will-change: transform, width, height;
+  will-change: transform, width, height, box-shadow;
 }
 
 .window.active {
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--glass-surface-active);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  border-color: var(--glass-border);
+  z-index: 100; /* Ensure active window is visually on top if z-index matches */
 }
 
 .window.minimized {
-  transform: scale(0.8);
+  transform: scale(0.8) translateY(20px);
   opacity: 0;
   pointer-events: none;
 }
 
 .window-titlebar {
-  background: transparent; /* Fully transparent to let the blur shine through */
-  border-bottom: 1px solid var(--glass-border-subtle);
-  padding: 10px 16px;
+  background: transparent;
+  /* Subtle separator */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 44px;
+  height: 48px; /* Slightly taller for touch/modern feel */
   flex-shrink: 0;
   user-select: none;
 }
@@ -45,14 +52,18 @@
   color: var(--text-primary);
   text-align: center;
   letter-spacing: -0.01em;
-  /* Shift title to compensate for controls if we want centered title */
-  margin-right: 52px;
+  margin-right: 60px; /* Balance controls */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
 }
 
 .window-controls {
   display: flex;
   gap: 8px;
-  order: -1; /* Move controls to the left (Mac style) */
+  order: -1;
+  margin-right: 16px;
 }
 
 .window-control {
@@ -62,14 +73,15 @@
   border-radius: 50%;
   padding: 0;
   cursor: pointer;
-  font-size: 0; /* Hide text */
+  font-size: 0;
   position: relative;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
   transition: transform 0.1s ease, filter 0.1s ease;
 }
 
 .window-control:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
 .window-control:active {
@@ -78,17 +90,9 @@
 }
 
 /* Mac-like traffic lights */
-.window-control.close {
-  background-color: #ff5f57;
-}
-
-.window-control.minimize {
-  background-color: #febc2e;
-}
-
-.window-control.maximize {
-  background-color: #28c840;
-}
+.window-control.close { background-color: #ff5f57; }
+.window-control.minimize { background-color: #febc2e; }
+.window-control.maximize { background-color: #28c840; }
 
 /* Hover symbols */
 .window-controls:hover .window-control.close::after {
@@ -97,7 +101,8 @@
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 10px;
-  color: rgba(0,0,0,0.6);
+  color: rgba(0,0,0,0.5);
+  font-weight: bold;
   line-height: 1;
 }
 
@@ -107,7 +112,8 @@
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 10px;
-  color: rgba(0,0,0,0.6);
+  color: rgba(0,0,0,0.5);
+  font-weight: bold;
   line-height: 1;
 }
 
@@ -117,16 +123,18 @@
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 8px;
-  color: rgba(0,0,0,0.6);
+  color: rgba(0,0,0,0.5);
+  font-weight: bold;
   line-height: 1;
 }
 
-
 .window-content {
-  background: rgba(255, 255, 255, 0.85); /* Slightly opaque white */
+  background: rgba(255, 255, 255, 0.5); /* More transparent content area */
   flex: 1;
   overflow: auto;
   position: relative;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 /* Resize handles */

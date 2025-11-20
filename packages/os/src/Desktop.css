@@ -3,6 +3,8 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+  /* Use the global font */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .os-desktop-background {
@@ -11,39 +13,34 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* Elegant gradient mesh */
-  background:
-    radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(253,16%,7%,1) 0, transparent 50%),
-    radial-gradient(at 100% 50%, hsla(339,49%,30%,1) 0, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(253,16%,7%,1) 0, transparent 50%),
-    radial-gradient(at 50% 100%, hsla(225,39%,30%,1) 0, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(339,49%,30%,1) 0, transparent 50%);
-  background-size: 200% 200%;
-  animation: subtle-shift 30s ease infinite alternate;
+
+  /*
+    Premium Abstract Gradient Mesh
+    Simulates a high-quality wallpaper with depth and color flow.
+    Inspired by macOS Big Sur / Monterey styles.
+  */
+  background-color: #ff9a9e;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 220, 220, 0.8) 0%, rgba(255, 154, 158, 0) 50%),
+    radial-gradient(circle at 90% 10%, rgba(161, 140, 209, 0.8) 0%, rgba(251, 194, 235, 0) 50%),
+    radial-gradient(circle at 20% 80%, rgba(132, 250, 176, 0.8) 0%, rgba(143, 211, 244, 0) 50%),
+    radial-gradient(circle at 80% 80%, rgba(67, 233, 123, 0.8) 0%, rgba(56, 249, 215, 0) 50%);
+
+  filter: contrast(110%) saturate(120%);
   z-index: 0;
+
+  /* Subtle movement */
+  animation: desktop-shift 60s ease-in-out infinite alternate;
+  background-size: 150% 150%;
 }
 
-/* Add a noise texture for a more premium feel */
-.os-desktop-background::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-@keyframes subtle-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes desktop-shift {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
 }
 
 .os-desktop-branding {
-  display: none; /* Remove the branding for a cleaner look, or we can restyle it */
+  display: none;
 }
 
 .os-desktop-content {
@@ -51,57 +48,73 @@
   z-index: 1;
   width: 100%;
   height: 100%;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  grid-template-rows: repeat(auto-fill, minmax(110px, 1fr));
-  grid-auto-flow: column;
-  align-content: start;
-  gap: 16px;
+  padding: 24px;
+
+  /* Grid for icons */
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px;
 }
 
-/* We can reuse this class for desktop icons if they exist, but I'll define it just in case */
+/* Desktop Icons */
 .desktop-icon {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 90px;
-  height: 100px;
-  padding: 8px;
+  width: 80px;
+  padding: 8px 4px;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.2s var(--ease-smooth);
-  color: var(--text-light);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  transition: background-color 0.2s ease;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  user-select: none;
 }
 
 .desktop-icon:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .desktop-icon.selected {
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .desktop-icon-img {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  width: 54px;
+  height: 54px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+  transition: transform 0.2s ease;
+}
+
+.desktop-icon:active .desktop-icon-img {
+  transform: scale(0.95);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .desktop-icon-label {
   font-size: 13px;
+  font-weight: 500;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.desktop-icon.selected .desktop-icon-label {
+  background: #0060fa;
+  color: white;
+  text-shadow: none;
 }

@@ -1,0 +1,6 @@
+turbo 2.6.0
+
+• Packages in scope: @browser-os/desktop-shell
+• Running dev in 1 packages
+• Remote caching disabled
+@browser-os/desktop-shell:dev: cache bypass, force executing 2414bbd6633a61b7

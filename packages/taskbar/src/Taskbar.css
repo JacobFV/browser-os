@@ -1,58 +1,51 @@
 .taskbar {
   position: fixed;
-  bottom: 16px; /* Floating effect */
+  bottom: 20px; /* Floating slightly higher */
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  min-width: 300px;
+  min-width: auto;
   max-width: 90vw;
-  height: 64px;
+  height: 68px; /* Slightly taller for more breathing room */
 
-  /* Glassmorphism */
+  /* Enhanced Glassmorphism */
   background: var(--glass-surface);
   backdrop-filter: blur(var(--blur-lg)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
 
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  /* Deep, layered shadow */
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 6px 16px; /* More padding */
   gap: 12px;
-  z-index: 10000; /* Ensure it's above everything */
-  transition: all 0.3s var(--ease-bounce);
+  z-index: 10000;
+  transition: width 0.3s var(--ease-bounce), background 0.3s ease;
 }
 
 .taskbar:hover {
   background: var(--glass-surface-hover);
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .taskbar-windows {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
+  gap: 10px; /* Increased gap */
+  flex: 0 1 auto;
   height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0 4px;
-
-  /* Hide scrollbar but allow scrolling */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: visible; /* Allow hover effects to escape */
 }
 
-.taskbar-windows::-webkit-scrollbar {
-  display: none;
-}
-
-/* Separator line if needed */
+/* Separator */
 .taskbar-separator {
   width: 1px;
-  height: 32px;
+  height: 36px;
   background: var(--glass-border-subtle);
-  margin: 0 4px;
+  margin: 0 8px;
 }
