@@ -10,6 +10,7 @@ export default defineConfig({
       '@browser-os/events': path.resolve(__dirname, '../../packages/events/src'),
       '@browser-os/fs': path.resolve(__dirname, '../../packages/fs/src'),
       '@browser-os/media': path.resolve(__dirname, '../../packages/media/src'),
+      '@browser-os/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },
   build: {
@@ -30,4 +31,3 @@ export default defineConfig({
     },
   },
 });
-

@@ -15,6 +15,7 @@
     "@browser-os/schemas": "workspace:*",
     "@browser-os/fs": "workspace:*",
     "@browser-os/media": "workspace:*",
+    "@browser-os/ui": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "lucide-react": "^0.294.0"
