@@ -5,6 +5,8 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,9 +14,12 @@
 }
 
 .dialog-modal {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   min-width: 400px;
   max-width: 90vw;
   max-height: 90vh;
@@ -28,15 +33,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f5f5f5;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
 }
 
 .dialog-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .dialog-close {
@@ -44,7 +51,7 @@
   border: none;
   font-size: 24px;
   line-height: 1;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
   width: 28px;
@@ -52,19 +59,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .dialog-close:hover {
-  background: #e0e0e0;
-  color: #333;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .dialog-content {
   padding: 20px;
   overflow-y: auto;
   flex: 1;
+  color: var(--text-primary);
 }
 
 .dialog-actions {
@@ -72,33 +80,35 @@
   justify-content: flex-end;
   gap: 8px;
   padding-top: 16px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--glass-border-subtle);
   margin-top: 16px;
 }
 
 .dialog-actions button {
   padding: 8px 16px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
-  background: white;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   cursor: pointer;
   font-size: 13px;
-  color: #333;
-  transition: background-color 0.15s;
+  color: var(--text-primary);
+  transition: all 0.15s var(--ease-smooth);
 }
 
 .dialog-actions button:hover:not(:disabled) {
-  background: #f5f5f5;
+  background: var(--glass-surface-hover);
 }
 
 .dialog-actions button.primary {
-  background: #0066cc;
-  color: white;
-  border-color: #0066cc;
+  background: var(--color-primary);
+  color: var(--text-light);
+  border-color: var(--color-primary-shaded);
 }
 
 .dialog-actions button.primary:hover:not(:disabled) {
-  background: #0052a3;
+  background: var(--color-primary-shaded);
 }
 
 .dialog-actions button:disabled {
@@ -114,37 +124,68 @@
   display: block;
   margin-bottom: 4px;
   font-size: 13px;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .dialog-input input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
   font-size: 13px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .dialog-input input:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .dialog-message {
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .dialog-error {
   padding: 8px 12px;
-  background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 4px;
-  color: #c00;
+  background: var(--color-error-lighter);
+  border: 1px solid var(--color-error-shaded);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
   font-size: 12px;
   margin-bottom: 16px;
 }
 
+/* Scrollbar styling */
+.dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dialog-content::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .dialog-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .dialog-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

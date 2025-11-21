@@ -1,7 +1,7 @@
 .file-list {
   flex: 1;
   overflow-y: auto;
-  background: white;
+  background: var(--bg-primary);
 }
 
 .file-list.list-view {
@@ -13,18 +13,19 @@
   align-items: center;
   padding: 8px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   gap: 8px;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s var(--ease-smooth);
+  color: var(--text-primary);
 }
 
 .file-list-item:hover {
-  background: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .file-list-item.selected {
-  background: #e8f4fd;
-  color: #0066cc;
+  background: var(--color-primary-lighter);
+  color: var(--color-primary);
 }
 
 .file-list-icon {
@@ -49,25 +50,27 @@
 .file-list-header {
   padding: 8px 12px;
   text-align: left;
-  background: #f5f5f5;
-  border-bottom: 2px solid #d0d0d0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 2px solid var(--glass-border-subtle);
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   cursor: pointer;
   user-select: none;
   position: sticky;
   top: 0;
   z-index: 10;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s var(--ease-smooth);
 }
 
 .file-list-header:hover {
-  background: #e8e8e8;
+  background: var(--glass-surface-hover);
 }
 
 .file-list-header.active {
-  background: #e0e0e0;
-  color: #0066cc;
+  background: var(--glass-surface-hover);
+  color: var(--color-primary);
 }
 
 .sort-indicator {
@@ -77,25 +80,26 @@
 
 .file-list-row {
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s var(--ease-smooth);
 }
 
 .file-list-row:hover {
-  background: #f5f5f5;
+  background: var(--glass-surface-hover);
 }
 
 .file-list-row.selected {
-  background: #e8f4fd;
+  background: var(--color-primary-lighter);
 }
 
 .file-list-row.selected .file-list-name {
-  color: #0066cc;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .file-list-cell {
   padding: 8px 12px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  color: var(--text-primary);
 }
 
 .file-list-cell.name {
@@ -109,17 +113,17 @@
   width: 100px;
   text-align: right;
   font-family: monospace;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .file-list-cell.modified {
   width: 180px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .file-list-cell.type {
   width: 120px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .file-list.tile-view {
@@ -135,32 +139,35 @@
   justify-content: center;
   padding: 8px;
   border: 2px solid transparent;
-  border-radius: 8px;
-  background: white;
+  border-radius: var(--radius-md);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   cursor: move;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   user-select: none;
 }
 
 .file-list-tile:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
 }
 
 .file-list-tile.selected {
-  background: #e8f4fd;
-  border-color: #0066cc;
+  background: var(--color-primary-lighter);
+  border-color: var(--color-primary);
 }
 
 .file-list-tile.dragging {
   opacity: 0.8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
 }
 
 .file-list-tile-icon {
   font-size: 32px;
   margin-bottom: 4px;
   text-align: center;
+  color: var(--text-primary);
 }
 
 .file-list-tile-name {
@@ -174,5 +181,32 @@
   -webkit-box-orient: vertical;
   max-width: 100%;
   line-height: 1.2;
+  color: var(--text-primary);
 }
 
+/* Scrollbar styling */
+.file-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.file-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.file-list::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.file-list::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .file-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .file-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

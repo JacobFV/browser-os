@@ -3,8 +3,10 @@
   align-items: center;
   gap: 8px;
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #d0d0d0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   flex-shrink: 0;
 }
 
@@ -16,20 +18,24 @@
 .toolbar-button {
   width: 32px;
   height: 32px;
-  border: 1px solid #c0c0c0;
-  background: white;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   padding: 0;
-  transition: background-color 0.15s;
+  color: var(--text-primary);
+  transition: all 0.15s var(--ease-smooth);
 }
 
 .toolbar-button:hover:not(:disabled) {
-  background: #e8f4fd;
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border-subtle);
 }
 
 .toolbar-button:disabled {
@@ -59,10 +65,10 @@
   border: none;
   padding: 4px 6px;
   cursor: pointer;
-  color: #0066cc;
+  color: var(--color-primary);
   font-size: 13px;
-  border-radius: 3px;
-  transition: background-color 0.15s;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s var(--ease-smooth);
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -70,28 +76,33 @@
 }
 
 .toolbar-breadcrumb:hover {
-  background: #e8f4fd;
+  background: var(--color-primary-lighter);
 }
 
 .toolbar-separator {
-  color: #999;
+  color: var(--text-secondary);
   margin: 0 2px;
 }
 
 .toolbar-path-input {
   flex: 1;
   padding: 6px 8px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-family: monospace;
   min-width: 0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .toolbar-path-input:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .toolbar-actions {
@@ -102,16 +113,21 @@
 
 .toolbar-search {
   padding: 6px 8px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   width: 200px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .toolbar-search:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .toolbar-view-controls {
@@ -123,25 +139,28 @@
 .toolbar-view-toggle {
   display: flex;
   gap: 0;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  background: white;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
 }
 
 .toolbar-view-button {
   width: 32px;
   height: 32px;
   border: none;
-  background: white;
+  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   padding: 0;
-  transition: background-color 0.15s;
-  border-right: 1px solid #c0c0c0;
+  color: var(--text-primary);
+  transition: all 0.15s var(--ease-smooth);
+  border-right: 1px solid var(--glass-border-subtle);
 }
 
 .toolbar-view-button:last-child {
@@ -149,12 +168,12 @@
 }
 
 .toolbar-view-button:hover {
-  background: #e8f4fd;
+  background: var(--glass-surface-hover);
 }
 
 .toolbar-view-button.active {
-  background: #0066cc;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
 }
 
 .toolbar-scale-control {
@@ -165,18 +184,40 @@
 
 .toolbar-scale-label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .toolbar-scale-slider {
   width: 100px;
   height: 4px;
+  border-radius: 2px;
+  background: var(--glass-border-subtle);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.toolbar-scale-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.toolbar-scale-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
 }
 
 .toolbar-scale-value {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
   min-width: 35px;
   text-align: right;
 }
-
