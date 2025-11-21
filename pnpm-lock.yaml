@@ -673,6 +673,9 @@ importers:
 
   packages/workspace:
     dependencies:
+      '@browser-os/app-registry':
+        specifier: workspace:*
+        version: link:../app-registry
       '@browser-os/events':
         specifier: workspace:*
         version: link:../events
@@ -1437,6 +1440,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1474,6 +1480,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1508,6 +1517,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -1542,6 +1554,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1647,6 +1662,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1816,6 +1834,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1850,6 +1871,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1890,6 +1914,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
@@ -1924,6 +1951,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       lucide-react:
         specifier: ^0.294.0
         version: 0.294.0(react@18.3.1)
