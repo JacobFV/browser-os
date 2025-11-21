@@ -14,6 +14,7 @@
     "@browser-os/client": "workspace:*",
     "@browser-os/events": "workspace:*",
     "@browser-os/schemas": "workspace:*",
+    "@browser-os/ui": "workspace:*",
     "chess.js": "^1.0.0-beta.8",
     "react": "^18.2.0",
     "react-chessboard": "^4.7.3",

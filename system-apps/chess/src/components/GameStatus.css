@@ -1,8 +1,10 @@
 .game-status {
   padding: 1em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   text-align: center;
 }
 
@@ -10,19 +12,20 @@
   font-size: 1.1em;
   font-weight: 600;
   margin-bottom: 0.5em;
+  color: var(--text-primary);
 }
 
 .game-status.active .status-text {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .game-status.check .status-text {
-  color: #f44336;
+  color: var(--color-error);
   animation: pulse 1s ease-in-out infinite;
 }
 
 .game-status.game-over .status-text {
-  color: #2196f3;
+  color: var(--color-primary);
   font-size: 1.2em;
 }
 
@@ -32,15 +35,15 @@
 }
 
 .connection-status.connected {
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .connection-status.connecting {
-  color: #ff9800;
+  color: var(--color-warning);
 }
 
 .connection-status.disconnected {
-  color: #f44336;
+  color: var(--color-error);
 }
 
 @keyframes pulse {
@@ -51,4 +54,3 @@
     opacity: 0.7;
   }
 }
-

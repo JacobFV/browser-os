@@ -12,8 +12,8 @@
   grid-template-rows: repeat(8, 1fr);
   width: 100%;
   height: 100%;
-  border: 2px solid #8b4513;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid #8b4513; /* Keep brown border for chess board */
+  box-shadow: var(--shadow-md);
 }
 
 .chess-square {
@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s var(--ease-smooth);
   min-width: 0;
   min-height: 0;
   aspect-ratio: 1;
@@ -32,6 +32,7 @@
   user-select: none;
 }
 
+/* Chess board squares - keep traditional colors for gameplay */
 .chess-square.light {
   background-color: #f0d9b5;
 }
@@ -106,6 +107,8 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,12 +116,17 @@
 }
 
 .game-over-message {
-  background-color: white;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
   padding: 2em;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 1.5em;
   font-weight: bold;
   text-align: center;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
 }
 
 @keyframes check-pulse {
@@ -129,4 +137,3 @@
     opacity: 0.7;
   }
 }
-

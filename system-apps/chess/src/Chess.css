@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   padding: 1em;
-  background-color: #f5f5f5;
+  background-color: var(--bg-primary);
   overflow: auto;
 }
 
@@ -20,11 +20,12 @@
 .mode-selection-screen h1 {
   font-size: 3em;
   margin: 0;
+  color: var(--text-primary);
 }
 
 .mode-selection-screen p {
   font-size: 1.2em;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .mode-buttons {
@@ -40,18 +41,20 @@
   flex-direction: column;
   align-items: center;
   padding: 2em;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
+  border: 2px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-smooth);
   text-align: center;
 }
 
 .mode-button:hover {
-  border-color: #2196f3;
+  border-color: var(--color-primary);
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .mode-icon {
@@ -63,25 +66,29 @@
   font-size: 1.5em;
   font-weight: 600;
   margin-bottom: 0.5em;
+  color: var(--text-primary);
 }
 
 .mode-description {
   font-size: 0.9em;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .settings-button {
   padding: 0.75em 1.5em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   cursor: pointer;
   font-size: 1em;
-  transition: all 0.2s ease;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .settings-button:hover {
-  background-color: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .settings-overlay {
@@ -91,6 +98,8 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,13 +107,17 @@
 }
 
 .settings-modal {
-  background-color: #fff;
-  border-radius: 8px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   padding: 2em;
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: var(--shadow-lg);
 }
 
 .settings-header {
@@ -113,11 +126,12 @@
   align-items: center;
   margin-bottom: 1em;
   padding-bottom: 1em;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .settings-header h2 {
   margin: 0;
+  color: var(--text-primary);
 }
 
 .settings-header button {
@@ -131,6 +145,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-secondary);
+  transition: color 0.2s var(--ease-smooth);
+}
+
+.settings-header button:hover {
+  color: var(--text-primary);
 }
 
 .chess-header {
@@ -139,12 +159,13 @@
   align-items: center;
   margin-bottom: 1em;
   padding-bottom: 1em;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--glass-border-subtle);
 }
 
 .chess-header h1 {
   margin: 0;
   font-size: 1.5em;
+  color: var(--text-primary);
 }
 
 .chess-header-actions {
@@ -154,16 +175,19 @@
 
 .header-button {
   padding: 0.5em 1em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-smooth);
   font-size: 0.9em;
+  color: var(--text-primary);
 }
 
 .header-button:hover {
-  background-color: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .chess-content {
@@ -193,9 +217,12 @@
   left: 50%;
   transform: translateX(-50%);
   padding: 0.5em 1em;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
   font-size: 0.9em;
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -207,11 +234,11 @@
   width: 300px;
   min-width: 300px;
   overflow-y: auto;
-  transition: width 0.3s ease, min-width 0.3s ease;
+  transition: width 0.3s var(--ease-smooth), min-width 0.3s var(--ease-smooth);
 }
 
 .chess-content {
-  transition: gap 0.3s ease;
+  transition: gap 0.3s var(--ease-smooth);
 }
 
 @keyframes pulse {
@@ -224,9 +251,11 @@
 }
 
 .settings-inline {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   padding: 1em;
 }
 
@@ -236,12 +265,13 @@
   align-items: center;
   margin-bottom: 1em;
   padding-bottom: 0.5em;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .settings-inline-header h3 {
   margin: 0;
   font-size: 1.1em;
+  color: var(--text-primary);
 }
 
 .settings-inline-header button {
@@ -255,10 +285,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: var(--text-secondary);
+  transition: color 0.2s var(--ease-smooth);
 }
 
 .settings-inline-header button:hover {
-  color: #000;
+  color: var(--text-primary);
 }
 
+/* Scrollbar styling */
+.chess-app::-webkit-scrollbar,
+.settings-modal::-webkit-scrollbar,
+.chess-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chess-app::-webkit-scrollbar-track,
+.settings-modal::-webkit-scrollbar-track,
+.chess-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chess-app::-webkit-scrollbar-thumb,
+.settings-modal::-webkit-scrollbar-thumb,
+.chess-sidebar::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.chess-app::-webkit-scrollbar-thumb:hover,
+.settings-modal::-webkit-scrollbar-thumb:hover,
+.chess-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .chess-app::-webkit-scrollbar-thumb,
+[data-theme="dark"] .settings-modal::-webkit-scrollbar-thumb,
+[data-theme="dark"] .chess-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .chess-app::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .settings-modal::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .chess-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
