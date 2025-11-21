@@ -87,14 +87,22 @@
    - Theme-aware messaging UI
    - Full dark mode support
 
+18. **Music** - ✅ Completed
+   - Updated player controls, sidebar, and track list
+   - Theme-aware music player UI
+   - Full dark mode support
+
+19. **Notes** - ✅ Completed
+   - Updated note cards, header, and search
+   - Theme-aware notes UI with color variants
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Music
-- Notes
 - Password Manager
 - PDF Viewer
 - Process Manager
