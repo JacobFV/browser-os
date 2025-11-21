@@ -62,13 +62,17 @@
    - Theme-aware file browser UI
    - Full dark mode support
 
+13. **File Search** - ✅ Completed
+   - Updated search input, filters, and results list
+   - Theme-aware search UI
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- File Search
 - Games
 - Image Viewer
 - Markdown Editor
