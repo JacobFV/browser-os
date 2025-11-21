@@ -67,16 +67,32 @@
    - Theme-aware search UI
    - Full dark mode support
 
+14. **Games** - ✅ Completed
+   - Already using theme variables
+   - Added @browser-os/ui dependency and vite config
+   - Full dark mode support
+
+15. **Image Viewer** - ✅ Completed
+   - Updated toolbar, thumbnails, and navigation buttons
+   - Theme-aware image viewer UI
+   - Full dark mode support
+
+16. **Markdown Editor** - ✅ Completed
+   - Updated editor pane, preview pane, and header
+   - Theme-aware markdown rendering
+   - Full dark mode support
+
+17. **Messaging Client** - ✅ Completed
+   - Updated conversation list, message bubbles, and input
+   - Theme-aware messaging UI
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Games
-- Image Viewer
-- Markdown Editor
-- Messaging Client
 - Music
 - Notes
 - Password Manager

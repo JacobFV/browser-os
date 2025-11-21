@@ -2,24 +2,26 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f5f5f5;
+  background: var(--bg-primary);
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 .notes-header {
   padding: 15px 20px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .notes-title {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .notes-actions {
@@ -29,30 +31,33 @@
 
 .header-btn {
   padding: 8px 16px;
-  background: #4285F4;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .header-btn:hover {
-  background: #357ae8;
+  background: var(--color-primary-shaded);
 }
 
 .header-btn.secondary {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
 }
 
 .header-btn.secondary:hover {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
 .notes-content {
@@ -72,25 +77,29 @@
 }
 
 .note-card {
-  background: white;
-  border-radius: 8px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s var(--ease-smooth);
   position: relative;
   min-height: 150px;
   display: flex;
   flex-direction: column;
-  border: 2px solid transparent;
 }
 
 .note-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--glass-border);
 }
 
 .note-card.editing {
-  border-color: #4285F4;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .note-header {
@@ -103,7 +112,7 @@
 .note-title {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 8px;
   flex: 1;
   min-width: 0;
@@ -113,9 +122,9 @@
   width: 100%;
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   border: none;
-  border-bottom: 2px solid #4285F4;
+  border-bottom: 2px solid var(--color-primary);
   padding: 4px 0;
   outline: none;
   background: transparent;
@@ -126,7 +135,7 @@
   display: flex;
   gap: 6px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s var(--ease-smooth);
 }
 
 .note-card:hover .note-actions {
@@ -136,36 +145,41 @@
 .note-action-btn {
   width: 28px;
   height: 28px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: #f0f0f0;
-  color: #666;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .note-action-btn:hover {
-  background: #e0e0e0;
-  color: #333;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .note-action-btn.delete:hover {
-  background: #ffebee;
-  color: #d32f2f;
+  background: var(--color-error-lighter);
+  color: var(--color-error);
+  border-color: var(--color-error-shaded);
 }
 
 .note-action-btn.pin:hover {
-  background: #fff3e0;
-  color: #f57c00;
+  background: var(--color-warning-lighter);
+  color: var(--color-warning);
+  border-color: var(--color-warning-shaded);
 }
 
 .note-content {
   flex: 1;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -176,7 +190,7 @@
   width: 100%;
   flex: 1;
   font-size: 14px;
-  color: #666;
+  color: var(--text-primary);
   line-height: 1.6;
   border: none;
   outline: none;
@@ -192,21 +206,21 @@
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--glass-border-subtle);
 }
 
 .note-date {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .note-color {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--glass-border-subtle);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s var(--ease-smooth);
 }
 
 .note-color:hover {
@@ -214,37 +228,37 @@
 }
 
 .note-card.yellow {
-  background: #fff9c4;
+  background: rgba(255, 249, 196, 0.6);
 }
 
 .note-card.blue {
-  background: #e3f2fd;
+  background: rgba(227, 242, 253, 0.6);
 }
 
 .note-card.green {
-  background: #e8f5e9;
+  background: rgba(232, 245, 233, 0.6);
 }
 
 .note-card.pink {
-  background: #fce4ec;
+  background: rgba(252, 228, 236, 0.6);
 }
 
 .note-card.purple {
-  background: #f3e5f5;
+  background: rgba(243, 229, 245, 0.6);
 }
 
 .note-card.orange {
-  background: #fff3e0;
+  background: rgba(255, 243, 224, 0.6);
 }
 
 .note-card.pinned {
-  border-left: 4px solid #f57c00;
+  border-left: 4px solid var(--color-warning);
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--text-secondary);
   grid-column: 1 / -1;
 }
 
@@ -257,11 +271,12 @@
 .empty-state-text {
   font-size: 18px;
   margin-bottom: 10px;
+  color: var(--text-primary);
 }
 
 .empty-state-hint {
   font-size: 14px;
-  color: #bbb;
+  color: var(--text-secondary);
 }
 
 .color-picker {
@@ -269,15 +284,17 @@
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: white;
-  border-radius: 8px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   z-index: 10;
-  border: 1px solid #e0e0e0;
 }
 
 .color-option {
@@ -286,7 +303,7 @@
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s var(--ease-smooth);
 }
 
 .color-option:hover {
@@ -294,7 +311,7 @@
 }
 
 .color-option.selected {
-  border-color: #333;
+  border-color: var(--text-primary);
 }
 
 .search-bar {
@@ -305,15 +322,18 @@
 .search-input {
   width: 100%;
   padding: 12px 16px 12px 40px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s var(--ease-smooth);
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .search-input:focus {
-  border-color: #4285F4;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .search-icon {
@@ -321,6 +341,32 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: var(--text-secondary);
 }
 
+/* Scrollbar styling */
+.notes-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notes-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notes-content::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.notes-content::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .notes-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .notes-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
