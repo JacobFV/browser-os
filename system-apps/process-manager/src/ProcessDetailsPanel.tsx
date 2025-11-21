@@ -25,33 +25,33 @@ export const ProcessDetailsPanel: React.FC<ProcessDetailsPanelProps> = ({
 
   const syscall = useMemo(() => createSyscallWrapper(eventBus), [eventBus]);
 
+  const fetchProcessDetails = React.useCallback(async () => {
+    if (!pid) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await syscall('proc.get', { pid });
+      if (result) {
+        setProcess(result as ProcessInfo);
+      } else {
+        setError('Process not found');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch process details';
+      setError(errorMessage);
+      console.error('Failed to fetch process details:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [pid, syscall]);
+
   useEffect(() => {
     if (!pid) {
       setProcess(null);
       return;
     }
-
-    const fetchProcessDetails = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await syscall('proc.get', { pid });
-        if (result) {
-          setProcess(result as ProcessInfo);
-        } else {
-          setError('Process not found');
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch process details';
-        setError(errorMessage);
-        console.error('Failed to fetch process details:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProcessDetails();
-  }, [pid, syscall]);
+  }, [pid, fetchProcessDetails]);
 
   const handleKill = async (signal: 'SIGTERM' | 'SIGKILL') => {
     if (!pid || killing) return;
