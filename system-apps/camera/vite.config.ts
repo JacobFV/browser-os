@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@browser-os/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
       '@browser-os/events': path.resolve(__dirname, '../../packages/events/src'),
+      '@browser-os/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },
   build: {
@@ -28,4 +29,3 @@ export default defineConfig({
     },
   },
 });
-
