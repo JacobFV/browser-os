@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: white;
+  background: var(--bg-primary);
 }
 
 .compose-header {
@@ -10,13 +10,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  border-bottom: 1px solid #ddd;
-  background: #f9f9f9;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
 }
 
 .compose-header h2 {
   margin: 0;
   font-size: 18px;
+  color: var(--text-primary);
 }
 
 .compose-actions {
@@ -27,30 +30,35 @@
 .save-draft-button,
 .cancel-button {
   padding: 8px 16px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .save-draft-button:hover,
 .cancel-button:hover {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
 .send-button {
   padding: 8px 16px;
-  background: #2196f3;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .send-button:hover:not(:disabled) {
-  background: #1976d2;
+  background: var(--color-primary-shaded);
 }
 
 .send-button:disabled {
@@ -74,16 +82,31 @@
   min-width: 80px;
   font-weight: 500;
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .compose-field input,
 .compose-field textarea {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-family: inherit;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.compose-field input:focus,
+.compose-field textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--glass-surface-hover);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .compose-field textarea {
@@ -101,27 +124,32 @@
 .field-toggle {
   padding: 4px 12px;
   background: transparent;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .field-toggle:hover {
-  background: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .compose-attachments {
   margin-bottom: 16px;
   padding: 12px;
-  background: #f5f5f5;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border-subtle);
 }
 
 .compose-attachments h3 {
   margin: 0 0 8px 0;
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .attachment-item {
@@ -129,23 +157,27 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  background: white;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border-subtle);
   margin-bottom: 4px;
 }
 
 .attachment-item button {
   padding: 4px 8px;
-  background: #f44336;
-  color: white;
+  background: var(--color-error);
+  color: var(--text-light);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 12px;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .attachment-item button:hover {
-  background: #d32f2f;
+  background: var(--color-error-shaded);
 }
 
 .compose-toolbar {
@@ -155,14 +187,44 @@
 
 .attach-button {
   padding: 8px 16px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .attach-button:hover {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
+/* Scrollbar styling */
+.compose-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.compose-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.compose-body::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.compose-body::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .compose-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .compose-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

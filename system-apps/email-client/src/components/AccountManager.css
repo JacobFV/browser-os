@@ -2,8 +2,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f5f5f5;
-  border-right: 1px solid #ddd;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-right: 1px solid var(--glass-border-subtle);
 }
 
 .account-manager-header {
@@ -11,28 +13,32 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid #ddd;
-  background: white;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
 }
 
 .account-manager-header h2 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .add-account-button {
   padding: 6px 12px;
-  background: #2196f3;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .add-account-button:hover:not(:disabled) {
-  background: #1976d2;
+  background: var(--color-primary-shaded);
 }
 
 .add-account-button:disabled {
@@ -49,7 +55,7 @@
 .no-accounts {
   padding: 32px 16px;
   text-align: center;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .account-item {
@@ -57,24 +63,28 @@
   align-items: center;
   padding: 12px;
   margin-bottom: 4px;
-  background: white;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border-subtle);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s var(--ease-smooth);
 }
 
 .account-item:hover {
-  background: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .account-item.active {
-  background: #e3f2fd;
-  border-left: 3px solid #2196f3;
+  background: var(--color-primary-lighter);
+  border-left: 3px solid var(--color-primary);
 }
 
 .account-icon {
   font-size: 24px;
   margin-right: 12px;
+  color: var(--text-primary);
 }
 
 .account-info {
@@ -85,7 +95,7 @@
 .account-email {
   font-weight: 500;
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -93,7 +103,7 @@
 
 .account-provider {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 
@@ -111,7 +121,7 @@
 .remove-account-button {
   background: transparent;
   border: none;
-  color: #999;
+  color: var(--text-secondary);
   font-size: 20px;
   cursor: pointer;
   padding: 0;
@@ -121,11 +131,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .remove-account-button:hover {
-  background: #ffebee;
-  color: #f44336;
+  background: var(--color-error-lighter);
+  color: var(--color-error);
 }
 
 .provider-selection-modal {
@@ -135,6 +146,8 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,16 +155,21 @@
 }
 
 .modal-content {
-  background: white;
-  border-radius: 8px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   padding: 24px;
   min-width: 300px;
   max-width: 500px;
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-content h3 {
   margin: 0 0 16px 0;
   font-size: 20px;
+  color: var(--text-primary);
 }
 
 .provider-list {
@@ -166,16 +184,19 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.2s;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .provider-button:hover:not(:disabled) {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
 .provider-button:disabled {
@@ -194,13 +215,43 @@
 .cancel-button {
   width: 100%;
   padding: 8px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .cancel-button:hover {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
+/* Scrollbar styling */
+.account-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.account-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.account-list::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.account-list::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .account-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .account-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

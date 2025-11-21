@@ -1,7 +1,9 @@
 .folder-sidebar {
   width: 200px;
-  background: #f9f9f9;
-  border-right: 1px solid #ddd;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-right: 1px solid var(--glass-border-subtle);
   display: flex;
   flex-direction: column;
 }
@@ -15,19 +17,21 @@
   align-items: center;
   padding: 10px 12px;
   margin-bottom: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s var(--ease-smooth);
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .folder-item:hover {
-  background: #f0f0f0;
+  background: var(--glass-surface-hover);
 }
 
 .folder-item.active {
-  background: #e3f2fd;
+  background: var(--color-primary-lighter);
   font-weight: 500;
+  color: var(--color-primary);
 }
 
 .folder-icon {
@@ -43,8 +47,8 @@
 }
 
 .folder-unread-count {
-  background: #2196f3;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 12px;
@@ -52,4 +56,3 @@
   min-width: 20px;
   text-align: center;
 }
-
