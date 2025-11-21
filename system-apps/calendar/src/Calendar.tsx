@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { Button, Input } from '@browser-os/ui';
 import './Calendar.css';
 
 interface CalendarEvent {
@@ -154,13 +155,13 @@ export const Calendar: React.FC<{ os: any }> = ({ os }) => {
           {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
         </div>
         <div className="calendar-nav">
-          <button className="calendar-nav-btn" onClick={handlePrevMonth}>
+          <Button variant="ghost" onClick={handlePrevMonth} className="calendar-nav-btn">
             <ChevronLeft size={18} />
-          </button>
-          <button className="today-btn" onClick={handleToday}>Today</button>
-          <button className="calendar-nav-btn" onClick={handleNextMonth}>
+          </Button>
+          <Button variant="primary" onClick={handleToday}>Today</Button>
+          <Button variant="ghost" onClick={handleNextMonth} className="calendar-nav-btn">
             <ChevronRight size={18} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -210,17 +211,17 @@ export const Calendar: React.FC<{ os: any }> = ({ os }) => {
           
           {selectedDate && (
             <>
-              <button className="add-event-btn" onClick={() => {
+              <Button variant="primary" onClick={() => {
                 setEditingEvent(null);
                 setShowEventForm(true);
-              }}>
+              }} className="add-event-btn">
                 <Plus size={16} style={{ marginRight: 8, verticalAlign: 'middle' }} />
                 Add Event
-              </button>
+              </Button>
               
               <div className="events-list">
                 {selectedDateEvents.length === 0 ? (
-                  <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
+                  <div className="events-empty">
                     No events scheduled
                   </div>
                 ) : (
@@ -229,12 +230,13 @@ export const Calendar: React.FC<{ os: any }> = ({ os }) => {
                       {event.time && <div className="event-time">{event.time}</div>}
                       <div className="event-title">{event.title}</div>
                       {event.description && <div className="event-description">{event.description}</div>}
-                      <button 
+                      <Button 
+                        variant="ghost"
                         onClick={() => handleDeleteEvent(event.id)}
-                        style={{ marginTop: 8, fontSize: 12, color: '#d32f2f', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ marginTop: 8, fontSize: 12, color: 'var(--color-error)' }}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   ))
                 )}
@@ -291,37 +293,19 @@ const EventForm: React.FC<EventFormProps> = ({ date, event, onSave, onCancel }) 
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: 8,
-        padding: 24,
-        width: 400,
-        maxWidth: '90%'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h2 style={{ margin: 0 }}>{event ? 'Edit Event' : 'New Event'}</h2>
-          <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+      <div className="event-form-overlay">
+      <div className="event-form-modal">
+        <div className="event-form-header">
+          <h2>{event ? 'Edit Event' : 'New Event'}</h2>
+          <Button variant="ghost" onClick={onCancel} className="event-form-close">
             <X size={20} />
-          </button>
+          </Button>
         </div>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Title</label>
-            <input
-              className="form-input"
+            <Input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -331,8 +315,7 @@ const EventForm: React.FC<EventFormProps> = ({ date, event, onSave, onCancel }) 
           
           <div className="form-group">
             <label className="form-label">Time (optional)</label>
-            <input
-              className="form-input"
+            <Input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
@@ -349,12 +332,12 @@ const EventForm: React.FC<EventFormProps> = ({ date, event, onSave, onCancel }) 
           </div>
           
           <div className="form-actions">
-            <button type="button" className="form-btn secondary" onClick={onCancel}>
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
-            </button>
-            <button type="submit" className="form-btn primary">
+            </Button>
+            <Button type="submit" variant="primary">
               Save
-            </button>
+            </Button>
           </div>
         </form>
       </div>
