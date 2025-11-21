@@ -3,80 +3,84 @@
   z-index: 10001;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   pointer-events: none;
 }
 
 .notification-toast-top-right {
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   align-items: flex-end;
 }
 
 .notification-toast-top-left {
-  top: 16px;
-  left: 16px;
+  top: 20px;
+  left: 20px;
   align-items: flex-start;
 }
 
 .notification-toast-bottom-right {
-  bottom: 80px; /* Above taskbar */
-  right: 16px;
+  bottom: 90px; /* Above taskbar */
+  right: 20px;
   align-items: flex-end;
   flex-direction: column-reverse;
 }
 
 .notification-toast-bottom-left {
-  bottom: 80px; /* Above taskbar */
-  left: 16px;
+  bottom: 90px; /* Above taskbar */
+  left: 20px;
   align-items: flex-start;
   flex-direction: column-reverse;
 }
 
 .notification-toast-item {
   pointer-events: auto;
-  max-width: 400px;
-  min-width: 300px;
+  max-width: 420px;
+  min-width: 320px;
+  animation-duration: 0.4s;
+  animation-timing-function: var(--ease-smooth);
+  animation-fill-mode: both;
 }
 
 @keyframes notification-toast-slide-in {
   from {
-    transform: translateX(100%);
+    transform: translateX(100%) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
   }
 }
 
-.notification-toast-top-left .notification-toast-item {
+.notification-toast-top-right .notification-toast-item,
+.notification-toast-bottom-right .notification-toast-item {
+  animation-name: notification-toast-slide-in;
+}
+
+.notification-toast-top-left .notification-toast-item,
+.notification-toast-bottom-left .notification-toast-item {
   animation-name: notification-toast-slide-in-left;
 }
 
 @keyframes notification-toast-slide-in-left {
   from {
-    transform: translateX(-100%);
+    transform: translateX(-100%) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
   }
 }
 
-.notification-toast-bottom-right .notification-toast-item,
-.notification-toast-bottom-left .notification-toast-item {
-  animation-name: notification-toast-slide-in-bottom;
-}
-
 @keyframes notification-toast-slide-in-bottom {
   from {
-    transform: translateY(100%);
+    transform: translateY(100%) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
