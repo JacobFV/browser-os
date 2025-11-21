@@ -311,6 +311,8 @@ export const Taskbar: React.FC<TaskbarProps> = ({
               />
             ))}
           </div>
+        </div>
+        <div className="taskbar-right-partition">
           <SearchBar apps={appRegistry.getEnabled()} onAppSelect={handleAppSelect} />
           {notificationManager && (
             <NotificationBadgeButton

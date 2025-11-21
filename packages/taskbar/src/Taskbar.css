@@ -24,7 +24,7 @@
 .taskbar-content {
   display: flex;
   align-items: center;
-  width: 100%;
+  flex: 1;
   height: 100%;
   padding: 0 16px; /* Horizontal padding here */
   gap: 12px;
@@ -44,6 +44,17 @@
   scroll-behavior: smooth;
 }
 
+/* Fixed right partition for notifications and desktop switcher */
+.taskbar-right-partition {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  flex-shrink: 0;
+  height: 100%;
+  border-left: 1px solid var(--glass-border-subtle);
+}
+
 .taskbar-content::-webkit-scrollbar {
   display: none;
 }
@@ -59,6 +70,15 @@
   padding: 16px 0;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+/* Vertical adjustments for right partition */
+.taskbar.left .taskbar-right-partition,
+.taskbar.right .taskbar-right-partition {
+  flex-direction: column;
+  padding: 12px 0;
+  border-left: none;
+  border-top: 1px solid var(--glass-border-subtle);
 }
 
 /* Horizontal: Bottom (default) or Top */
