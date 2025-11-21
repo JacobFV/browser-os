@@ -42,6 +42,8 @@ import { NotificationManager } from '@browser-os/notifications';
 import { NotificationAPI } from '@browser-os/proc';
 import { NetworkManager } from '@browser-os/network';
 import { appIcons } from './appIcons';
+import { ThemeProvider } from '@browser-os/ui';
+// Theme CSS is imported via ThemeProvider
 import './OS.css';
 
 export interface OSProps {
@@ -1143,17 +1145,19 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'b
   }
 
   return (
-    <DesktopShell
-      eventBus={eventBus}
-      windowManager={windowManager}
-      workspaceManager={workspaceManager}
-      appRegistry={appRegistry}
-      appComponentRegistry={appComponentRegistry}
-      desktop={desktop}
-      fs={fs}
-      notificationManager={notificationManager}
-      networkManager={networkManager}
-    />
+    <ThemeProvider>
+      <DesktopShell
+        eventBus={eventBus}
+        windowManager={windowManager}
+        workspaceManager={workspaceManager}
+        appRegistry={appRegistry}
+        appComponentRegistry={appComponentRegistry}
+        desktop={desktop}
+        fs={fs}
+        notificationManager={notificationManager}
+        networkManager={networkManager}
+      />
+    </ThemeProvider>
   );
 };
 

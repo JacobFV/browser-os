@@ -1,22 +1,25 @@
 .settings-sidebar {
-  width: 200px;
-  background: #f5f5f5;
-  border-right: 1px solid #d0d0d0;
+  width: 240px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-right: 1px solid var(--glass-border-subtle);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-sidebar-header {
-  padding: 16px;
-  border-bottom: 1px solid #d0d0d0;
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .settings-sidebar-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .settings-sidebar-nav {
@@ -29,25 +32,28 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 20px;
   background: none;
   border: none;
   text-align: left;
   cursor: pointer;
-  color: #333;
+  color: var(--text-primary);
   font-size: 14px;
-  transition: background-color 0.15s;
+  transition: all 0.2s var(--ease-smooth);
   gap: 12px;
+  border-radius: 0;
 }
 
 .settings-sidebar-item:hover {
-  background: #e8e8e8;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .settings-sidebar-item.active {
-  background: #e8f4fd;
-  color: #0066cc;
-  font-weight: 500;
+  background: rgba(0, 122, 255, 0.15);
+  color: rgba(0, 122, 255, 1);
+  font-weight: 600;
+  border-left: 3px solid rgba(0, 122, 255, 0.8);
 }
 
 .settings-sidebar-icon {

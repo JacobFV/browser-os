@@ -1,0 +1,56 @@
+.ui-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ui-input-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.ui-input {
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s var(--ease-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.ui-input:focus {
+  outline: none;
+  border-color: rgba(0, 122, 255, 0.6);
+  background: var(--glass-surface-hover);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15), var(--shadow-md);
+}
+
+.ui-input-error {
+  border-color: rgba(255, 59, 48, 0.6);
+}
+
+.ui-input-error:focus {
+  border-color: rgba(255, 59, 48, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15), var(--shadow-md);
+}
+
+.ui-input-hint,
+.ui-input-error-text {
+  font-size: 12px;
+  margin-top: -2px;
+}
+
+.ui-input-hint {
+  color: var(--text-secondary);
+}
+
+.ui-input-error-text {
+  color: rgba(255, 59, 48, 0.9);
+}
+

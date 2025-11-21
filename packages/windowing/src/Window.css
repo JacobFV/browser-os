@@ -66,6 +66,8 @@
   margin-right: 16px;
 }
 
+/* Traffic light position is handled by theme.css via data-traffic-lights attribute */
+
 .window-control {
   width: 12px;
   height: 12px;

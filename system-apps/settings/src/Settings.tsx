@@ -8,6 +8,7 @@ import { UsersSettings } from './UsersSettings';
 import { MountsSettings } from './MountsSettings';
 import { AppsSettings } from './AppsSettings';
 import { ChessSettings } from './ChessSettings';
+import { AppearanceSettings } from './AppearanceSettings';
 import { OtherSettings } from './OtherSettings';
 import './Settings.css';
 
@@ -192,6 +193,9 @@ export const Settings: React.FC<SettingsProps> = ({ windowId }) => {
         )}
         {currentCategory === 'chess' && (
           <ChessSettings loading={loading} />
+        )}
+        {currentCategory === 'appearance' && (
+          <AppearanceSettings loading={loading} />
         )}
         {currentCategory === 'other' && <OtherSettings fs={fs} loading={loading} />}
       </div>

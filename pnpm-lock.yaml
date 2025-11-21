@@ -412,6 +412,9 @@ importers:
       '@browser-os/todo':
         specifier: workspace:*
         version: link:../../system-apps/todo
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@browser-os/video-player':
         specifier: workspace:*
         version: link:../../system-apps/video-player
@@ -617,6 +620,19 @@ importers:
       vitest:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@20.19.24)(jsdom@23.2.0)
+
+  packages/ui:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.26
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
 
   packages/windowing:
     dependencies:
@@ -1460,6 +1476,9 @@ importers:
       '@browser-os/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@browser-os/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       react:
         specifier: ^18.2.0
         version: 18.3.1

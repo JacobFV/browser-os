@@ -18,6 +18,7 @@ export default defineConfig({
       '@browser-os/notifications': path.resolve(__dirname, '../../packages/notifications/src'),
       '@browser-os/server': path.resolve(__dirname, '../../packages/server/src'),
       '@browser-os/os': path.resolve(__dirname, '../../packages/os/src'),
+      '@browser-os/ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@browser-os/proc': path.resolve(__dirname, '../../packages/proc/src'),
       '@browser-os/network': path.resolve(__dirname, '../../packages/network/src'),
       '@browser-os/browser': path.resolve(__dirname, '../../system-apps/browser/src'),

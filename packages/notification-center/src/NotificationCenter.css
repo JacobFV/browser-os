@@ -2,15 +2,19 @@
   position: fixed;
   top: 16px; /* Floating top right */
   right: 16px;
-  width: 360px;
+  width: 380px;
   max-width: calc(100vw - 32px);
   height: calc(100vh - 32px); /* Full height minus margins */
   max-height: 800px;
 
-  /* Glassmorphism */
-  background: var(--glass-surface);
+  /* Glassmorphism - More translucent for that gorgeous blurred effect */
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(var(--blur-lg)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+}
+
+[data-theme="dark"] .notification-center {
+  background: rgba(30, 30, 30, 0.3);
 
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -19,8 +23,8 @@
   overflow: hidden;
   animation: notification-center-slide-in 0.4s var(--ease-bounce);
 
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-xl);
 }
 
 @keyframes notification-center-slide-in {
@@ -38,9 +42,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--glass-border-subtle);
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .notification-center-title {
@@ -53,15 +60,17 @@
 }
 
 .notification-center-unread-count {
-  background: #007aff; /* Apple Blue */
+  background: rgba(0, 122, 255, 0.9);
   color: white;
   font-size: 12px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 12px;
   min-width: 20px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .notification-center-close {
@@ -81,18 +90,20 @@
 }
 
 .notification-center-close:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.08);
   color: var(--text-primary);
+  transform: scale(1.1);
 }
 
 .notification-center-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--glass-border-subtle);
   gap: 12px;
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .notification-center-filters {
@@ -121,9 +132,16 @@
 }
 
 .notification-center-filter.active {
-  background: white;
+  background: rgba(255, 255, 255, 0.4);
   color: var(--text-primary);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .notification-center-filter.active {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .notification-center-filter-badge {
@@ -183,7 +201,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px 20px;
+  padding: 16px 24px;
   min-height: 0;
 }
 
@@ -215,10 +233,20 @@
 }
 
 .notification-center-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 3px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .notification-center-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .notification-center-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .notification-center-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
