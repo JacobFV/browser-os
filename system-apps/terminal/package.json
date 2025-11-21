@@ -17,6 +17,7 @@
     "@browser-os/events": "workspace:*",
     "@browser-os/fs": "workspace:*",
     "@browser-os/schemas": "workspace:*",
+    "@browser-os/ui": "workspace:*",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "react": "^18.2.0",
