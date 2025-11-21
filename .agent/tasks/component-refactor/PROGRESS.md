@@ -52,13 +52,17 @@
    - Theme-aware drawing tools and UI elements
    - Full dark mode support
 
+11. **Email Client** - ✅ Completed
+   - Updated inbox, folders, compose, and detail views
+   - Theme-aware email list and forms
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Email Client
 - File Browser
 - File Search
 - Games
