@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #202020;
-  color: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: system-ui, -apple-system, sans-serif;
   overflow: hidden;
 }
@@ -14,15 +14,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: #2a2a2a;
-  border-bottom: 1px solid #444;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .process-manager-header h1 {
   margin: 0;
   font-size: 20px;
   font-weight: 500;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .process-manager-tabs {
@@ -34,21 +36,21 @@
   padding: 8px 16px;
   background: transparent;
   border: none;
-  color: #aaa;
+  color: var(--text-secondary);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-manager-tab:hover {
-  background: #333;
-  color: #fff;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .process-manager-tab.active {
-  background: #4285F4;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--text-light);
 }
 
 /* Content Area */
@@ -72,8 +74,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  background: #2a2a2a;
-  border-bottom: 1px solid #333;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   gap: 16px;
 }
 
@@ -86,26 +90,34 @@
 .process-filter-input {
   flex: 1;
   padding: 8px 12px;
-  background: #333;
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #fff;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
   font-size: 14px;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-filter-input:focus {
   outline: none;
-  border-color: #4285F4;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .process-filter-select {
   padding: 8px 12px;
-  background: #333;
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #fff;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.process-filter-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .process-list-actions {
@@ -118,7 +130,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 14px;
   cursor: pointer;
 }
@@ -129,17 +141,17 @@
 
 .process-refresh-btn {
   padding: 8px 16px;
-  background: #4285F4;
+  background: var(--color-primary);
   border: none;
-  color: white;
-  border-radius: 4px;
+  color: var(--text-light);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-refresh-btn:hover:not(:disabled) {
-  background: #357ae8;
+  background: var(--color-primary-shaded);
 }
 
 .process-refresh-btn:disabled {
@@ -149,8 +161,9 @@
 
 .process-list-error {
   padding: 12px 20px;
-  background: #5a1a1a;
-  color: #ff6b6b;
+  background: var(--color-error-lighter);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-shaded);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -158,12 +171,17 @@
 
 .process-list-error button {
   padding: 6px 12px;
-  background: #ff6b6b;
+  background: var(--color-error);
   border: none;
-  color: white;
-  border-radius: 4px;
+  color: var(--text-light);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 13px;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.process-list-error button:hover {
+  background: var(--color-error-shaded);
 }
 
 .process-list-loading {
@@ -171,12 +189,13 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .process-table-container {
   flex: 1;
   overflow: auto;
+  background: var(--bg-primary);
 }
 
 .process-table {
@@ -186,15 +205,18 @@
 }
 
 .process-table th {
-  background: #2a2a2a;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   padding: 10px 12px;
   font-weight: 500;
-  color: #aaa;
+  color: var(--text-secondary);
   position: sticky;
   top: 0;
   font-size: 12px;
   text-transform: uppercase;
   z-index: 1;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .process-table th.sortable {
@@ -203,42 +225,43 @@
 }
 
 .process-table th.sortable:hover {
-  background: #333;
-  color: #fff;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .process-table td {
   padding: 10px 12px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--glass-border-subtle);
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .process-table-empty {
   text-align: center;
-  color: #aaa;
+  color: var(--text-secondary);
   padding: 40px !important;
 }
 
 .process-row {
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s var(--ease-smooth);
 }
 
 .process-row:hover {
-  background: #2a2a2a;
+  background: var(--glass-surface-hover);
 }
 
 .process-row.selected {
-  background: #1a3a5a;
+  background: var(--color-primary-lighter);
 }
 
 .process-name {
   font-weight: 500;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .process-cwd {
-  color: #aaa;
+  color: var(--text-secondary);
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -249,25 +272,28 @@
 .status-badge {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 500;
   text-transform: capitalize;
 }
 
 .status-badge.status-running {
-  background: #1a5a1a;
-  color: #4caf50;
+  background: var(--color-success-lighter);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-shaded);
 }
 
 .status-badge.status-stopped {
-  background: #5a4a1a;
-  color: #ffc107;
+  background: var(--color-warning-lighter);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning-shaded);
 }
 
 .status-badge.status-terminated {
-  background: #5a1a1a;
-  color: #f44336;
+  background: var(--color-error-lighter);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-shaded);
 }
 
 /* Process Details Panel */
@@ -277,12 +303,14 @@
   top: 0;
   bottom: 0;
   width: 400px;
-  background: #2a2a2a;
-  border-left: 1px solid #444;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-left: 1px solid var(--glass-border-subtle);
   display: flex;
   flex-direction: column;
   z-index: 10;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 .process-details-header {
@@ -290,19 +318,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .process-details-header h2 {
   margin: 0;
   font-size: 18px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .process-details-close {
   background: transparent;
   border: none;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 24px;
   cursor: pointer;
   padding: 0;
@@ -311,13 +340,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-details-close:hover {
-  background: #333;
-  color: #fff;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .process-details-content {
@@ -330,21 +359,26 @@
 .process-details-error {
   padding: 20px;
   text-align: center;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .process-details-error {
-  color: #ff6b6b;
+  color: var(--color-error);
 }
 
 .process-details-error button {
   margin-top: 12px;
   padding: 8px 16px;
-  background: #ff6b6b;
+  background: var(--color-error);
   border: none;
-  color: white;
-  border-radius: 4px;
+  color: var(--text-light);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.process-details-error button:hover {
+  background: var(--color-error-shaded);
 }
 
 .process-details-section {
@@ -355,7 +389,7 @@
   margin: 0 0 12px 0;
   font-size: 14px;
   font-weight: 500;
-  color: #aaa;
+  color: var(--text-secondary);
   text-transform: uppercase;
   display: flex;
   justify-content: space-between;
@@ -365,10 +399,15 @@
 .process-details-toggle {
   background: transparent;
   border: none;
-  color: #4285F4;
+  color: var(--color-primary);
   cursor: pointer;
   font-size: 12px;
   padding: 4px 8px;
+  transition: color 0.2s var(--ease-smooth);
+}
+
+.process-details-toggle:hover {
+  color: var(--color-primary-shaded);
 }
 
 .process-details-grid {
@@ -384,13 +423,13 @@
 
 .process-details-item label {
   font-size: 12px;
-  color: #aaa;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
 
 .process-details-item span {
   font-size: 14px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .process-details-env {
@@ -399,9 +438,12 @@
   gap: 8px;
   max-height: 300px;
   overflow-y: auto;
-  background: #1a1a1a;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
   padding: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .process-details-env-item {
@@ -411,13 +453,13 @@
 }
 
 .process-details-env-key {
-  color: #4285F4;
+  color: var(--color-primary);
   font-weight: 500;
   min-width: 120px;
 }
 
 .process-details-env-value {
-  color: #aaa;
+  color: var(--text-secondary);
   word-break: break-all;
 }
 
@@ -430,11 +472,11 @@
 .process-action-btn {
   padding: 10px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-action-btn:disabled {
@@ -443,21 +485,21 @@
 }
 
 .process-action-kill {
-  background: #ff6b6b;
-  color: white;
+  background: var(--color-error);
+  color: var(--text-light);
 }
 
 .process-action-kill:hover:not(:disabled) {
-  background: #ff5252;
+  background: var(--color-error-shaded);
 }
 
 .process-action-force-kill {
-  background: #d32f2f;
-  color: white;
+  background: var(--color-error-shaded);
+  color: var(--text-light);
 }
 
 .process-action-force-kill:hover:not(:disabled) {
-  background: #c62828;
+  background: var(--color-error-dark);
 }
 
 /* Process Tree View */
@@ -467,6 +509,7 @@
   height: 100%;
   width: 100%;
   padding: 20px;
+  background: var(--bg-primary);
 }
 
 .process-tree-header {
@@ -480,24 +523,29 @@
   margin: 0;
   font-size: 16px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .process-tree-expand-all,
 .process-tree-collapse-all {
   padding: 6px 12px;
-  background: #333;
-  border: none;
-  color: #aaa;
-  border-radius: 4px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 12px;
   margin-left: 8px;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .process-tree-expand-all:hover,
 .process-tree-collapse-all:hover {
-  background: #444;
-  color: #fff;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--glass-border);
 }
 
 .process-tree-content {
@@ -507,7 +555,7 @@
 
 .process-tree-empty {
   text-align: center;
-  color: #aaa;
+  color: var(--text-secondary);
   padding: 40px;
 }
 
@@ -520,23 +568,23 @@
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s var(--ease-smooth);
 }
 
 .process-tree-item:hover {
-  background: #2a2a2a;
+  background: var(--glass-surface-hover);
 }
 
 .process-tree-item.selected {
-  background: #1a3a5a;
+  background: var(--color-primary-lighter);
 }
 
 .process-tree-toggle {
   background: transparent;
   border: none;
-  color: #aaa;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
   width: 16px;
@@ -545,6 +593,11 @@
   align-items: center;
   justify-content: center;
   font-size: 10px;
+  transition: color 0.2s var(--ease-smooth);
+}
+
+.process-tree-toggle:hover {
+  color: var(--text-primary);
 }
 
 .process-tree-spacer {
@@ -553,28 +606,30 @@
 
 .process-tree-pid {
   font-weight: 500;
-  color: #4285F4;
+  color: var(--color-primary);
   min-width: 60px;
   font-size: 13px;
 }
 
 .process-tree-name {
   flex: 1;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .process-tree-children {
   margin-left: 20px;
-  border-left: 1px solid #333;
+  border-left: 1px solid var(--glass-border-subtle);
   padding-left: 8px;
 }
 
 /* Footer */
 .process-manager-footer {
   padding: 12px 20px;
-  background: #2a2a2a;
-  border-top: 1px solid #444;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-top: 1px solid var(--glass-border-subtle);
 }
 
 .process-stats {
@@ -584,24 +639,69 @@
 }
 
 .process-stat {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .process-stat strong {
-  color: #fff;
+  color: var(--text-primary);
   margin-right: 4px;
 }
 
 .stat-running {
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .stat-stopped {
-  color: #ffc107;
+  color: var(--color-warning);
 }
 
 .stat-terminated {
-  color: #f44336;
+  color: var(--color-error);
+}
+
+/* Scrollbar styling */
+.process-table-container::-webkit-scrollbar,
+.process-details-content::-webkit-scrollbar,
+.process-tree-content::-webkit-scrollbar,
+.process-details-env::-webkit-scrollbar {
+  width: 8px;
+}
+
+.process-table-container::-webkit-scrollbar-track,
+.process-details-content::-webkit-scrollbar-track,
+.process-tree-content::-webkit-scrollbar-track,
+.process-details-env::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.process-table-container::-webkit-scrollbar-thumb,
+.process-details-content::-webkit-scrollbar-thumb,
+.process-tree-content::-webkit-scrollbar-thumb,
+.process-details-env::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.process-table-container::-webkit-scrollbar-thumb:hover,
+.process-details-content::-webkit-scrollbar-thumb:hover,
+.process-tree-content::-webkit-scrollbar-thumb:hover,
+.process-details-env::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .process-table-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .process-details-content::-webkit-scrollbar-thumb,
+[data-theme="dark"] .process-tree-content::-webkit-scrollbar-thumb,
+[data-theme="dark"] .process-details-env::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .process-table-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .process-details-content::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .process-tree-content::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .process-details-env::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Responsive Design */
