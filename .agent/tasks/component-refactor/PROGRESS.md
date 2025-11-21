@@ -37,13 +37,17 @@
    - Theme-aware backdrop blur effects
    - Full dark mode support
 
+8. **Chess** - ✅ Completed
+   - Updated game controls, status panels, and UI elements
+   - Maintained chess board square colors for gameplay
+   - Full dark mode support for UI panels
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Chess
 - Contacts
 - Draw
 - Email Client
