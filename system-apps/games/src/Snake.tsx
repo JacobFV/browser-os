@@ -18,7 +18,7 @@ interface SnakeGameState {
 }
 
 const generateFood = (snake: Array<{ x: number; y: number }>): { x: number; y: number } => {
-  let food;
+  let food: { x: number; y: number };
   do {
     food = {
       x: Math.floor(Math.random() * GRID_SIZE),
