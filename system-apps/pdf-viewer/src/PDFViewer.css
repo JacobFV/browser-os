@@ -2,15 +2,17 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #525252;
-  color: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 .pdf-viewer-header {
   padding: 12px 20px;
-  background: #2d2d2d;
-  border-bottom: 1px solid #404040;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,6 +26,7 @@
   gap: 8px;
   flex: 1;
   min-width: 0;
+  color: var(--text-primary);
 }
 
 .pdf-viewer-title-text {
@@ -41,19 +44,23 @@
 .toolbar-btn {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: #404040;
-  color: white;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .toolbar-btn:hover:not(:disabled) {
-  background: #525252;
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
 }
 
 .toolbar-btn:disabled {
@@ -62,13 +69,15 @@
 }
 
 .toolbar-btn.active {
-  background: #667eea;
+  background: var(--color-primary);
+  color: var(--text-light);
+  border-color: var(--color-primary-shaded);
 }
 
 .toolbar-separator {
   width: 1px;
   height: 24px;
-  background: #404040;
+  background: var(--glass-border-subtle);
   margin: 0 4px;
 }
 
@@ -81,22 +90,24 @@
 .page-input {
   width: 60px;
   padding: 4px 8px;
-  background: #404040;
-  border: 1px solid #525252;
-  border-radius: 4px;
-  color: white;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
   text-align: center;
   font-size: 12px;
   outline: none;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .page-input:focus {
-  border-color: #667eea;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .page-info {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -110,7 +121,7 @@
   min-width: 50px;
   text-align: center;
   font-size: 12px;
-  color: #ccc;
+  color: var(--text-secondary);
 }
 
 .pdf-viewer-content {
@@ -128,12 +139,12 @@
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
-  background: #525252;
+  background: var(--bg-primary);
 }
 
 .pdf-page {
   background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   margin-bottom: 20px;
   display: block;
   max-width: 100%;
@@ -150,7 +161,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #999;
+  color: var(--text-secondary);
   text-align: center;
   padding: 40px;
 }
@@ -164,12 +175,12 @@
 .empty-state-text {
   font-size: 18px;
   margin-bottom: 10px;
-  color: #ccc;
+  color: var(--text-primary);
 }
 
 .empty-state-hint {
   font-size: 14px;
-  color: #888;
+  color: var(--text-secondary);
   margin-top: 10px;
 }
 
@@ -179,21 +190,21 @@
 
 .open-file-btn {
   padding: 10px 20px;
-  background: #667eea;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .open-file-btn:hover {
-  background: #5568d3;
+  background: var(--color-primary-shaded);
 }
 
 .loading-state {
@@ -202,14 +213,14 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #ccc;
+  color: var(--text-secondary);
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #404040;
-  border-top-color: #667eea;
+  border: 4px solid var(--glass-border-subtle);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
@@ -225,8 +236,10 @@
 
 .sidebar {
   width: 300px;
-  background: #2d2d2d;
-  border-right: 1px solid #404040;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-right: 1px solid var(--glass-border-subtle);
   padding: 20px;
   overflow-y: auto;
   display: flex;
@@ -247,6 +260,7 @@
 .sidebar-title {
   font-size: 16px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .thumbnail-list {
@@ -256,26 +270,27 @@
 }
 
 .thumbnail-item {
-  background: #404040;
-  border-radius: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
   padding: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 2px solid transparent;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .thumbnail-item:hover {
-  background: #525252;
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
 }
 
 .thumbnail-item.active {
-  border-color: #667eea;
-  background: #404040;
+  border-color: var(--color-primary);
+  background: var(--color-primary-lighter);
 }
 
 .thumbnail-page-number {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   text-align: center;
 }
@@ -283,7 +298,7 @@
 .thumbnail-image {
   width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: white;
   display: block;
 }
@@ -297,20 +312,55 @@
 .view-mode-btn {
   flex: 1;
   padding: 8px;
-  background: #404040;
-  border: none;
-  border-radius: 4px;
-  color: white;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 12px;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .view-mode-btn.active {
-  background: #667eea;
+  background: var(--color-primary);
+  color: var(--text-light);
+  border-color: var(--color-primary-shaded);
 }
 
 .view-mode-btn:hover:not(.active) {
-  background: #525252;
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
 }
 
+/* Scrollbar styling */
+.pdf-container::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pdf-container::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pdf-container::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.pdf-container::-webkit-scrollbar-thumb:hover,
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .pdf-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .pdf-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
