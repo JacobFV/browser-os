@@ -20,9 +20,9 @@ function loadStockfish() {
   }
   
   // Try importScripts (for web workers)
-  if (typeof importScripts !== 'undefined') {
+  if (typeof (self as any).importScripts !== 'undefined') {
     try {
-      importScripts('https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js');
+      (self as any).importScripts('https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js');
       return (self as any).Stockfish || (self as any).stockfish;
     } catch (e) {
       console.error('Failed to load Stockfish:', e);

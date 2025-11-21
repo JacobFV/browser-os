@@ -201,6 +201,10 @@ export class AIController {
       const movetime = this.calculateMovetime(this.config.difficulty);
 
       // Request move
+      if (!this.worker) {
+        this.rejectMove?.(new Error('Worker not initialized'));
+        return;
+      }
       this.worker.postMessage({
         type: 'go',
         payload: {

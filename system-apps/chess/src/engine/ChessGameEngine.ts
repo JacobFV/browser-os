@@ -41,7 +41,7 @@ export class ChessGameEngine {
       for (let file = 0; file < 8; file++) {
         const square = `${String.fromCharCode(97 + file)}${rank + 1}` as Square;
         const piece = this.chess.get(square);
-        row.push(piece);
+        row.push(piece ?? null);
       }
       board.push(row);
     }

@@ -78,13 +78,6 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
     enabled: gameMode === 'online' && !!gameId,
   });
 
-  // Send moves to online game
-  useEffect(() => {
-    if (gameMode === 'online' && onlineGame.sendMove && lastMove) {
-      // Move was already made, just notify the server
-      // The actual sending happens in handlePieceMoveWithMode
-    }
-  }, [gameMode, lastMove, onlineGame]);
 
   const aiOpponent = useAIOpponent({
     engine,
@@ -118,6 +111,7 @@ export const Chess: React.FC<ChessProps> = ({ windowId, appId, eventBus }) => {
   };
 
   const handleSave = () => {
+    if (!gameMode) return;
     const state = gameState.exportState(gameMode, gameId);
     const saveKey = `game_${Date.now()}`;
     saveGameToStorage(saveKey, state);
