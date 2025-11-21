@@ -42,13 +42,17 @@
    - Maintained chess board square colors for gameplay
    - Full dark mode support for UI panels
 
+9. **Contacts** - ✅ Completed
+   - Updated sidebar, contact list, and detail views
+   - Theme-aware forms and buttons
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Contacts
 - Draw
 - Email Client
 - File Browser
