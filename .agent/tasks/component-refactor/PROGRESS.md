@@ -57,13 +57,17 @@
    - Theme-aware email list and forms
    - Full dark mode support
 
+12. **File Browser** - ✅ Completed
+   - Updated toolbar, file list, dialogs, and context menu
+   - Theme-aware file browser UI
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- File Browser
 - File Search
 - Games
 - Image Viewer
