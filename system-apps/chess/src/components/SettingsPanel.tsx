@@ -34,7 +34,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onPieceSetChange,
 }) => {
   return (
-    <div className="settings-panel">
+    <div className="chess-settings-panel">
       <h3>Settings</h3>
       
       <div className="setting-group">

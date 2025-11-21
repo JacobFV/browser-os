@@ -19,9 +19,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 32px;
-  background: var(--glass-surface);
-  backdrop-filter: blur(var(--blur-md)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  /* Solid background from window border - no glass effect here */
+  background: transparent;
 }
 
 .settings-error {
@@ -204,35 +203,40 @@
 .users-table th,
 .mounts-table th,
 .apps-table th {
-  background: #f5f5f5;
+  /* No background - headers sit on window background */
+  background: transparent;
   padding: 12px;
   text-align: left;
   font-weight: 600;
   font-size: 14px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  color: var(--text-secondary);
 }
 
 .users-table td,
 .mounts-table td,
 .apps-table td {
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--glass-border-subtle);
   font-size: 14px;
 }
 
 .users-table tr:hover,
 .mounts-table tr:hover,
 .apps-table tr:hover {
-  background: #f9f9f9;
+  /* Subtle hover - no background box */
+  background: transparent;
+  opacity: 0.8;
 }
 
 .users-table code,
 .mounts-table code {
   font-family: monospace;
   font-size: 12px;
-  background: #f5f5f5;
-  padding: 2px 6px;
-  border-radius: 3px;
+  /* No background - code sits on window background */
+  background: transparent;
+  padding: 0;
+  color: var(--text-secondary);
 }
 
 /* Lists */
@@ -247,7 +251,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .users-list-header h4,
@@ -255,6 +259,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .users-list-empty,
@@ -262,17 +267,16 @@
 .apps-list-empty {
   padding: 40px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
 /* Forms */
 .user-form,
 .mount-form {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  /* No background, border, or shadow - content sits directly on window background */
+  padding: 0;
+  margin-top: 24px;
 }
 
 .user-form h4,
@@ -345,8 +349,9 @@
 
 .other-settings-path {
   padding: 12px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  /* No background - sits on window background */
+  background: transparent;
+  border-bottom: 1px solid var(--glass-border-subtle);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -356,7 +361,7 @@
   flex: 1;
   font-family: monospace;
   font-size: 13px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .other-settings-list {
@@ -368,7 +373,7 @@
 .other-settings-empty {
   padding: 40px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .other-settings-item {
@@ -382,12 +387,16 @@
 }
 
 .other-settings-item:hover {
-  background: #f5f5f5;
+  /* Subtle hover - no background box */
+  background: transparent;
+  opacity: 0.8;
 }
 
 .other-settings-item.selected {
-  background: #e8f4fd;
-  color: #0066cc;
+  /* Use primary color for selection, no background box */
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .other-settings-icon {
@@ -403,21 +412,22 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  /* No border - content sits on window background */
+  border: none;
   overflow: hidden;
 }
 
 .other-settings-file-header {
   padding: 12px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  /* No background - sits on window background */
+  background: transparent;
+  border-bottom: 1px solid var(--glass-border-subtle);
 }
 
 .other-settings-file-name {
   font-family: monospace;
   font-size: 13px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .other-settings-placeholder {
@@ -425,7 +435,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--text-secondary);
   font-style: italic;
 }
 

@@ -1,11 +1,11 @@
-.settings-panel {
+.chess-settings-panel {
   padding: 1em;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
 }
 
-.settings-panel h3 {
+.chess-settings-panel h3 {
   margin: 0 0 1em 0;
   font-size: 1em;
   font-weight: 600;
