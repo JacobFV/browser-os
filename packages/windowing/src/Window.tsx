@@ -187,7 +187,7 @@ export const Window: React.FC<WindowProps> = ({
     <>
       <div
         ref={windowRef}
-        className={`window ${window.isFocused ? 'active' : ''} ${isMaximized ? 'maximized' : ''}`}
+        className={`window ${isMaximized ? 'maximized' : ''}`}
         style={style}
         onClick={onFocus}
         onMouseDown={onFocus}
