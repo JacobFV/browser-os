@@ -4,7 +4,8 @@
   gap: 6px;
   padding: 4px 8px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
 }
 
 .status-dot {
@@ -15,16 +16,16 @@
 }
 
 .status-connected .status-dot {
-  background-color: #4caf50;
+  background: var(--color-success);
 }
 
 .status-connecting .status-dot {
-  background-color: #ff9800;
+  background: var(--color-warning);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .status-disconnected .status-dot {
-  background-color: #f44336;
+  background: var(--color-error);
 }
 
 .status-text {
@@ -39,4 +40,3 @@
     opacity: 0.5;
   }
 }
-
