@@ -205,7 +205,7 @@ export const MarkdownEditor: React.FC<{ os: any }> = ({ os }) => {
 
       <div className="markdown-editor-content">
         {viewMode === 'edit' || viewMode === 'split' ? (
-          <div className={`editor-pane ${viewMode === 'preview' ? 'hidden' : ''}`}>
+          <div className={`editor-pane ${viewMode === 'split' ? '' : ''}`}>
             <div className="pane-header">
               <Edit size={14} />
               Editor
@@ -232,7 +232,7 @@ console.log('Hello, Markdown!');
         ) : null}
 
         {viewMode === 'preview' || viewMode === 'split' ? (
-          <div className={`preview-pane ${viewMode === 'edit' ? 'hidden' : ''}`}>
+          <div className={`preview-pane ${viewMode === 'split' ? '' : ''}`}>
             <div className="pane-header">
               <Eye size={14} />
               Preview
