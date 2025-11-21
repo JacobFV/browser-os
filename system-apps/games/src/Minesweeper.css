@@ -1,0 +1,188 @@
+.minesweeper-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.minesweeper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.minesweeper-difficulty-select {
+  padding: 8px 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+}
+
+.minesweeper-difficulty-select:hover:not(:disabled) {
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
+}
+
+.minesweeper-difficulty-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.minesweeper-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.minesweeper-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.minesweeper-board-container {
+  position: relative;
+  padding: 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  box-shadow: var(--shadow-md);
+  overflow: auto;
+  max-width: 100%;
+}
+
+.minesweeper-board {
+  display: grid;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin: 0 auto;
+}
+
+.minesweeper-cell {
+  width: 28px;
+  height: 28px;
+  background: var(--glass-surface-hover);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s var(--ease-smooth);
+  font-weight: 700;
+  font-size: 14px;
+  user-select: none;
+  position: relative;
+}
+
+.minesweeper-cell:hover:not(.revealed):not(.flagged) {
+  background: var(--glass-surface-active);
+  transform: scale(1.05);
+}
+
+.minesweeper-cell.revealed {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--glass-border-subtle);
+  cursor: default;
+}
+
+.minesweeper-cell.mine {
+  background: var(--color-error-lighter);
+  border-color: var(--color-error);
+}
+
+.minesweeper-cell.flagged {
+  background: var(--color-warning-lighter);
+  border-color: var(--color-warning);
+}
+
+.minesweeper-number {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.minesweeper-mine {
+  font-size: 18px;
+}
+
+.minesweeper-flag-icon {
+  color: var(--color-warning);
+}
+
+.minesweeper-game-over {
+  text-align: center;
+  padding: 24px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  box-shadow: var(--shadow-md);
+}
+
+.minesweeper-game-over-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.minesweeper-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.minesweeper-instructions {
+  text-align: center;
+  padding: 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  max-width: 400px;
+}
+
+.minesweeper-instructions-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.minesweeper-instructions-list {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.minesweeper-instructions-list span {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
