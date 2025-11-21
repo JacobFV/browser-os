@@ -32,6 +32,10 @@
   pointer-events: none;
 }
 
+.window.maximized {
+  border-radius: 0;
+}
+
 .window-titlebar {
   background: transparent;
   /* Subtle separator */
@@ -137,6 +141,11 @@
   position: relative;
   border-bottom-left-radius: var(--radius-lg);
   border-bottom-right-radius: var(--radius-lg);
+}
+
+.window.maximized .window-content {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 /* Resize handles */
