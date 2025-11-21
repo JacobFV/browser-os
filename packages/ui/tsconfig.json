@@ -6,7 +6,8 @@
     "declaration": true,
     "declarationMap": true,
     "module": "ESNext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "noEmit": false
   },
   "include": ["src/**/*"]
 }
