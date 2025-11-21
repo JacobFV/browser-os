@@ -47,13 +47,17 @@
    - Theme-aware forms and buttons
    - Full dark mode support
 
+10. **Draw** - ✅ Completed
+   - Updated toolbar, menubar, and canvas container
+   - Theme-aware drawing tools and UI elements
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Draw
 - Email Client
 - File Browser
 - File Search
