@@ -24,7 +24,10 @@ import { ImageViewer } from '@browser-os/image-viewer';
 import { VideoPlayer } from '@browser-os/video-player';
 import { Contacts } from '@browser-os/contacts';
 import { Weather } from '@browser-os/weather';
-import { Games } from '@browser-os/games';
+import { Snake } from '@browser-os/snake';
+import { Minesweeper } from '@browser-os/minesweeper';
+import { Tetris } from '@browser-os/tetris';
+import { TicTacToe } from '@browser-os/tic-tac-toe';
 import { Screenshot } from '@browser-os/screenshot';
 import { VoiceRecorder } from '@browser-os/voice-recorder';
 import { Notes } from '@browser-os/notes';
@@ -631,38 +634,116 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
           console.log('[OS] Weather app registered/updated in registry');
         }
 
-        // Register games app component
-        console.log('[OS] Registering games app component...');
-        console.log('[OS] Games component:', Games);
-        if (!Games) {
-          throw new Error('Games component is undefined');
-        }
-        appComponentRegistry.registerAppComponent('games', Games);
-        console.log('[OS] Games app component registered');
+        // Register snake app component
+        console.log('[OS] Registering snake app component...');
+        appComponentRegistry.registerAppComponent('snake', Snake);
+        console.log('[OS] Snake app component registered');
 
-        // Register or update games app in registry
-        const existingGames = appRegistry.get('games');
-        if (!existingGames || !existingGames.manifest.icon) {
-          console.log('[OS] Registering/updating games app in registry...');
-          const gamesEntry = {
-            id: 'games',
-            installedAt: existingGames?.installedAt || Date.now(),
-            installedBy: existingGames?.installedBy || 'system',
-            enabled: existingGames?.enabled ?? true,
+        const existingSnake = appRegistry.get('snake');
+        if (!existingSnake || !existingSnake.manifest.icon) {
+          const snakeEntry = {
+            id: 'snake',
+            installedAt: existingSnake?.installedAt || Date.now(),
+            installedBy: existingSnake?.installedBy || 'system',
+            enabled: existingSnake?.enabled ?? true,
             manifest: {
-              id: 'games',
-              name: 'Games',
+              id: 'snake',
+              name: 'Snake',
               version: '0.1.0',
-              description: 'Play classic games',
-              entrypoint: '/bin/games.js',
+              description: 'Classic snake game',
+              entrypoint: '/bin/snake.js',
               permissions: [],
-              icon: appIcons.games,
+              icon: appIcons.snake,
               showInTaskbar: true,
             },
           };
-          appRegistry.add(gamesEntry);
+          appRegistry.add(snakeEntry);
           await appRegistry.save();
-          console.log('[OS] Games app registered/updated in registry');
+          console.log('[OS] Snake app registered/updated in registry');
+        }
+
+        // Register minesweeper app component
+        console.log('[OS] Registering minesweeper app component...');
+        appComponentRegistry.registerAppComponent('minesweeper', Minesweeper);
+        console.log('[OS] Minesweeper app component registered');
+
+        const existingMinesweeper = appRegistry.get('minesweeper');
+        if (!existingMinesweeper || !existingMinesweeper.manifest.icon) {
+          const minesweeperEntry = {
+            id: 'minesweeper',
+            installedAt: existingMinesweeper?.installedAt || Date.now(),
+            installedBy: existingMinesweeper?.installedBy || 'system',
+            enabled: existingMinesweeper?.enabled ?? true,
+            manifest: {
+              id: 'minesweeper',
+              name: 'Minesweeper',
+              version: '0.1.0',
+              description: 'Find all mines without detonating them',
+              entrypoint: '/bin/minesweeper.js',
+              permissions: [],
+              icon: appIcons.minesweeper,
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(minesweeperEntry);
+          await appRegistry.save();
+          console.log('[OS] Minesweeper app registered/updated in registry');
+        }
+
+        // Register tetris app component
+        console.log('[OS] Registering tetris app component...');
+        appComponentRegistry.registerAppComponent('tetris', Tetris);
+        console.log('[OS] Tetris app component registered');
+
+        const existingTetris = appRegistry.get('tetris');
+        if (!existingTetris || !existingTetris.manifest.icon) {
+          const tetrisEntry = {
+            id: 'tetris',
+            installedAt: existingTetris?.installedAt || Date.now(),
+            installedBy: existingTetris?.installedBy || 'system',
+            enabled: existingTetris?.enabled ?? true,
+            manifest: {
+              id: 'tetris',
+              name: 'Tetris',
+              version: '0.1.0',
+              description: 'Classic Tetris puzzle game',
+              entrypoint: '/bin/tetris.js',
+              permissions: [],
+              icon: appIcons.tetris,
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(tetrisEntry);
+          await appRegistry.save();
+          console.log('[OS] Tetris app registered/updated in registry');
+        }
+
+        // Register tic-tac-toe app component
+        console.log('[OS] Registering tic-tac-toe app component...');
+        appComponentRegistry.registerAppComponent('tic-tac-toe', TicTacToe);
+        console.log('[OS] Tic-Tac-Toe app component registered');
+
+        const existingTicTacToe = appRegistry.get('tic-tac-toe');
+        if (!existingTicTacToe || !existingTicTacToe.manifest.icon) {
+          const ticTacToeEntry = {
+            id: 'tic-tac-toe',
+            installedAt: existingTicTacToe?.installedAt || Date.now(),
+            installedBy: existingTicTacToe?.installedBy || 'system',
+            enabled: existingTicTacToe?.enabled ?? true,
+            manifest: {
+              id: 'tic-tac-toe',
+              name: 'Tic-Tac-Toe',
+              version: '0.1.0',
+              description: 'Play Tic-Tac-Toe against a friend or AI',
+              entrypoint: '/bin/tic-tac-toe.js',
+              permissions: [],
+              icon: appIcons['tic-tac-toe'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(ticTacToeEntry);
+          await appRegistry.save();
+          console.log('[OS] Tic-Tac-Toe app registered/updated in registry');
         }
 
         // Register screenshot app component
@@ -1382,12 +1463,17 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
       updateWindows();
     });
 
+    const unsubscribeMaximized = eventBus.on('window:maximized', () => {
+      updateWindows();
+    });
+
     return () => {
       unsubscribeCreated();
       unsubscribeUpdated();
       unsubscribeDestroyed();
       unsubscribeMinimized();
       unsubscribeRestored();
+      unsubscribeMaximized();
     };
   }, [eventBus, windowManager, activeWorkspaceId]);
 

@@ -331,4 +331,65 @@ export const appIcons = {
       <circle cx="18" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
     </svg>
   `),
+
+  snake: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4CAF50">
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#4CAF50"/>
+      <circle cx="7" cy="7" r="2" fill="#fff"/>
+      <circle cx="12" cy="7" r="2" fill="#fff"/>
+      <circle cx="17" cy="7" r="2" fill="#fff"/>
+      <circle cx="7" cy="12" r="2" fill="#fff"/>
+      <circle cx="12" cy="12" r="2" fill="#fff"/>
+      <circle cx="17" cy="12" r="2" fill="#fff"/>
+      <circle cx="7" cy="17" r="2" fill="#fff"/>
+      <circle cx="12" cy="17" r="2" fill="#fff"/>
+      <circle cx="17" cy="17" r="2" fill="#fff"/>
+      <circle cx="12" cy="12" r="1" fill="#4CAF50"/>
+    </svg>
+  `),
+
+  minesweeper: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF9800">
+      <rect x="2" y="2" width="20" height="20" rx="2" fill="#FF9800"/>
+      <rect x="4" y="4" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="9" y="4" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="14" y="4" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="19" y="4" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="4" y="9" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="9" y="9" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="14" y="9" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <rect x="19" y="9" width="3" height="3" fill="#fff" opacity="0.8"/>
+      <circle cx="5.5" cy="5.5" r="1" fill="#FF9800"/>
+      <circle cx="10.5" cy="5.5" r="1" fill="#FF9800"/>
+      <circle cx="15.5" cy="5.5" r="1" fill="#FF9800"/>
+      <circle cx="20.5" cy="5.5" r="1" fill="#FF9800"/>
+    </svg>
+  `),
+
+  tetris: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#00BCD4">
+      <rect x="2" y="2" width="20" height="20" rx="2" fill="#00BCD4"/>
+      <rect x="4" y="4" width="4" height="4" fill="#fff"/>
+      <rect x="10" y="4" width="4" height="4" fill="#fff"/>
+      <rect x="16" y="4" width="4" height="4" fill="#fff"/>
+      <rect x="4" y="10" width="4" height="4" fill="#fff"/>
+      <rect x="10" y="10" width="4" height="4" fill="#fff"/>
+      <rect x="16" y="10" width="4" height="4" fill="#fff"/>
+      <rect x="4" y="16" width="4" height="4" fill="#fff"/>
+      <rect x="10" y="16" width="4" height="4" fill="#fff"/>
+      <rect x="16" y="16" width="4" height="4" fill="#fff"/>
+    </svg>
+  `),
+
+  'tic-tac-toe': createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9C27B0">
+      <rect x="2" y="2" width="20" height="20" rx="2" fill="#9C27B0"/>
+      <line x1="8" y1="4" x2="8" y2="22" stroke="#fff" stroke-width="2"/>
+      <line x1="16" y1="4" x2="16" y2="22" stroke="#fff" stroke-width="2"/>
+      <line x1="2" y1="8" x2="22" y2="8" stroke="#fff" stroke-width="2"/>
+      <line x1="2" y1="16" x2="22" y2="16" stroke="#fff" stroke-width="2"/>
+      <circle cx="5" cy="5" r="1.5" fill="#fff"/>
+      <path d="M19 19l-2-2M17 19l2-2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `),
 };
