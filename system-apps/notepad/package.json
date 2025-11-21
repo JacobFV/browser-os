@@ -15,6 +15,7 @@
     "@browser-os/events": "workspace:*",
     "@browser-os/schemas": "workspace:*",
     "@browser-os/dialogs": "workspace:*",
+    "@browser-os/ui": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

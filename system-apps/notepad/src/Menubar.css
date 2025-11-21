@@ -1,8 +1,10 @@
 .menubar {
   display: flex;
   align-items: center;
-  background: #f0f0f0;
-  border-bottom: 1px solid #d0d0d0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   padding: 0;
   height: 28px;
   font-size: 13px;
@@ -19,24 +21,27 @@
   padding: 4px 12px;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
+  color: var(--text-primary);
   height: 28px;
   display: flex;
   align-items: center;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s var(--ease-smooth);
 }
 
 .menubar-button:hover {
-  background: #e0e0e0;
+  background: var(--glass-surface-hover);
 }
 
 .menubar-menu {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border: 1px solid #c0c0c0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
   min-width: 180px;
   z-index: 1000;
   padding: 4px 0;
@@ -53,16 +58,25 @@
   text-align: left;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
-  transition: background-color 0.15s;
+  color: var(--text-primary);
+  transition: background-color 0.15s var(--ease-smooth);
 }
 
 .menubar-menu-item:hover {
-  background: #e8f4fd;
+  background: var(--glass-surface-hover);
+}
+
+.menubar-menu-item:first-child {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.menubar-menu-item:last-child {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 .menubar-menu-item:disabled {
-  color: #999;
+  color: var(--text-secondary);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -71,19 +85,19 @@
 }
 
 .menubar-menu-item-checked {
-  background: #e8f4fd;
+  background: var(--color-primary-lighter);
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .menubar-shortcut {
-  color: #999;
+  color: var(--text-secondary);
   font-size: 11px;
   margin-left: 20px;
 }
 
 .menubar-menu-separator {
   height: 1px;
-  background: #e0e0e0;
+  background: var(--glass-border-subtle);
   margin: 4px 0;
 }
-
