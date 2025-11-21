@@ -79,12 +79,33 @@ export const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({
     setDraggedWindowId(windowId);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', windowId);
-    // Create a custom drag image
-    const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
-    dragImage.style.opacity = '0.5';
+    // Create a small custom drag image that matches the thumbnail size
+    const sourceElement = e.currentTarget as HTMLElement;
+    const dragImage = sourceElement.cloneNode(true) as HTMLElement;
+    
+    // Style the drag image to be a fixed small size
+    dragImage.style.position = 'fixed';
+    dragImage.style.top = '-1000px';
+    dragImage.style.left = '-1000px';
+    dragImage.style.width = sourceElement.offsetWidth + 'px';
+    dragImage.style.height = sourceElement.offsetHeight + 'px';
+    dragImage.style.opacity = '0.8';
+    dragImage.style.pointerEvents = 'none';
+    dragImage.style.transform = 'none';
+    dragImage.style.margin = '0';
+    
     document.body.appendChild(dragImage);
-    e.dataTransfer.setDragImage(dragImage, 0, 0);
-    setTimeout(() => document.body.removeChild(dragImage), 0);
+    
+    // Use the center of the element as the drag point
+    const rect = sourceElement.getBoundingClientRect();
+    e.dataTransfer.setDragImage(dragImage, rect.width / 2, rect.height / 2);
+    
+    // Clean up after a short delay
+    setTimeout(() => {
+      if (document.body.contains(dragImage)) {
+        document.body.removeChild(dragImage);
+      }
+    }, 0);
   };
 
   const handleWindowDragEnd = () => {

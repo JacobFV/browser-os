@@ -85,17 +85,57 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   const [windowsByWorkspace, setWindowsByWorkspace] = useState<Map<string, Window[]>>(new Map());
   
   useEffect(() => {
-    const wsMap = new Map<string, Window[]>();
-    workspaceManager.getAllWorkspaces().forEach((workspace) => {
-      const wsWindows = windowManager.getWindowsInWorkspace(workspace.id).filter((w) => {
-        if (!w.appId) return true;
-        const app = appRegistry.get(w.appId);
-        return app?.manifest.showInTaskbar !== false;
+    const updateWindowsByWorkspace = () => {
+      const wsMap = new Map<string, Window[]>();
+      workspaceManager.getAllWorkspaces().forEach((workspace) => {
+        const wsWindows = windowManager.getWindowsInWorkspace(workspace.id).filter((w) => {
+          if (!w.appId) return true;
+          const app = appRegistry.get(w.appId);
+          return app?.manifest.showInTaskbar !== false;
+        });
+        wsMap.set(workspace.id, wsWindows);
       });
-      wsMap.set(workspace.id, wsWindows);
+      setWindowsByWorkspace(wsMap);
+    };
+
+    // Initial update
+    updateWindowsByWorkspace();
+
+    // Listen to window events to update immediately when windows are created/destroyed
+    const unsubscribeCreated = eventBus.on('window:created', () => {
+      updateWindowsByWorkspace();
     });
-    setWindowsByWorkspace(wsMap);
-  }, [workspaceManager, windowManager, appRegistry, windows, activeWorkspaceId]);
+
+    const unsubscribeDestroyed = eventBus.on('window:destroyed', () => {
+      updateWindowsByWorkspace();
+    });
+
+    const unsubscribeUpdated = eventBus.on('window:updated', () => {
+      updateWindowsByWorkspace();
+    });
+
+    // Also listen to workspace events
+    const unsubscribeWorkspaceCreated = eventBus.on('workspace:created', () => {
+      updateWindowsByWorkspace();
+    });
+
+    const unsubscribeWorkspaceDeleted = eventBus.on('workspace:deleted', () => {
+      updateWindowsByWorkspace();
+    });
+
+    const unsubscribeWorkspaceSwitched = eventBus.on('workspace:switched', () => {
+      updateWindowsByWorkspace();
+    });
+
+    return () => {
+      unsubscribeCreated();
+      unsubscribeDestroyed();
+      unsubscribeUpdated();
+      unsubscribeWorkspaceCreated();
+      unsubscribeWorkspaceDeleted();
+      unsubscribeWorkspaceSwitched();
+    };
+  }, [workspaceManager, windowManager, appRegistry, eventBus]);
 
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
