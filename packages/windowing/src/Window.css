@@ -164,3 +164,39 @@
 .resize-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; }
 .resize-se { bottom: 0; right: 0; width: 12px; height: 12px; cursor: nwse-resize; }
 .resize-sw { bottom: 0; left: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+
+/* Snap indicator overlay */
+.snap-indicator {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 99999;
+  pointer-events: none;
+  border: 3px solid var(--color-primary, #007aff);
+  background: rgba(0, 122, 255, 0.08);
+  animation: snapIndicatorFadeIn 0.15s ease;
+  box-shadow: inset 0 0 0 1px rgba(0, 122, 255, 0.2);
+}
+
+.snap-indicator-left {
+  left: 0;
+  width: 50%;
+  border-right: 3px solid var(--color-primary, #007aff);
+}
+
+.snap-indicator-right {
+  right: 0;
+  width: 50%;
+  border-left: 3px solid var(--color-primary, #007aff);
+}
+
+@keyframes snapIndicatorFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
