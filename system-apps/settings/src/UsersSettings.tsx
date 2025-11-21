@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { SystemConfig, User } from '@browser-os/schemas';
+import { Input, Button, Dropdown } from '@browser-os/ui';
 
 export interface UsersSettingsProps {
   config: SystemConfig | null;
@@ -131,87 +132,72 @@ export const UsersSettings: React.FC<UsersSettingsProps> = ({
 
   return (
     <div className="settings-panel">
-      <h3 className="settings-panel-title">User Management</h3>
+      <h2 className="settings-panel-title">User Management</h2>
       <div className="settings-form">
         {showUserForm ? (
           <div className="user-form">
-            <h4>{editingUser ? 'Edit User' : 'Add User'}</h4>
-            <div className="settings-form-group">
-              <label htmlFor="user-id">User ID</label>
-              <input
-                id="user-id"
-                type="text"
-                value={formData.id}
-                onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                disabled={!!editingUser}
-                placeholder="user-1"
-              />
-            </div>
-            <div className="settings-form-group">
-              <label htmlFor="user-username">Username</label>
-              <input
-                id="user-username"
-                type="text"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                placeholder="user"
-              />
-            </div>
-            <div className="settings-form-group">
-              <label htmlFor="user-homedir">Home Directory</label>
-              <input
-                id="user-homedir"
-                type="text"
-                value={formData.homeDir}
-                onChange={(e) => setFormData({ ...formData, homeDir: e.target.value })}
-                placeholder="/home/user"
-              />
-            </div>
-            <div className="settings-form-group">
-              <label htmlFor="user-shell">Default Shell (optional)</label>
-              <input
-                id="user-shell"
-                type="text"
-                value={formData.defaultShell}
-                onChange={(e) => setFormData({ ...formData, defaultShell: e.target.value })}
-                placeholder="/bin/sh"
-              />
-            </div>
+            <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '24px', color: 'var(--text-primary)' }}>
+              {editingUser ? 'Edit User' : 'Add User'}
+            </h3>
+            <Input
+              label="User ID"
+              type="text"
+              value={formData.id}
+              onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+              disabled={!!editingUser}
+              placeholder="user-1"
+            />
+            <Input
+              label="Username"
+              type="text"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              placeholder="user"
+            />
+            <Input
+              label="Home Directory"
+              type="text"
+              value={formData.homeDir}
+              onChange={(e) => setFormData({ ...formData, homeDir: e.target.value })}
+              placeholder="/home/user"
+            />
+            <Input
+              label="Default Shell (optional)"
+              type="text"
+              value={formData.defaultShell}
+              onChange={(e) => setFormData({ ...formData, defaultShell: e.target.value })}
+              placeholder="/bin/sh"
+            />
             {error && <div className="settings-form-error">{error}</div>}
             <div className="settings-form-actions">
-              <button className="settings-button" onClick={() => setShowUserForm(false)}>
+              <Button variant="ghost" onClick={() => setShowUserForm(false)}>
                 Cancel
-              </button>
-              <button className="settings-button primary" onClick={handleSaveUser}>
+              </Button>
+              <Button variant="primary" onClick={handleSaveUser}>
                 {editingUser ? 'Update' : 'Add'}
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="settings-form-group">
-              <label htmlFor="default-user">Default User</label>
-              <select
-                id="default-user"
-                value={defaultUser}
-                onChange={(e) => {
-                  setDefaultUser(e.target.value);
-                  setHasChanges(true);
-                }}
-              >
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.username} ({user.id})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Dropdown
+              label="Default User"
+              value={defaultUser}
+              onChange={(value) => {
+                setDefaultUser(value);
+                setHasChanges(true);
+              }}
+              options={users.map((user) => ({
+                value: user.id,
+                label: `${user.username} (${user.id})`,
+              }))}
+            />
             <div className="users-list">
               <div className="users-list-header">
-                <h4>Users</h4>
-                <button className="settings-button" onClick={handleAddUser}>
-                  + Add User
-                </button>
+                <h3 style={{ fontSize: '18px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>
+                  Users
+                </h3>
+                <Button onClick={handleAddUser}>+ Add User</Button>
               </div>
               {users.length === 0 ? (
                 <div className="users-list-empty">No users configured</div>
@@ -231,22 +217,26 @@ export const UsersSettings: React.FC<UsersSettingsProps> = ({
                       <tr key={user.id}>
                         <td>{user.id}</td>
                         <td>{user.username}</td>
-                        <td>{user.homeDir}</td>
-                        <td>{user.defaultShell || '-'}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '13px' }}>{user.homeDir}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '13px' }}>{user.defaultShell || '-'}</td>
                         <td>
-                          <button
-                            className="settings-button-small"
-                            onClick={() => handleEditUser(user)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="settings-button-small"
-                            onClick={() => handleDeleteUser(user.id)}
-                            disabled={user.id === defaultUser}
-                          >
-                            Delete
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleEditUser(user)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeleteUser(user.id)}
+                              disabled={user.id === defaultUser}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -257,13 +247,13 @@ export const UsersSettings: React.FC<UsersSettingsProps> = ({
             {error && <div className="settings-form-error">{error}</div>}
             {success && <div className="settings-form-success">Settings saved successfully!</div>}
             <div className="settings-form-actions">
-              <button
-                className="settings-button primary"
+              <Button
+                variant="primary"
                 onClick={handleSave}
                 disabled={!hasChanges || saving}
               >
                 {saving ? 'Saving...' : 'Save'}
-              </button>
+              </Button>
             </div>
           </>
         )}
@@ -271,4 +261,3 @@ export const UsersSettings: React.FC<UsersSettingsProps> = ({
     </div>
   );
 };
-

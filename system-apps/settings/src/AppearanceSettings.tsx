@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme, Toggle, Select } from '@browser-os/ui';
+import { useTheme, Toggle, Dropdown } from '@browser-os/ui';
 import './AppearanceSettings.css';
 
 export interface AppearanceSettingsProps {
@@ -36,10 +36,10 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ loading 
       <div className="settings-section">
         <h3 className="settings-section-title">Window Controls</h3>
         <div className="settings-section-content">
-          <Select
+          <Dropdown
             label="Window Button Side"
             value={windowButtonSide}
-            onChange={(e) => setWindowButtonSide(e.target.value as 'left' | 'right')}
+            onChange={(value) => setWindowButtonSide(value as 'left' | 'right')}
             options={[
               { value: 'left', label: 'Top Left' },
               { value: 'right', label: 'Top Right' },

@@ -1,21 +1,5 @@
-.chess-settings {
-  padding: 1em;
-}
-
-.chess-settings h2 {
-  margin: 0 0 0.5em 0;
-  font-size: 1.5em;
-}
-
-.chess-settings > p {
-  margin: 0 0 2em 0;
-  color: #666;
-}
-
 .settings-section {
-  margin-bottom: 2em;
-  padding-bottom: 2em;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 32px;
 }
 
 .settings-section:last-child {
@@ -24,68 +8,18 @@
   padding-bottom: 0;
 }
 
-.settings-section h3 {
-  margin: 0 0 1em 0;
-  font-size: 1.2em;
+.settings-section-title {
+  font-size: 18px;
   font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 20px 0;
 }
 
 .setting-item {
-  margin-bottom: 1.5em;
+  margin-bottom: 24px;
 }
 
 .setting-item:last-child {
   margin-bottom: 0;
-}
-
-.setting-item label {
-  display: block;
-  margin-bottom: 0.5em;
-  font-weight: 500;
-  font-size: 0.95em;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  cursor: pointer;
-  width: 18px;
-  height: 18px;
-}
-
-.checkbox-label span {
-  flex: 1;
-}
-
-.setting-description {
-  margin: 0.5em 0 0 0;
-  font-size: 0.85em;
-  color: #666;
-  font-style: italic;
-}
-
-.setting-select {
-  width: 100%;
-  max-width: 300px;
-  padding: 0.5em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.95em;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.setting-select:hover {
-  border-color: #bbb;
-}
-
-.setting-select:focus {
-  outline: none;
-  border-color: #2196f3;
 }
 

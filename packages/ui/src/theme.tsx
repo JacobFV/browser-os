@@ -4,6 +4,7 @@ import './components/Button.css';
 import './components/Input.css';
 import './components/Select.css';
 import './components/Toggle.css';
+import './components/Dropdown.css';
 
 export type Theme = 'light' | 'dark';
 export type WindowButtonSide = 'left' | 'right';

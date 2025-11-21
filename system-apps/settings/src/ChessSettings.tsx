@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toggle, Dropdown } from '@browser-os/ui';
 import './ChessSettings.css';
 
 export interface ChessSettingsProps {
@@ -39,83 +40,68 @@ export const ChessSettings: React.FC<ChessSettingsProps> = ({ loading }) => {
   }, [chatEnabled, soundsEnabled, boardTheme, pieceSet]);
 
   if (loading) {
-    return <div>Loading chess settings...</div>;
+    return <div className="settings-panel-loading">Loading...</div>;
   }
 
   return (
-    <div className="chess-settings">
-      <h2>Chess Settings</h2>
-      <p>Configure your chess game preferences</p>
+    <div className="settings-panel">
+      <h2 className="settings-panel-title">Chess Settings</h2>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
+        Configure your chess game preferences
+      </p>
 
       <div className="settings-section">
-        <h3>Game Preferences</h3>
+        <h3 className="settings-section-title">Game Preferences</h3>
         
         <div className="setting-item">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={chatEnabled}
-              onChange={(e) => setChatEnabled(e.target.checked)}
-            />
-            <span>Enable chat in online games</span>
-          </label>
-          <p className="setting-description">
-            Allow chat messages when playing online multiplayer games
-          </p>
+          <Toggle
+            label="Enable chat in online games"
+            checked={chatEnabled}
+            onChange={setChatEnabled}
+            hint="Allow chat messages when playing online multiplayer games"
+          />
         </div>
 
         <div className="setting-item">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={soundsEnabled}
-              onChange={(e) => setSoundsEnabled(e.target.checked)}
-            />
-            <span>Enable sound effects</span>
-          </label>
-          <p className="setting-description">
-            Play sounds for moves, captures, checks, and checkmates
-          </p>
+          <Toggle
+            label="Enable sound effects"
+            checked={soundsEnabled}
+            onChange={setSoundsEnabled}
+            hint="Play sounds for moves, captures, checks, and checkmates"
+          />
         </div>
       </div>
 
       <div className="settings-section">
-        <h3>Appearance</h3>
+        <h3 className="settings-section-title">Appearance</h3>
         
         <div className="setting-item">
-          <label htmlFor="board-theme">Board Theme</label>
-          <select
-            id="board-theme"
+          <Dropdown
+            label="Board Theme"
             value={boardTheme}
-            onChange={(e) => setBoardTheme(e.target.value)}
-            className="setting-select"
-          >
-            <option value="classic">Classic</option>
-            <option value="wood">Wood</option>
-            <option value="marble">Marble</option>
-          </select>
-          <p className="setting-description">
-            Choose the visual style of the chess board
-          </p>
+            onChange={setBoardTheme}
+            options={[
+              { value: 'classic', label: 'Classic' },
+              { value: 'wood', label: 'Wood' },
+              { value: 'marble', label: 'Marble' },
+            ]}
+            hint="Choose the visual style of the chess board"
+          />
         </div>
 
         <div className="setting-item">
-          <label htmlFor="piece-set">Piece Set</label>
-          <select
-            id="piece-set"
+          <Dropdown
+            label="Piece Set"
             value={pieceSet}
-            onChange={(e) => setPieceSet(e.target.value)}
-            className="setting-select"
-          >
-            <option value="classic">Classic</option>
-            <option value="modern">Modern</option>
-          </select>
-          <p className="setting-description">
-            Choose the style of chess pieces
-          </p>
+            onChange={setPieceSet}
+            options={[
+              { value: 'classic', label: 'Classic' },
+              { value: 'modern', label: 'Modern' },
+            ]}
+            hint="Choose the style of chess pieces"
+          />
         </div>
       </div>
     </div>
   );
 };
-
