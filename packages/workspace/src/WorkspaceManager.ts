@@ -23,8 +23,8 @@ export class WorkspaceManager implements IWorkspaceManager {
     this.eventBus = options.eventBus ?? new EventBus();
     this.windowManager = options.windowManager;
 
-    // Create initial workspaces (default: 4)
-    const count = options.initialWorkspaceCount ?? 4;
+    // Create initial workspaces (default: 1)
+    const count = options.initialWorkspaceCount ?? 1;
     for (let i = 0; i < count; i++) {
       this.createWorkspace(`Workspace ${i + 1}`);
     }
@@ -116,6 +116,49 @@ export class WorkspaceManager implements IWorkspaceManager {
     if (workspace) {
       this.switchWorkspace(workspace.id);
     }
+  }
+
+  /**
+   * Delete a workspace
+   */
+  deleteWorkspace(workspaceId: string): void {
+    if (!this.workspaces.has(workspaceId)) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    // Prevent deletion if it's the last workspace
+    if (this.workspaces.size <= 1) {
+      throw new Error('Cannot delete the last workspace');
+    }
+
+    // Check if workspace has windows
+    const windows = this.windowManager.getWindowsInWorkspace(workspaceId);
+    if (windows.length > 0) {
+      throw new Error(`Cannot delete workspace with ${windows.length} window(s)`);
+    }
+
+    // If deleting active workspace, switch to another first
+    if (this.activeWorkspaceId === workspaceId) {
+      const otherWorkspace = Array.from(this.workspaces.values()).find((w) => w.id !== workspaceId);
+      if (otherWorkspace) {
+        this.switchWorkspace(otherWorkspace.id);
+      }
+    }
+
+    // Remove workspace and recalculate indices
+    this.workspaces.delete(workspaceId);
+    
+    // Recalculate indices for remaining workspaces
+    const remainingWorkspaces = Array.from(this.workspaces.values()).sort((a, b) => {
+      // Sort by original index to maintain order
+      return a.index - b.index;
+    });
+    
+    remainingWorkspaces.forEach((workspace, newIndex) => {
+      workspace.index = newIndex;
+    });
+
+    this.eventBus.emit('workspace:deleted', { workspaceId }, { source: 'workspace' });
   }
 }
 

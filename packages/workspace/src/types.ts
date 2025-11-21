@@ -8,6 +8,7 @@ export interface WorkspaceManager {
   getWorkspace(workspaceId: string): Workspace | null;
   getAllWorkspaces(): Workspace[];
   moveWindowToWorkspace(windowId: string, workspaceId: string): void;
+  deleteWorkspace(workspaceId: string): void;
 }
 
 export interface AppComponentProps {

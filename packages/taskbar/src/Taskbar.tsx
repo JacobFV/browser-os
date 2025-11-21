@@ -81,16 +81,21 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     handleShortcutClick(appId);
   };
 
-  // Get windows by workspace for overview
-  const windowsByWorkspace = new Map<string, Window[]>();
-  workspaceManager.getAllWorkspaces().forEach((workspace) => {
-    const wsWindows = windowManager.getWindowsInWorkspace(workspace.id).filter((w) => {
-      if (!w.appId) return true;
-      const app = appRegistry.get(w.appId);
-      return app?.manifest.showInTaskbar !== false;
+  // Get windows by workspace for overview - recalculate when workspaces or windows change
+  const [windowsByWorkspace, setWindowsByWorkspace] = useState<Map<string, Window[]>>(new Map());
+  
+  useEffect(() => {
+    const wsMap = new Map<string, Window[]>();
+    workspaceManager.getAllWorkspaces().forEach((workspace) => {
+      const wsWindows = windowManager.getWindowsInWorkspace(workspace.id).filter((w) => {
+        if (!w.appId) return true;
+        const app = appRegistry.get(w.appId);
+        return app?.manifest.showInTaskbar !== false;
+      });
+      wsMap.set(workspace.id, wsWindows);
     });
-    windowsByWorkspace.set(workspace.id, wsWindows);
-  });
+    setWindowsByWorkspace(wsMap);
+  }, [workspaceManager, windowManager, appRegistry, windows, activeWorkspaceId]);
 
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -281,6 +286,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           workspaces={workspaceManager.getAllWorkspaces()}
           activeWorkspaceId={activeWorkspaceId}
           windowsByWorkspace={windowsByWorkspace}
+          workspaceManager={workspaceManager}
+          windowManager={windowManager}
+          appRegistry={appRegistry}
           onSelectWorkspace={(workspaceId) => {
             workspaceManager.switchWorkspace(workspaceId);
             setShowOverview(false);

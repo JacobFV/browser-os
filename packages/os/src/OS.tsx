@@ -49,13 +49,13 @@ import './OS.css';
 export interface OSProps {
   /** Custom desktop background component */
   desktop?: React.ReactNode;
-  /** Number of workspaces to create (default: 4) */
+  /** Number of workspaces to create (default: 1) */
   workspaceCount?: number;
   /** Filesystem database name (default: 'browser-os-fs') */
   dbName?: string;
 }
 
-export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 4, dbName = 'browser-os-fs' }) => {
+export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'browser-os-fs' }) => {
   const [eventBus] = useState(() => new EventBus());
   const [fs] = useState(() => new FileSystem());
   const [appRegistry] = useState(() => new AppRegistry({ fs, eventBus }));
