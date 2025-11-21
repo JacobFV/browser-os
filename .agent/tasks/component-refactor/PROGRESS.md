@@ -97,21 +97,58 @@
    - Theme-aware notes UI with color variants
    - Full dark mode support
 
+20. **Password Manager** - ✅ Completed
+   - Updated sidebar, password list, and modals
+   - Theme-aware password manager UI
+   - Full dark mode support
+
+21. **Todo** - ✅ Completed
+   - Updated todo list, filters, and priority badges
+   - Theme-aware todo UI
+   - Full dark mode support
+
+22. **Weather** - ✅ Completed
+   - Updated weather cards and forecast grid
+   - Theme-aware weather UI
+   - Full dark mode support
+
+23. **PDF Viewer** - ✅ Completed
+   - Updated toolbar, sidebar, and page controls
+   - Theme-aware PDF viewer UI
+   - Full dark mode support
+
+24. **Process Manager** - ✅ Completed
+   - Updated process table, details panel, and tree view
+   - Theme-aware process manager UI
+   - Full dark mode support
+
+25. **Screenshot** - ✅ Completed
+   - Updated capture buttons, preview, and gallery
+   - Theme-aware screenshot UI
+   - Full dark mode support
+
+26. **System Monitor** - ✅ Completed
+   - Updated tabs, process table, and stat cards
+   - Theme-aware system monitor UI
+   - Full dark mode support
+
+27. **Video Player** - ✅ Completed
+   - Updated controls, playlist sidebar, and video container
+   - Theme-aware video player UI
+   - Full dark mode support
+
+28. **Voice Recorder** - ✅ Completed
+   - Updated recorder controls, waveform, and recordings list
+   - Theme-aware voice recorder UI
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Password Manager
-- PDF Viewer
-- Process Manager
-- Screenshot
-- System Monitor
-- Todo
-- Video Player
-- Voice Recorder
-- Weather
+All apps completed! 🎉
 
 ## Notes
 
