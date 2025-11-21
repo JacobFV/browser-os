@@ -17,7 +17,7 @@
 .ui-button:hover:not(:disabled) {
   background: var(--glass-surface-hover);
   border-color: var(--glass-border);
-  transform: translateY(-1px);
+  transform: translateY(-0.25px);
   box-shadow: var(--shadow-md);
 }
 

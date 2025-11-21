@@ -335,7 +335,7 @@
 .other-settings {
   display: flex;
   gap: 16px;
-  height: calc(100vh - 200px);
+  /* Height is determined by content, not fixed */
 }
 
 .other-settings-browser {
@@ -367,6 +367,8 @@
 .other-settings-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 200px;
+  max-height: 600px;
 }
 
 .other-settings-loading,
