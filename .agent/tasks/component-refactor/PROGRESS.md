@@ -27,13 +27,17 @@
    - Uses Button component with rounded variants
    - Full dark mode support
 
+6. **Calendar** - ✅ Completed
+   - Refactored navigation buttons, event form, and calendar grid
+   - Uses Button and Input components
+   - Full dark mode support with theme-aware calendar cells
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Calendar
 - Camera
 - Chess
 - Contacts
