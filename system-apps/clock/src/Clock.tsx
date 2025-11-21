@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Button } from '@browser-os/ui';
 import './Clock.css';
 
 type Tab = 'clock' | 'stopwatch' | 'timer';
@@ -103,12 +104,12 @@ const StopwatchView: React.FC = () => {
       <div className="stopwatch-display">{formatTime(time)}</div>
       <div className="clock-controls">
         {!isRunning ? (
-          <button className="clock-button start" onClick={() => setIsRunning(true)}>Start</button>
+          <Button variant="primary" onClick={() => setIsRunning(true)} className="clock-button-round">Start</Button>
         ) : (
-          <button className="clock-button stop" onClick={() => setIsRunning(false)}>Stop</button>
+          <Button variant="ghost" onClick={() => setIsRunning(false)} className="clock-button-round clock-button-stop">Stop</Button>
         )}
-        <button className="clock-button reset" onClick={handleLap} disabled={!isRunning && time === 0}>Lap</button>
-        <button className="clock-button reset" onClick={handleReset}>Reset</button>
+        <Button variant="secondary" onClick={handleLap} disabled={!isRunning && time === 0} className="clock-button-round">Lap</Button>
+        <Button variant="secondary" onClick={handleReset} className="clock-button-round">Reset</Button>
       </div>
       
       {laps.length > 0 && (
@@ -222,11 +223,11 @@ const TimerView: React.FC = () => {
 
       <div className="clock-controls">
         {!isRunning ? (
-          <button className="clock-button start" onClick={startTimer}>Start</button>
+          <Button variant="primary" onClick={startTimer} className="clock-button-round">Start</Button>
         ) : (
-          <button className="clock-button stop" onClick={() => setIsRunning(false)}>Pause</button>
+          <Button variant="ghost" onClick={() => setIsRunning(false)} className="clock-button-round clock-button-stop">Pause</Button>
         )}
-        <button className="clock-button reset" onClick={resetTimer}>Reset</button>
+        <Button variant="secondary" onClick={resetTimer} className="clock-button-round">Reset</Button>
       </div>
     </>
   );
