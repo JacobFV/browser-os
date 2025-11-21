@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import React, { useState, useRef, useEffect } from 'react';
+import { Button, Input } from '@browser-os/ui';
 import './Browser.css';
 
 export interface BrowserProps {
@@ -125,41 +126,40 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     <div className="browser">
       <div className="browser-toolbar">
         <div className="browser-nav-buttons">
-          <button
-            className="browser-nav-button"
+          <Button
+            variant="ghost"
             onClick={handleBack}
             disabled={!canGoBack}
             title="Back"
           >
             ←
-          </button>
-          <button
-            className="browser-nav-button"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleForward}
             disabled={!canGoForward}
             title="Forward"
           >
             →
-          </button>
-          <button
-            className="browser-nav-button"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleReload}
             title="Reload"
           >
             ↻
-          </button>
+          </Button>
         </div>
         <form className="browser-url-bar" onSubmit={handleSubmit}>
-          <input
+          <Input
             type="text"
-            className="browser-url-input"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter URL or search"
           />
-          <button type="submit" className="browser-go-button" title="Go">
+          <Button type="submit" variant="primary" title="Go">
             Go
-          </button>
+          </Button>
         </form>
       </div>
       <div className="browser-content">
@@ -188,17 +188,17 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
               </div>
             </div>
             <div className="browser-error-actions">
-              <button 
-                className="browser-open-external"
+              <Button 
+                variant="primary"
                 onClick={() => window.open(currentUrl, '_blank')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" fill="currentColor"/>
                 </svg>
                 Open in New Tab
-              </button>
-              <button 
-                className="browser-retry-button"
+              </Button>
+              <Button 
+                variant="ghost"
                 onClick={() => {
                   setError(null);
                   setLoading(true);
@@ -211,7 +211,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
                   <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/>
                 </svg>
                 Retry
-              </button>
+              </Button>
             </div>
           </div>
         )}
