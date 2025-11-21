@@ -154,7 +154,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
           <Input
             type="text"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
             placeholder="Enter URL or search"
           />
           <Button type="submit" variant="primary" title="Go">
