@@ -27,18 +27,18 @@
 
 .ui-select:focus {
   outline: none;
-  border-color: rgba(0, 122, 255, 0.6);
+  border-color: var(--color-primary);
   background: var(--glass-surface-hover);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15), var(--shadow-md);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter), var(--shadow-md);
 }
 
 .ui-select-error {
-  border-color: rgba(255, 59, 48, 0.6);
+  border-color: var(--color-error);
 }
 
 .ui-select-error:focus {
-  border-color: rgba(255, 59, 48, 0.8);
-  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15), var(--shadow-md);
+  border-color: var(--color-error-shaded);
+  box-shadow: 0 0 0 3px var(--color-error-lighter), var(--shadow-md);
 }
 
 .ui-select-hint,

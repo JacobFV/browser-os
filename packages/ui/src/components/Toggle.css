@@ -33,15 +33,19 @@
 }
 
 .ui-toggle-checked {
-  background: rgba(0, 122, 255, 0.8);
+  background: var(--color-primary);
 }
 
 .ui-toggle:hover:not(.ui-toggle-disabled) {
   background: rgba(0, 0, 0, 0.3);
 }
 
+[data-theme="dark"] .ui-toggle:hover:not(.ui-toggle-disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .ui-toggle-checked:hover:not(.ui-toggle-disabled) {
-  background: rgba(0, 122, 255, 0.9);
+  background: var(--color-primary-shaded);
 }
 
 .ui-toggle-thumb {

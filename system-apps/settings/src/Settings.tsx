@@ -10,6 +10,7 @@ import { AppsSettings } from './AppsSettings';
 import { ChessSettings } from './ChessSettings';
 import { AppearanceSettings } from './AppearanceSettings';
 import { OtherSettings } from './OtherSettings';
+import { Button } from '@browser-os/ui';
 import './Settings.css';
 
 export interface SettingsProps {
@@ -174,9 +175,9 @@ export const Settings: React.FC<SettingsProps> = ({ windowId }) => {
         {error && (
           <div className="settings-error">
             {error}
-            <button className="settings-button-small" onClick={loadConfigFiles}>
+            <Button size="sm" onClick={loadConfigFiles}>
               Retry
-            </button>
+            </Button>
           </div>
         )}
         {currentCategory === 'system' && (

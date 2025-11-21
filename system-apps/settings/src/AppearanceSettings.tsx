@@ -7,7 +7,7 @@ export interface AppearanceSettingsProps {
 }
 
 export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ loading }) => {
-  const { theme, setTheme, trafficLightPosition, setTrafficLightPosition } = useTheme();
+  const { theme, setTheme, windowButtonSide, setWindowButtonSide } = useTheme();
 
   if (loading) {
     return (
@@ -37,9 +37,9 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ loading 
         <h3 className="settings-section-title">Window Controls</h3>
         <div className="settings-section-content">
           <Select
-            label="Traffic Light Position"
-            value={trafficLightPosition}
-            onChange={(e) => setTrafficLightPosition(e.target.value as 'left' | 'right')}
+            label="Window Button Side"
+            value={windowButtonSide}
+            onChange={(e) => setWindowButtonSide(e.target.value as 'left' | 'right')}
             options={[
               { value: 'left', label: 'Top Left' },
               { value: 'right', label: 'Top Right' },

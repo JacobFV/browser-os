@@ -6,30 +6,30 @@ import './components/Select.css';
 import './components/Toggle.css';
 
 export type Theme = 'light' | 'dark';
-export type TrafficLightPosition = 'left' | 'right';
+export type WindowButtonSide = 'left' | 'right';
 
 export interface ThemeContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-  trafficLightPosition: TrafficLightPosition;
-  setTrafficLightPosition: (position: TrafficLightPosition) => void;
+  windowButtonSide: WindowButtonSide;
+  setWindowButtonSide: (side: WindowButtonSide) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'browser-os-theme';
-const TRAFFIC_LIGHT_POSITION_STORAGE_KEY = 'browser-os-traffic-light-position';
+const WINDOW_BUTTON_SIDE_STORAGE_KEY = 'browser-os-window-button-side';
 
 export interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
-  defaultTrafficLightPosition?: TrafficLightPosition;
+  defaultWindowButtonSide?: WindowButtonSide;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
   defaultTheme = 'light',
-  defaultTrafficLightPosition = 'left',
+  defaultWindowButtonSide = 'left',
 }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
@@ -41,14 +41,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     return defaultTheme;
   });
 
-  const [trafficLightPosition, setTrafficLightPositionState] = useState<TrafficLightPosition>(() => {
+  const [windowButtonSide, setWindowButtonSideState] = useState<WindowButtonSide>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(TRAFFIC_LIGHT_POSITION_STORAGE_KEY);
+      const stored = localStorage.getItem(WINDOW_BUTTON_SIDE_STORAGE_KEY);
       if (stored === 'left' || stored === 'right') {
         return stored;
       }
     }
-    return defaultTrafficLightPosition;
+    return defaultWindowButtonSide;
   });
 
   useEffect(() => {
@@ -60,21 +60,21 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(TRAFFIC_LIGHT_POSITION_STORAGE_KEY, trafficLightPosition);
-      document.documentElement.setAttribute('data-traffic-lights', trafficLightPosition);
+      localStorage.setItem(WINDOW_BUTTON_SIDE_STORAGE_KEY, windowButtonSide);
+      document.documentElement.setAttribute('data-window-button-side', windowButtonSide);
     }
-  }, [trafficLightPosition]);
+  }, [windowButtonSide]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
 
-  const setTrafficLightPosition = (position: TrafficLightPosition) => {
-    setTrafficLightPositionState(position);
+  const setWindowButtonSide = (side: WindowButtonSide) => {
+    setWindowButtonSideState(side);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, trafficLightPosition, setTrafficLightPosition }}>
+    <ThemeContext.Provider value={{ theme, setTheme, windowButtonSide, setWindowButtonSide }}>
       {children}
     </ThemeContext.Provider>
   );

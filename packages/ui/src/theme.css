@@ -11,6 +11,44 @@
   --text-secondary: #86868b;
   --text-light: #ffffff;
 
+  /* Primary color shades */
+  --color-primary: #007aff;
+  --color-primary-shaded: #0051d5;
+  --color-primary-light: #5ac8fa;
+  --color-primary-lighter: #e5f2ff;
+  --color-primary-dark: #0041a3;
+  --color-primary-darker: #002d6e;
+
+  /* Secondary color shades */
+  --color-secondary: #5856d6;
+  --color-secondary-shaded: #3d3bb8;
+  --color-secondary-light: #af52de;
+  --color-secondary-lighter: #f0e5ff;
+  --color-secondary-dark: #2c2a9a;
+  --color-secondary-darker: #1e1c6b;
+
+  /* Accent colors */
+  --color-accent: #ff9500;
+  --color-accent-shaded: #cc7700;
+  --color-accent-light: #ffb340;
+  --color-accent-lighter: #fff4e5;
+  --color-accent-dark: #996600;
+  --color-accent-darker: #664400;
+
+  /* Success, Warning, Error */
+  --color-success: #34c759;
+  --color-success-shaded: #28a745;
+  --color-success-light: #6dd47e;
+  --color-success-lighter: #e5f9ea;
+  --color-warning: #ff9500;
+  --color-warning-shaded: #cc7700;
+  --color-warning-light: #ffb340;
+  --color-warning-lighter: #fff4e5;
+  --color-error: #ff3b30;
+  --color-error-shaded: #cc2f26;
+  --color-error-light: #ff6b63;
+  --color-error-lighter: #ffe5e3;
+
   /* Effects */
   --blur-md: 25px;
   --blur-lg: 50px;
@@ -48,6 +86,44 @@
   --text-secondary: #86868b;
   --text-light: #ffffff;
 
+  /* Primary color shades - adjusted for dark mode */
+  --color-primary: #0a84ff;
+  --color-primary-shaded: #0051d5;
+  --color-primary-light: #409cff;
+  --color-primary-lighter: rgba(10, 132, 255, 0.15);
+  --color-primary-dark: #0041a3;
+  --color-primary-darker: #002d6e;
+
+  /* Secondary color shades */
+  --color-secondary: #5e5ce6;
+  --color-secondary-shaded: #3d3bb8;
+  --color-secondary-light: #7d7aff;
+  --color-secondary-lighter: rgba(94, 92, 230, 0.15);
+  --color-secondary-dark: #2c2a9a;
+  --color-secondary-darker: #1e1c6b;
+
+  /* Accent colors */
+  --color-accent: #ff9f0a;
+  --color-accent-shaded: #cc7f08;
+  --color-accent-light: #ffb340;
+  --color-accent-lighter: rgba(255, 159, 10, 0.15);
+  --color-accent-dark: #996600;
+  --color-accent-darker: #664400;
+
+  /* Success, Warning, Error */
+  --color-success: #30d158;
+  --color-success-shaded: #28a745;
+  --color-success-light: #5de26a;
+  --color-success-lighter: rgba(48, 209, 88, 0.15);
+  --color-warning: #ff9f0a;
+  --color-warning-shaded: #cc7f08;
+  --color-warning-light: #ffb340;
+  --color-warning-lighter: rgba(255, 159, 10, 0.15);
+  --color-error: #ff453a;
+  --color-error-shaded: #cc2f26;
+  --color-error-light: #ff6b63;
+  --color-error-lighter: rgba(255, 69, 58, 0.15);
+
   /* Shadows */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -58,15 +134,25 @@
   --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
-/* Traffic light position */
-[data-traffic-lights="right"] .window-controls {
+/* Window button side */
+[data-window-button-side="right"] .window-controls {
   order: 1;
   margin-left: 16px;
   margin-right: 0;
+  flex-direction: row-reverse; /* Reverse order so red button is in corner */
 }
 
-[data-traffic-lights="right"] .window-title {
+[data-window-button-side="right"] .window-title {
   margin-left: 60px;
   margin-right: 0;
+  text-align: left;
+}
+
+/* Default left position - ensure title is centered when controls are on left */
+[data-window-button-side="left"] .window-title,
+:not([data-window-button-side]) .window-title {
+  margin-left: 0;
+  margin-right: 60px;
+  text-align: center;
 }
 

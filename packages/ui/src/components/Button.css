@@ -32,14 +32,14 @@
 }
 
 .ui-button-primary {
-  background: rgba(0, 122, 255, 0.8);
+  background: var(--color-primary);
   color: var(--text-light);
-  border-color: rgba(0, 122, 255, 0.5);
+  border-color: var(--color-primary-shaded);
 }
 
 .ui-button-primary:hover:not(:disabled) {
-  background: rgba(0, 122, 255, 0.9);
-  border-color: rgba(0, 122, 255, 0.7);
+  background: var(--color-primary-shaded);
+  border-color: var(--color-primary-dark);
 }
 
 .ui-button-ghost {

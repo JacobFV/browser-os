@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { SystemConfig } from '@browser-os/schemas';
+import { Input, Button } from '@browser-os/ui';
 
 export interface SystemSettingsProps {
   config: SystemConfig | null;
@@ -64,15 +65,6 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
     setSuccess(false);
   };
 
-  const handleMaxRecentFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= 100) {
-      setMaxRecentFiles(value);
-      setHasChanges(true);
-      setSuccess(false);
-    }
-  };
-
   if (loading) {
     return <div className="settings-panel-loading">Loading...</div>;
   }
@@ -81,49 +73,47 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
     <div className="settings-panel">
       <h3 className="settings-panel-title">System Settings</h3>
       <div className="settings-form">
-        <div className="settings-form-group">
-          <label htmlFor="hostname">Hostname</label>
-          <input
-            id="hostname"
-            type="text"
-            value={hostname}
-            onChange={handleHostnameChange}
-            placeholder="browser-os"
-          />
-        </div>
-        <div className="settings-form-group">
-          <label htmlFor="timezone">Timezone</label>
-          <input
-            id="timezone"
-            type="text"
-            value={timezone}
-            onChange={handleTimezoneChange}
-            placeholder="UTC"
-          />
-          <small className="settings-form-hint">e.g., America/New_York, Europe/London, UTC</small>
-        </div>
-        <div className="settings-form-group">
-          <label htmlFor="maxRecentFiles">Max Recent Files</label>
-          <input
-            id="maxRecentFiles"
-            type="number"
-            min="1"
-            max="100"
-            value={maxRecentFiles}
-            onChange={handleMaxRecentFilesChange}
-          />
-          <small className="settings-form-hint">Number of recent files to show per app (1-100)</small>
-        </div>
+        <Input
+          label="Hostname"
+          type="text"
+          value={hostname}
+          onChange={handleHostnameChange}
+          placeholder="browser-os"
+        />
+        <Input
+          label="Timezone"
+          type="text"
+          value={timezone}
+          onChange={handleTimezoneChange}
+          placeholder="UTC"
+          hint="e.g., America/New_York, Europe/London, UTC"
+        />
+        <Input
+          label="Max Recent Files"
+          type="number"
+          min="1"
+          max="100"
+          value={maxRecentFiles.toString()}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = parseInt(e.target.value, 10);
+            if (!isNaN(value) && value >= 1 && value <= 100) {
+              setMaxRecentFiles(value);
+              setHasChanges(true);
+              setSuccess(false);
+            }
+          }}
+          hint="Number of recent files to show per app (1-100)"
+        />
         {error && <div className="settings-form-error">{error}</div>}
         {success && <div className="settings-form-success">Settings saved successfully!</div>}
         <div className="settings-form-actions">
-          <button
-            className="settings-button primary"
+          <Button
+            variant="primary"
             onClick={handleSave}
             disabled={!hasChanges || saving || !hostname.trim()}
           >
             {saving ? 'Saving...' : 'Save'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
