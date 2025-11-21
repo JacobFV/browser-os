@@ -156,7 +156,6 @@ export const MountsSettings: React.FC<MountsSettingsProps> = ({
               <label htmlFor="mount-options">Options (JSON)</label>
               <textarea
                 id="mount-options"
-                className="settings-form-group textarea"
                 value={formData.optionsJson}
                 onChange={(e) => setFormData({ ...formData, optionsJson: e.target.value })}
                 rows={4}

@@ -173,3 +173,11 @@
   background: var(--glass-border-subtle);
 }
 
+[data-theme="dark"] .ui-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .ui-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
