@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   background: #000;
-  color: white;
+  color: var(--text-light);
   font-family: system-ui, -apple-system, sans-serif;
   overflow: hidden;
 }
@@ -29,6 +29,8 @@
 .video-controls {
   height: 80px;
   background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
   position: absolute;
   bottom: 0;
   left: 0;
@@ -37,7 +39,7 @@
   flex-direction: column;
   padding: 10px 20px;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .video-container:hover .video-controls,
@@ -57,9 +59,9 @@
 
 .progress-bar {
   height: 100%;
-  background: #4285F4;
+  background: var(--color-primary);
   border-radius: 3px;
-  transition: width 0.1s;
+  transition: width 0.1s var(--ease-smooth);
 }
 
 .progress-buffer {
@@ -80,11 +82,11 @@
 .control-btn {
   background: none;
   border: none;
-  color: white;
+  color: var(--text-light);
   cursor: pointer;
   padding: 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,6 +111,7 @@
   font-size: 14px;
   font-variant-numeric: tabular-nums;
   min-width: 100px;
+  color: var(--text-light);
 }
 
 .volume-control {
@@ -132,7 +135,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  background: white;
+  background: var(--text-light);
   border-radius: 2px;
 }
 
@@ -146,8 +149,10 @@
 
 .playlist-sidebar {
   width: 250px;
-  background: #1a1a1a;
-  border-left: 1px solid #333;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-left: 1px solid var(--glass-border-subtle);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -155,12 +160,13 @@
 
 .playlist-header {
   padding: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--glass-border-subtle);
   font-weight: 600;
   font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-primary);
 }
 
 .playlist-list {
@@ -171,32 +177,34 @@
 
 .playlist-item {
   padding: 10px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   margin-bottom: 5px;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  color: var(--text-primary);
 }
 
 .playlist-item:hover {
-  background: #2a2a2a;
+  background: var(--glass-surface-hover);
 }
 
 .playlist-item.active {
-  background: #333;
-  border-left: 3px solid #4285F4;
+  background: var(--color-primary-lighter);
+  border-left: 3px solid var(--color-primary);
 }
 
 .playlist-title {
   font-weight: 500;
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .playlist-duration {
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .empty-state {
@@ -205,7 +213,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   padding: 40px;
 }
@@ -219,11 +227,12 @@
 .empty-state-text {
   font-size: 16px;
   margin-bottom: 10px;
+  color: var(--text-primary);
 }
 
 .empty-state-hint {
   font-size: 12px;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .video-title {
@@ -231,13 +240,42 @@
   top: 20px;
   left: 20px;
   background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
-  backdrop-filter: blur(10px);
   max-width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-light);
 }
 
+/* Scrollbar styling */
+.playlist-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.playlist-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.playlist-list::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.playlist-list::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .playlist-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .playlist-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
