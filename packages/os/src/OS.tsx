@@ -48,6 +48,37 @@ import { appIcons } from './appIcons';
 import { ThemeProvider } from '@browser-os/ui';
 // Theme CSS is imported via ThemeProvider
 import './OS.css';
+import type { AppComponentProps } from '@browser-os/workspace';
+
+// Helper to wrap components that take { os: any } props
+function wrapOSComponent<T extends { os: any }>(
+  Component: React.ComponentType<T>
+): React.ComponentType<AppComponentProps> {
+  const Wrapped: React.ComponentType<AppComponentProps> = (props: AppComponentProps) => {
+    return <Component os={{}} windowId={props.windowId} {...(props as any)} />;
+  };
+  return Wrapped;
+}
+
+// Helper to wrap components that take optional props (os or windowId)
+function wrapOptionalComponent<T extends { windowId?: string; os?: any }>(
+  Component: React.ComponentType<T>
+): React.ComponentType<AppComponentProps> {
+  const Wrapped: React.ComponentType<AppComponentProps> = (props: AppComponentProps) => {
+    return <Component windowId={props.windowId} os={props.os || {}} {...(props as any)} />;
+  };
+  return Wrapped;
+}
+
+// Helper to wrap ProcessManager which has specific props
+function wrapProcessManager(
+  Component: React.ComponentType<any>,
+  eventBus: EventBus
+): React.ComponentType<AppComponentProps> {
+  return (props: AppComponentProps) => {
+    return <Component eventBus={eventBus} windowId={props.windowId} {...(props as any)} />;
+  };
+}
 
 export interface OSProps {
   /** Custom desktop background component */
@@ -368,7 +399,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!SystemMonitor) {
           throw new Error('SystemMonitor component is undefined');
         }
-        appComponentRegistry.registerAppComponent('system-monitor', SystemMonitor);
+        appComponentRegistry.registerAppComponent('system-monitor', wrapOSComponent(SystemMonitor));
         console.log('[OS] SystemMonitor app component registered');
 
         // Register or update system monitor app in registry
@@ -402,7 +433,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Camera) {
           throw new Error('Camera component is undefined');
         }
-        appComponentRegistry.registerAppComponent('camera', Camera);
+        appComponentRegistry.registerAppComponent('camera', wrapOSComponent(Camera));
         console.log('[OS] Camera app component registered');
 
         // Register or update camera app in registry
@@ -436,7 +467,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!MusicPlayer) {
           throw new Error('MusicPlayer component is undefined');
         }
-        appComponentRegistry.registerAppComponent('music', MusicPlayer);
+        appComponentRegistry.registerAppComponent('music', wrapOSComponent(MusicPlayer));
         console.log('[OS] MusicPlayer app component registered');
 
         // Register or update music app in registry
@@ -470,7 +501,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Calendar) {
           throw new Error('Calendar component is undefined');
         }
-        appComponentRegistry.registerAppComponent('calendar', Calendar);
+        appComponentRegistry.registerAppComponent('calendar', wrapOSComponent(Calendar));
         console.log('[OS] Calendar app component registered');
 
         // Register or update calendar app in registry
@@ -504,7 +535,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!ImageViewer) {
           throw new Error('ImageViewer component is undefined');
         }
-        appComponentRegistry.registerAppComponent('image-viewer', ImageViewer);
+        appComponentRegistry.registerAppComponent('image-viewer', wrapOSComponent(ImageViewer));
         console.log('[OS] ImageViewer app component registered');
 
         // Register or update image viewer app in registry
@@ -538,7 +569,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!VideoPlayer) {
           throw new Error('VideoPlayer component is undefined');
         }
-        appComponentRegistry.registerAppComponent('video-player', VideoPlayer);
+        appComponentRegistry.registerAppComponent('video-player', wrapOSComponent(VideoPlayer));
         console.log('[OS] VideoPlayer app component registered');
 
         // Register or update video player app in registry
@@ -572,7 +603,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Contacts) {
           throw new Error('Contacts component is undefined');
         }
-        appComponentRegistry.registerAppComponent('contacts', Contacts);
+        appComponentRegistry.registerAppComponent('contacts', wrapOSComponent(Contacts));
         console.log('[OS] Contacts app component registered');
 
         // Register or update contacts app in registry
@@ -606,7 +637,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Weather) {
           throw new Error('Weather component is undefined');
         }
-        appComponentRegistry.registerAppComponent('weather', Weather);
+        appComponentRegistry.registerAppComponent('weather', wrapOSComponent(Weather));
         console.log('[OS] Weather app component registered');
 
         // Register or update weather app in registry
@@ -636,7 +667,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
 
         // Register snake app component
         console.log('[OS] Registering snake app component...');
-        appComponentRegistry.registerAppComponent('snake', Snake);
+        appComponentRegistry.registerAppComponent('snake', wrapOptionalComponent(Snake));
         console.log('[OS] Snake app component registered');
 
         const existingSnake = appRegistry.get('snake');
@@ -664,7 +695,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
 
         // Register minesweeper app component
         console.log('[OS] Registering minesweeper app component...');
-        appComponentRegistry.registerAppComponent('minesweeper', Minesweeper);
+        appComponentRegistry.registerAppComponent('minesweeper', wrapOptionalComponent(Minesweeper));
         console.log('[OS] Minesweeper app component registered');
 
         const existingMinesweeper = appRegistry.get('minesweeper');
@@ -692,7 +723,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
 
         // Register tetris app component
         console.log('[OS] Registering tetris app component...');
-        appComponentRegistry.registerAppComponent('tetris', Tetris);
+        appComponentRegistry.registerAppComponent('tetris', wrapOptionalComponent(Tetris));
         console.log('[OS] Tetris app component registered');
 
         const existingTetris = appRegistry.get('tetris');
@@ -720,7 +751,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
 
         // Register tic-tac-toe app component
         console.log('[OS] Registering tic-tac-toe app component...');
-        appComponentRegistry.registerAppComponent('tic-tac-toe', TicTacToe);
+        appComponentRegistry.registerAppComponent('tic-tac-toe', wrapOptionalComponent(TicTacToe));
         console.log('[OS] Tic-Tac-Toe app component registered');
 
         const existingTicTacToe = appRegistry.get('tic-tac-toe');
@@ -752,7 +783,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Screenshot) {
           throw new Error('Screenshot component is undefined');
         }
-        appComponentRegistry.registerAppComponent('screenshot', Screenshot);
+        appComponentRegistry.registerAppComponent('screenshot', wrapOSComponent(Screenshot));
         console.log('[OS] Screenshot app component registered');
 
         // Register or update screenshot app in registry
@@ -786,7 +817,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!VoiceRecorder) {
           throw new Error('VoiceRecorder component is undefined');
         }
-        appComponentRegistry.registerAppComponent('voice-recorder', VoiceRecorder);
+        appComponentRegistry.registerAppComponent('voice-recorder', wrapOSComponent(VoiceRecorder));
         console.log('[OS] VoiceRecorder app component registered');
 
         // Register or update voice-recorder app in registry
@@ -820,7 +851,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Notes) {
           throw new Error('Notes component is undefined');
         }
-        appComponentRegistry.registerAppComponent('notes', Notes);
+        appComponentRegistry.registerAppComponent('notes', wrapOSComponent(Notes));
         console.log('[OS] Notes app component registered');
 
         // Register or update notes app in registry
@@ -854,7 +885,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Todo) {
           throw new Error('Todo component is undefined');
         }
-        appComponentRegistry.registerAppComponent('todo', Todo);
+        appComponentRegistry.registerAppComponent('todo', wrapOSComponent(Todo));
         console.log('[OS] Todo app component registered');
 
         // Register or update todo app in registry
@@ -888,7 +919,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!FileSearch) {
           throw new Error('FileSearch component is undefined');
         }
-        appComponentRegistry.registerAppComponent('file-search', FileSearch);
+        appComponentRegistry.registerAppComponent('file-search', wrapOSComponent(FileSearch));
         console.log('[OS] FileSearch app component registered');
 
         // Register or update file-search app in registry
@@ -922,7 +953,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!MarkdownEditor) {
           throw new Error('MarkdownEditor component is undefined');
         }
-        appComponentRegistry.registerAppComponent('markdown-editor', MarkdownEditor);
+        appComponentRegistry.registerAppComponent('markdown-editor', wrapOSComponent(MarkdownEditor));
         console.log('[OS] MarkdownEditor app component registered');
 
         // Register or update markdown-editor app in registry
@@ -956,7 +987,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!PasswordManager) {
           throw new Error('PasswordManager component is undefined');
         }
-        appComponentRegistry.registerAppComponent('password-manager', PasswordManager);
+        appComponentRegistry.registerAppComponent('password-manager', wrapOSComponent(PasswordManager));
         console.log('[OS] PasswordManager app component registered');
 
         // Register or update password-manager app in registry
@@ -990,7 +1021,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!PDFViewer) {
           throw new Error('PDFViewer component is undefined');
         }
-        appComponentRegistry.registerAppComponent('pdf-viewer', PDFViewer);
+        appComponentRegistry.registerAppComponent('pdf-viewer', wrapOSComponent(PDFViewer));
         console.log('[OS] PDFViewer app component registered');
 
         // Register or update pdf-viewer app in registry
@@ -1024,7 +1055,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!ProcessManager) {
           throw new Error('ProcessManager component is undefined');
         }
-        appComponentRegistry.registerAppComponent('process-manager', ProcessManager);
+        appComponentRegistry.registerAppComponent('process-manager', wrapProcessManager(ProcessManager, eventBus));
         console.log('[OS] ProcessManager app component registered');
 
         // Register or update process-manager app in registry
@@ -1058,7 +1089,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!Chess) {
           throw new Error('Chess component is undefined');
         }
-        appComponentRegistry.registerAppComponent('chess', Chess);
+        appComponentRegistry.registerAppComponent('chess', wrapOptionalComponent(Chess));
         console.log('[OS] Chess app component registered');
 
         // Register or update chess app in registry
@@ -1092,7 +1123,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!MessagingClient) {
           throw new Error('MessagingClient component is undefined');
         }
-        appComponentRegistry.registerAppComponent('messaging-client', MessagingClient);
+        appComponentRegistry.registerAppComponent('messaging-client', wrapOptionalComponent(MessagingClient));
         console.log('[OS] MessagingClient app component registered');
 
         // Register or update messaging-client app in registry
@@ -1126,7 +1157,7 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
         if (!EmailClient) {
           throw new Error('EmailClient component is undefined');
         }
-        appComponentRegistry.registerAppComponent('email-client', EmailClient);
+        appComponentRegistry.registerAppComponent('email-client', wrapOptionalComponent(EmailClient));
         console.log('[OS] EmailClient app component registered');
 
         // Register or update email-client app in registry
