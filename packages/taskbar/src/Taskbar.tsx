@@ -318,7 +318,10 @@ export const Taskbar: React.FC<TaskbarProps> = ({
               onClick={() => setShowNotificationCenter(!showNotificationCenter)}
             />
           )}
-          <WorkspaceOverviewButton onClick={() => setShowOverview(true)} />
+          <WorkspaceOverviewButton 
+            onClick={() => setShowOverview(true)}
+            activeWorkspaceNumber={workspaceManager.getAllWorkspaces().findIndex(w => w.id === activeWorkspaceId) + 1}
+          />
         </div>
       </div>
       {showOverview && (
@@ -329,6 +332,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           workspaceManager={workspaceManager}
           windowManager={windowManager}
           appRegistry={appRegistry}
+          eventBus={eventBus}
           onSelectWorkspace={(workspaceId) => {
             workspaceManager.switchWorkspace(workspaceId);
             setShowOverview(false);

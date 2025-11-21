@@ -9,6 +9,10 @@ export interface WorkspaceManager {
   getAllWorkspaces(): Workspace[];
   moveWindowToWorkspace(windowId: string, workspaceId: string): void;
   deleteWorkspace(workspaceId: string): void;
+  renameWorkspace(workspaceId: string, newName: string): void;
+  reorderWorkspace(workspaceId: string, newIndex: number): void;
+  duplicateWorkspace(workspaceId: string): string;
+  updateWorkspaceColor(workspaceId: string, color: string): void;
 }
 
 export interface AppComponentProps {

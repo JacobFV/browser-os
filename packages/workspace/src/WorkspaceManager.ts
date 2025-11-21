@@ -37,6 +37,17 @@ export class WorkspaceManager implements IWorkspaceManager {
   }
 
   /**
+   * Generate a color for a workspace based on its index
+   */
+  private generateWorkspaceColor(index: number): string {
+    const hues = [0, 30, 60, 120, 180, 210, 270, 300, 330]; // Distinct hues
+    const hue = hues[index % hues.length];
+    const saturation = 65 + (index % 20);
+    const lightness = 45 + ((index * 7) % 15);
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
+
+  /**
    * Create a new workspace
    */
   createWorkspace(name?: string): string {
@@ -47,6 +58,7 @@ export class WorkspaceManager implements IWorkspaceManager {
       id: workspaceId,
       name: name ?? `Workspace ${index + 1}`,
       index,
+      color: this.generateWorkspaceColor(index),
     };
 
     this.workspaces.set(workspaceId, workspace);
@@ -159,6 +171,95 @@ export class WorkspaceManager implements IWorkspaceManager {
     });
 
     this.eventBus.emit('workspace:deleted', { workspaceId }, { source: 'workspace' });
+  }
+
+  /**
+   * Rename a workspace
+   */
+  renameWorkspace(workspaceId: string, newName: string): void {
+    if (!this.workspaces.has(workspaceId)) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    if (!newName || newName.trim().length === 0) {
+      throw new Error('Workspace name cannot be empty');
+    }
+
+    if (newName.length > 50) {
+      throw new Error('Workspace name cannot exceed 50 characters');
+    }
+
+    const workspace = this.workspaces.get(workspaceId);
+    if (workspace) {
+      workspace.name = newName.trim();
+      this.eventBus.emit('workspace:renamed', { workspaceId, newName: workspace.name }, { source: 'workspace' });
+    }
+  }
+
+  /**
+   * Reorder a workspace to a new index
+   */
+  reorderWorkspace(workspaceId: string, newIndex: number): void {
+    if (!this.workspaces.has(workspaceId)) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    const allWorkspaces = Array.from(this.workspaces.values()).sort((a, b) => a.index - b.index);
+    const maxIndex = allWorkspaces.length - 1;
+    
+    if (newIndex < 0 || newIndex > maxIndex) {
+      throw new Error(`New index ${newIndex} is out of range (0-${maxIndex})`);
+    }
+
+    const workspace = this.workspaces.get(workspaceId);
+    if (!workspace) return;
+
+    const oldIndex = workspace.index;
+    
+    // Remove workspace from list temporarily
+    const otherWorkspaces = allWorkspaces.filter(w => w.id !== workspaceId);
+    
+    // Insert at new position
+    otherWorkspaces.splice(newIndex, 0, workspace);
+    
+    // Reassign indices
+    otherWorkspaces.forEach((w, idx) => {
+      w.index = idx;
+    });
+
+    this.eventBus.emit('workspace:reordered', { workspaceId, oldIndex, newIndex }, { source: 'workspace' });
+  }
+
+  /**
+   * Duplicate a workspace (creates new workspace with same name + "Copy")
+   */
+  duplicateWorkspace(workspaceId: string): string {
+    if (!this.workspaces.has(workspaceId)) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    const sourceWorkspace = this.workspaces.get(workspaceId);
+    if (!sourceWorkspace) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    const newName = `${sourceWorkspace.name || 'Workspace'} Copy`;
+    return this.createWorkspace(newName);
+  }
+
+  /**
+   * Update workspace color
+   */
+  updateWorkspaceColor(workspaceId: string, color: string): void {
+    if (!this.workspaces.has(workspaceId)) {
+      throw new Error(`Workspace ${workspaceId} not found`);
+    }
+
+    const workspace = this.workspaces.get(workspaceId);
+    if (workspace) {
+      workspace.color = color;
+      this.eventBus.emit('workspace:colorUpdated', { workspaceId, color }, { source: 'workspace' });
+    }
   }
 }
 
