@@ -32,13 +32,17 @@
    - Uses Button and Input components
    - Full dark mode support with theme-aware calendar cells
 
+7. **Camera** - ✅ Completed
+   - Updated controls and filters panel to use theme variables
+   - Theme-aware backdrop blur effects
+   - Full dark mode support
+
 ## In Progress 🔄
 
 None currently
 
 ## Pending 📋
 
-- Camera
 - Chess
 - Contacts
 - Draw
