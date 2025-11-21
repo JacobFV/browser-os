@@ -1,0 +1,135 @@
+.tic-tac-toe-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.tic-tac-toe-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tic-tac-toe-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: center;
+}
+
+.tic-tac-toe-mode-select {
+  padding: 8px 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+}
+
+.tic-tac-toe-mode-select:hover:not(:disabled) {
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
+}
+
+.tic-tac-toe-mode-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tic-tac-toe-status {
+  text-align: center;
+}
+
+.tic-tac-toe-turn {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tic-tac-toe-winner {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.tic-tac-toe-draw {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.tic-tac-toe-board-container {
+  position: relative;
+  padding: 16px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  box-shadow: var(--shadow-md);
+}
+
+.tic-tac-toe-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  width: 300px;
+  height: 300px;
+}
+
+.tic-tac-toe-cell {
+  background: var(--glass-surface-hover);
+  border: 2px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 48px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.tic-tac-toe-cell:hover:not(:disabled) {
+  background: var(--glass-surface-active);
+  border-color: var(--glass-border);
+  transform: scale(1.05);
+}
+
+.tic-tac-toe-cell:disabled {
+  cursor: not-allowed;
+}
+
+.tic-tac-toe-cell.cell-x {
+  color: var(--color-primary);
+}
+
+.tic-tac-toe-cell.cell-o {
+  color: var(--color-error);
+}
+
+.tic-tac-toe-cell.cell-empty:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.tic-tac-toe-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
