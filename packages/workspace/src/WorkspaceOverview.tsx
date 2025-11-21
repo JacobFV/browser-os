@@ -58,7 +58,9 @@ export const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({
   const [draggedWindowId, setDraggedWindowId] = useState<string | null>(null);
   const [dragOverWorkspaceId, setDragOverWorkspaceId] = useState<string | null>(null);
   const [draggedWorkspaceId, setDraggedWorkspaceId] = useState<string | null>(null);
-  const [workspaceList, setWorkspaceList] = useState<Workspace[]>(workspaces);
+  const [workspaceList, setWorkspaceList] = useState<Workspace[]>(() => 
+    workspaceManager.getAllWorkspaces().sort((a, b) => a.index - b.index)
+  );
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string>(initialActiveWorkspaceId);
   const [editingWorkspaceId, setEditingWorkspaceId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string>('');
@@ -72,7 +74,8 @@ export const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({
 
   // Update workspace list when workspaces prop changes
   useEffect(() => {
-    setWorkspaceList(workspaceManager.getAllWorkspaces().sort((a, b) => a.index - b.index));
+    const allWorkspaces = workspaceManager.getAllWorkspaces().sort((a, b) => a.index - b.index);
+    setWorkspaceList(allWorkspaces);
   }, [workspaces, workspaceManager]);
 
   // Listen to workspace switch events to update active workspace
