@@ -2,21 +2,22 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f5f5f5;
+  background: var(--bg-primary);
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 .todo-header {
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: var(--text-light);
+  box-shadow: var(--shadow-md);
 }
 
 .todo-title {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 10px;
+  color: var(--text-light);
 }
 
 .todo-stats {
@@ -30,6 +31,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text-light);
 }
 
 .todo-content {
@@ -40,8 +42,10 @@
 
 .todo-sidebar {
   width: 250px;
-  background: white;
-  border-right: 1px solid #e0e0e0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-right: 1px solid var(--glass-border-subtle);
   padding: 20px;
   overflow-y: auto;
 }
@@ -54,7 +58,7 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  color: #999;
+  color: var(--text-secondary);
   margin-bottom: 12px;
   letter-spacing: 0.5px;
 }
@@ -65,11 +69,11 @@
   text-align: left;
   border: none;
   background: transparent;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -77,13 +81,13 @@
 }
 
 .filter-btn:hover {
-  background: #f5f5f5;
-  color: #333;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
 }
 
 .filter-btn.active {
-  background: #667eea;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
 }
 
 .todo-main {
@@ -95,8 +99,10 @@
 
 .todo-toolbar {
   padding: 20px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border-bottom: 1px solid var(--glass-border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -112,40 +118,44 @@
 .task-input {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s var(--ease-smooth);
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .task-input:focus {
-  border-color: #667eea;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 .add-btn {
   padding: 12px 24px;
-  background: #667eea;
-  color: white;
+  background: var(--color-primary);
+  color: var(--text-light);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .add-btn:hover {
-  background: #5568d3;
+  background: var(--color-primary-shaded);
 }
 
 .todo-list {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  background: var(--bg-primary);
 }
 
 .todo-group {
@@ -159,14 +169,18 @@
   margin-bottom: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .group-count {
-  background: #e0e0e0;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 12px;
+  color: var(--text-primary);
 }
 
 .todo-items {
@@ -176,20 +190,23 @@
 }
 
 .todo-item {
-  background: white;
-  border-radius: 8px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-md);
   padding: 16px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-  border: 2px solid transparent;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .todo-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
+  border-color: var(--glass-border);
 }
 
 .todo-item.completed {
@@ -199,24 +216,25 @@
 .todo-checkbox {
   width: 20px;
   height: 20px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
+  border: 2px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   margin-top: 2px;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
+  background: var(--bg-primary);
 }
 
 .todo-checkbox:hover {
-  border-color: #667eea;
+  border-color: var(--color-primary);
 }
 
 .todo-checkbox.checked {
-  background: #667eea;
-  border-color: #667eea;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .todo-content-wrapper {
@@ -226,7 +244,7 @@
 
 .todo-text {
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
   line-height: 1.6;
   word-wrap: break-word;
   margin-bottom: 8px;
@@ -234,15 +252,15 @@
 
 .todo-text.completed {
   text-decoration: line-through;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .todo-text-input {
   width: 100%;
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
   border: none;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--color-primary);
   padding: 4px 0;
   outline: none;
   background: transparent;
@@ -254,29 +272,29 @@
   align-items: center;
   gap: 12px;
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .todo-priority {
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 11px;
   font-weight: 500;
 }
 
 .todo-priority.high {
-  background: #ffebee;
-  color: #c62828;
+  background: var(--color-error-lighter);
+  color: var(--color-error);
 }
 
 .todo-priority.medium {
-  background: #fff3e0;
-  color: #ef6c00;
+  background: var(--color-warning-lighter);
+  color: var(--color-warning);
 }
 
 .todo-priority.low {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--color-success-lighter);
+  color: var(--color-success);
 }
 
 .todo-date {
@@ -289,7 +307,7 @@
   display: flex;
   gap: 6px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s var(--ease-smooth);
 }
 
 .todo-item:hover .todo-actions {
@@ -299,31 +317,36 @@
 .todo-action-btn {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: #f5f5f5;
-  color: #666;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  border: 1px solid var(--glass-border-subtle);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .todo-action-btn:hover {
-  background: #e0e0e0;
-  color: #333;
+  background: var(--glass-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--glass-border);
 }
 
 .todo-action-btn.delete:hover {
-  background: #ffebee;
-  color: #d32f2f;
+  background: var(--color-error-lighter);
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .empty-state-icon {
@@ -335,11 +358,12 @@
 .empty-state-text {
   font-size: 18px;
   margin-bottom: 10px;
+  color: var(--text-primary);
 }
 
 .empty-state-hint {
   font-size: 14px;
-  color: #bbb;
+  color: var(--text-secondary);
 }
 
 .priority-selector {
@@ -349,34 +373,69 @@
 
 .priority-option {
   padding: 4px 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: white;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
   cursor: pointer;
   font-size: 11px;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth);
+  color: var(--text-primary);
 }
 
 .priority-option:hover {
-  border-color: #667eea;
+  border-color: var(--color-primary);
 }
 
 .priority-option.selected {
-  border-color: #667eea;
-  background: #667eea;
-  color: white;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--text-light);
 }
 
 .date-picker {
   padding: 6px 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
   font-size: 12px;
   cursor: pointer;
-  background: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .date-picker:hover {
-  border-color: #667eea;
+  border-color: var(--color-primary);
 }
 
+/* Scrollbar styling */
+.todo-sidebar::-webkit-scrollbar,
+.todo-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.todo-sidebar::-webkit-scrollbar-track,
+.todo-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.todo-sidebar::-webkit-scrollbar-thumb,
+.todo-list::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.todo-sidebar::-webkit-scrollbar-thumb:hover,
+.todo-list::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-subtle);
+}
+
+[data-theme="dark"] .todo-sidebar::-webkit-scrollbar-thumb,
+[data-theme="dark"] .todo-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .todo-sidebar::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .todo-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
