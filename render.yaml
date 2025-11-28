@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: browser-os-server
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: pnpm install && pnpm build --filter @browser-os/server
+    startCommand: pnpm --filter @browser-os/server start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+    healthCheckPath: /health
+
