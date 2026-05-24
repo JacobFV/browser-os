@@ -46,6 +46,7 @@ import { NotificationAPI } from '@browser-os/proc';
 import { NetworkManager } from '@browser-os/network';
 import { appIcons } from './appIcons';
 import { ThemeProvider } from '@browser-os/ui';
+import { installSynthuxBridge } from './synthuxBridge';
 // Theme CSS is imported via ThemeProvider
 import './OS.css';
 import type { AppComponentProps } from '@browser-os/workspace';
@@ -1507,6 +1508,16 @@ const DesktopShell: React.FC<DesktopShellProps> = ({
       unsubscribeMaximized();
     };
   }, [eventBus, windowManager, activeWorkspaceId]);
+
+  useEffect(() => {
+    return installSynthuxBridge({
+      eventBus,
+      fs,
+      appRegistry,
+      windowManager,
+      activeWorkspaceId,
+    });
+  }, [eventBus, fs, appRegistry, windowManager, activeWorkspaceId]);
 
   // Handle app launching
   useEffect(() => {
