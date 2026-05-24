@@ -43,6 +43,16 @@ const SURFACE_APP: Record<string, string> = {
   dashboard: 'browser',
 };
 
+type VisibleStep = {
+  step: number;
+  surface: string;
+  action: string;
+  target: string;
+  payload: string;
+};
+
+const visibleSteps: VisibleStep[] = [];
+
 function isSynthuxCommand(data: unknown): data is SynthuxCommandMessage {
   return (
     typeof data === 'object' &&
@@ -63,6 +73,74 @@ function postToParent(message: SynthuxCommandResultMessage): void {
 function synthuxPath(path: string): string {
   if (path.startsWith('/')) return path;
   return `/home/user/synthux/${path.replace(/^\/+/, '')}`;
+}
+
+function visiblePayload(args: Record<string, unknown>, fallback = ''): string {
+  const raw = args.visible_text ?? args.content ?? args.preview ?? args.text ?? args.query ?? args.title ?? args.command ?? fallback;
+  return String(raw ?? '').slice(0, 2200);
+}
+
+function renderSynthuxPanel(current: VisibleStep, goal: string): void {
+  visibleSteps.push(current);
+  while (visibleSteps.length > 8) visibleSteps.shift();
+
+  let panel = document.getElementById('synthux-execution-panel');
+  if (!panel) {
+    panel = document.createElement('section');
+    panel.id = 'synthux-execution-panel';
+    document.body.appendChild(panel);
+  }
+
+  const history = visibleSteps
+    .slice(-5)
+    .map((step) => `<li><span>${step.step}</span> ${escapeHtml(step.surface)}.${escapeHtml(step.action)} <em>${escapeHtml(step.target)}</em></li>`)
+    .join('');
+  panel.innerHTML = `
+    <style>
+      #synthux-execution-panel {
+        position: fixed;
+        right: 22px;
+        top: 34px;
+        width: 430px;
+        max-height: 82vh;
+        z-index: 2147483647;
+        background: rgba(17, 24, 39, 0.94);
+        color: #f9fafb;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 14px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+        font: 13px/1.45 Inter, system-ui, sans-serif;
+        overflow: hidden;
+      }
+      #synthux-execution-panel header { padding: 12px 14px; background: rgba(236, 72, 153, 0.24); border-bottom: 1px solid rgba(255,255,255,0.14); }
+      #synthux-execution-panel strong { display: block; font-size: 15px; }
+      #synthux-execution-panel .goal { color: #fbcfe8; margin-top: 4px; }
+      #synthux-execution-panel .body { padding: 12px 14px; }
+      #synthux-execution-panel .target { color: #fde68a; margin-bottom: 8px; }
+      #synthux-execution-panel pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; background: rgba(15,23,42,0.9); padding: 10px; border-radius: 8px; }
+      #synthux-execution-panel ol { margin: 10px 0 0; padding-left: 18px; color: #d1d5db; }
+      #synthux-execution-panel li span { color: #f9a8d4; font-variant-numeric: tabular-nums; }
+      #synthux-execution-panel em { color: #f3f4f6; font-style: normal; }
+    </style>
+    <header>
+      <strong>Step ${current.step}: ${escapeHtml(current.surface)}.${escapeHtml(current.action)}</strong>
+      <div class="goal">${escapeHtml(goal)}</div>
+    </header>
+    <div class="body">
+      <div class="target">Target: ${escapeHtml(current.target)}</div>
+      <pre>${escapeHtml(current.payload || '(no visible payload)')}</pre>
+      <ol>${history}</ol>
+    </div>
+  `;
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 async function ensureParentDirs(fs: FileSystem, path: string): Promise<void> {
@@ -160,6 +238,17 @@ async function executeTargetAction(
   const targetAction = String(action.action ?? '');
   const target = String(action.target ?? '');
   const args = (action.args && typeof action.args === 'object' ? action.args : {}) as Record<string, unknown>;
+  const visible = visiblePayload(args, target);
+  renderSynthuxPanel(
+    {
+      step: Number(action.step ?? visibleSteps.length + 1),
+      surface,
+      action: targetAction,
+      target,
+      payload: visible,
+    },
+    String(action.goal ?? '')
+  );
   const appId = launchOrFocusApp(options, surface);
 
   if (surface === 'editor' && targetAction === 'open_file') {
@@ -170,20 +259,20 @@ async function executeTargetAction(
     } catch {
       chars = 0;
     }
-    return ok(requestId, 'file.opened', path, snapshot(options, { appId, path, chars }), `${appId} opened ${path}.`);
+    return ok(requestId, 'file.opened', path, snapshot(options, { appId, path, chars, visibleText: visible }), `${appId} opened ${path}.`);
   }
 
   if (surface === 'editor' && targetAction === 'replace_buffer') {
     const path = synthuxPath(target);
-    const content = String(args.preview ?? `<buffer:${String(args.chars ?? 0)} chars>`);
+    const content = String(args.content ?? args.preview ?? `<buffer:${String(args.chars ?? 0)} chars>`);
     await ensureParentDirs(options.fs, path);
     await options.fs.write(path, new TextEncoder().encode(content), { create: true });
-    return ok(requestId, 'buffer.replaced', path, snapshot(options, { appId, path, chars: content.length }), `${appId} wrote ${path}.`);
+    return ok(requestId, 'buffer.replaced', path, snapshot(options, { appId, path, chars: content.length, visibleText: visible }), `${appId} wrote ${path}.`);
   }
 
   if (surface === 'editor' && targetAction === 'save_file') {
     const path = synthuxPath(target);
-    return ok(requestId, 'file.saved', path, snapshot(options, { appId, path }), `${path} is saved in browser-os.`);
+    return ok(requestId, 'file.saved', path, snapshot(options, { appId, path, visibleText: visible }), `${path} is saved in browser-os.`);
   }
 
   if (surface === 'terminal' && targetAction === 'run_command') {
@@ -192,7 +281,7 @@ async function executeTargetAction(
       requestId,
       'process.exited',
       target,
-      snapshot(options, { appId, command: args.command, exitCode: args.exit_code ?? 0 }),
+      snapshot(options, { appId, command: args.command, exitCode: args.exit_code ?? 0, visibleText: visible }),
       `Terminal ran ${String(args.command ?? target)}.`
     );
   }
@@ -210,7 +299,7 @@ async function executeTargetAction(
       targetAction === 'drill_into_alert' ? 'dashboard.alert_drilled' :
       'app.action';
     options.eventBus.emit(`synthux:${surface}:${targetAction}`, { target, args }, { source: 'synthux' });
-    return ok(requestId, event, target, snapshot(options, { appId, args }), `${appId} executed ${surface}.${targetAction}.`);
+    return ok(requestId, event, target, snapshot(options, { appId, args, visibleText: visible }), `${appId} executed ${surface}.${targetAction}.`);
   }
 
   if (surface === 'notion' || surface === 'slack') {
@@ -225,10 +314,10 @@ async function executeTargetAction(
       targetAction === 'react_to_message' ? 'message.reacted' :
       'app.action';
     options.eventBus.emit(`synthux:${surface}:${targetAction}`, { target, args }, { source: 'synthux' });
-    return ok(requestId, event, target, snapshot(options, { appId, args }), `${appId} executed ${surface}.${targetAction}.`);
+    return ok(requestId, event, target, snapshot(options, { appId, args, visibleText: visible }), `${appId} executed ${surface}.${targetAction}.`);
   }
 
-  return ok(requestId, 'app.action', target, snapshot(options, { appId, args }), `${appId} accepted ${surface}.${targetAction}.`);
+  return ok(requestId, 'app.action', target, snapshot(options, { appId, args, visibleText: visible }), `${appId} accepted ${surface}.${targetAction}.`);
 }
 
 async function executeCommand(
