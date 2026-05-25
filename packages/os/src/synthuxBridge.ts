@@ -80,67 +80,9 @@ function visiblePayload(args: Record<string, unknown>, fallback = ''): string {
   return String(raw ?? '').slice(0, 2200);
 }
 
-function renderSynthuxPanel(current: VisibleStep, goal: string): void {
+function recordSynthuxStep(current: VisibleStep): void {
   visibleSteps.push(current);
   while (visibleSteps.length > 8) visibleSteps.shift();
-
-  let panel = document.getElementById('synthux-execution-panel');
-  if (!panel) {
-    panel = document.createElement('section');
-    panel.id = 'synthux-execution-panel';
-    document.body.appendChild(panel);
-  }
-
-  const history = visibleSteps
-    .slice(-5)
-    .map((step) => `<li><span>${step.step}</span> ${escapeHtml(step.surface)}.${escapeHtml(step.action)} <em>${escapeHtml(step.target)}</em></li>`)
-    .join('');
-  panel.innerHTML = `
-    <style>
-      #synthux-execution-panel {
-        position: fixed;
-        right: 22px;
-        top: 34px;
-        width: 430px;
-        max-height: 82vh;
-        z-index: 2147483647;
-        background: rgba(17, 24, 39, 0.94);
-        color: #f9fafb;
-        border: 1px solid rgba(255, 255, 255, 0.24);
-        border-radius: 14px;
-        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-        font: 13px/1.45 Inter, system-ui, sans-serif;
-        overflow: hidden;
-      }
-      #synthux-execution-panel header { padding: 12px 14px; background: rgba(236, 72, 153, 0.24); border-bottom: 1px solid rgba(255,255,255,0.14); }
-      #synthux-execution-panel strong { display: block; font-size: 15px; }
-      #synthux-execution-panel .goal { color: #fbcfe8; margin-top: 4px; }
-      #synthux-execution-panel .body { padding: 12px 14px; }
-      #synthux-execution-panel .target { color: #fde68a; margin-bottom: 8px; }
-      #synthux-execution-panel pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; background: rgba(15,23,42,0.9); padding: 10px; border-radius: 8px; }
-      #synthux-execution-panel ol { margin: 10px 0 0; padding-left: 18px; color: #d1d5db; }
-      #synthux-execution-panel li span { color: #f9a8d4; font-variant-numeric: tabular-nums; }
-      #synthux-execution-panel em { color: #f3f4f6; font-style: normal; }
-    </style>
-    <header>
-      <strong>Step ${current.step}: ${escapeHtml(current.surface)}.${escapeHtml(current.action)}</strong>
-      <div class="goal">${escapeHtml(goal)}</div>
-    </header>
-    <div class="body">
-      <div class="target">Target: ${escapeHtml(current.target)}</div>
-      <pre>${escapeHtml(current.payload || '(no visible payload)')}</pre>
-      <ol>${history}</ol>
-    </div>
-  `;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
 
 async function ensureParentDirs(fs: FileSystem, path: string): Promise<void> {
@@ -239,16 +181,13 @@ async function executeTargetAction(
   const target = String(action.target ?? '');
   const args = (action.args && typeof action.args === 'object' ? action.args : {}) as Record<string, unknown>;
   const visible = visiblePayload(args, target);
-  renderSynthuxPanel(
-    {
-      step: Number(action.step ?? visibleSteps.length + 1),
-      surface,
-      action: targetAction,
-      target,
-      payload: visible,
-    },
-    String(action.goal ?? '')
-  );
+  recordSynthuxStep({
+    step: Number(action.step ?? visibleSteps.length + 1),
+    surface,
+    action: targetAction,
+    target,
+    payload: visible,
+  });
   const appId = launchOrFocusApp(options, surface);
 
   if (surface === 'editor' && targetAction === 'open_file') {
