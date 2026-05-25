@@ -1,5 +1,7 @@
 # browser-os
 
+> Project page: [jacobfv.com/projects/browser-os](https://jacobfv.com/projects/browser-os) · Used as a native execution substrate by [SynthUX](https://jacobfv.com/projects/synthux) ([github.com/JacobFV/synthux](https://github.com/JacobFV/synthux))
+
 A browser-based operating system monorepo built with React, TypeScript, and Turbo.
 
 ## Overview
