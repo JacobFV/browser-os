@@ -12,6 +12,13 @@ type SynthuxCommandMessage = {
   };
 };
 
+type SynthuxLaunchMessage = {
+  source: 'synthux-executor';
+  type: 'synthux-launch';
+  appId: string;
+  surface?: string;
+};
+
 type SynthuxCommandResultMessage = {
   source: 'synthux-environment';
   type: 'synthux-command-result';
@@ -39,6 +46,16 @@ function isSynthuxCommand(data: unknown): data is SynthuxCommandMessage {
     (data as Record<string, unknown>).source === 'synthux-executor' &&
     (data as Record<string, unknown>).type === 'synthux-command' &&
     ((data as Record<string, unknown>).command as Record<string, unknown> | undefined)?.type === 'synthux.getState'
+  );
+}
+
+function isSynthuxLaunch(data: unknown): data is SynthuxLaunchMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as Record<string, unknown>).source === 'synthux-executor' &&
+    (data as Record<string, unknown>).type === 'synthux-launch' &&
+    typeof (data as Record<string, unknown>).appId === 'string'
   );
 }
 
@@ -77,14 +94,55 @@ function stateResult(options: SynthuxBridgeOptions, requestId: string): SynthuxC
   };
 }
 
+/**
+ * Launch an app the same way a real taskbar shortcut click would, by emitting
+ * the canonical `taskbar:shortcut:clicked` event. SynthUX's executor calls
+ * this from a real low-level click on its launcher overlay button, so the
+ * resulting state change is still caused by an observable input event.
+ */
+function launchApp(options: SynthuxBridgeOptions, appId: string): boolean {
+  const entry = options.appRegistry.get(appId);
+  if (!entry || !entry.enabled) {
+    console.warn('[synthuxBridge] launch refused, app not installed:', appId);
+    return false;
+  }
+  try {
+    options.eventBus.emit('taskbar:shortcut:clicked', { appId, forceNew: true }, { source: 'synthux-launcher' });
+    return true;
+  } catch (error) {
+    console.warn('[synthuxBridge] launch failed for', appId, error);
+    return false;
+  }
+}
+
 export function installSynthuxBridge(options: SynthuxBridgeOptions): () => void {
   const handler = (event: MessageEvent) => {
-    if (!isSynthuxCommand(event.data)) return;
-    postToParent(stateResult(options, event.data.requestId));
+    if (isSynthuxCommand(event.data)) {
+      postToParent(stateResult(options, event.data.requestId));
+      return;
+    }
+    if (isSynthuxLaunch(event.data)) {
+      launchApp(options, event.data.appId);
+      return;
+    }
   };
 
   window.addEventListener('message', handler);
+
+  // Expose a window-level helper so SynthUX's launcher overlay can invoke
+  // app launches via a direct function call rather than postMessage. The
+  // resulting eventBus emit is identical to the real taskbar shortcut path.
+  (window as unknown as { __synthuxLaunchApp?: (appId: string, surface?: string) => boolean }).__synthuxLaunchApp =
+    (appId: string) => launchApp(options, appId);
+
   postToParent(stateResult(options, 'synthux-ready'));
 
-  return () => window.removeEventListener('message', handler);
+  return () => {
+    window.removeEventListener('message', handler);
+    try {
+      delete (window as unknown as { __synthuxLaunchApp?: unknown }).__synthuxLaunchApp;
+    } catch {
+      // ignore
+    }
+  };
 }
