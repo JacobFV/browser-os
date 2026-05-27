@@ -23,7 +23,30 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
    * Get the proxied URL for a given target URL
    */
   const getProxiedUrl = (targetUrl: string): string => {
+    // SynthUX virtual-internet pages serve HTML directly; bypass the proxy.
+    const net = (window as any).__synthuxInternet;
+    if (net && net.url && targetUrl.startsWith(net.url)) return targetUrl;
     return `${proxyUrl}?url=${encodeURIComponent(targetUrl)}`;
+  };
+
+  const rewriteGithub = (target: string): string => {
+    // Route github.com URLs through the SynthUX virtual internet so the
+    // iframe can render (real github.com blocks framing).
+    const net = (window as any).__synthuxInternet;
+    if (!net || !net.enabled || !net.url) return target;
+    try {
+      const u = new URL(target);
+      if (!u.hostname.endsWith('github.com')) return target;
+      const parts = u.pathname.split('/').filter(Boolean);
+      const owner = parts[0] || 'acme';
+      const repo = parts[1] || 'api';
+      let view = 'overview';
+      if (parts[2] === 'pulls') view = 'pulls';
+      else if (parts[2] === 'pull' && parts[3]) {
+        return `${net.url}/web/github/${owner}/${repo}/pull/${parts[3]}`;
+      } else if (parts[2]) view = parts[2];
+      return `${net.url}/web/github/${owner}/${repo}?view=${encodeURIComponent(view)}`;
+    } catch { return target; }
   };
 
   const navigateToUrl = (newUrl: string) => {
@@ -32,6 +55,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     if (!formattedUrl.match(/^https?:\/\//i)) {
       formattedUrl = 'https://' + formattedUrl;
     }
+    formattedUrl = rewriteGithub(formattedUrl);
 
     try {
       new URL(formattedUrl); // Validate URL
