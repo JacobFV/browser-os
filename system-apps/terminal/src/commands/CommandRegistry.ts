@@ -43,6 +43,12 @@ export class CommandRegistry {
     this.register('env', systemCommands.env);
     this.register('export', systemCommands.exportCmd);
     this.register('unset', systemCommands.unset);
+    this.register('git', systemCommands.git);
+    this.register('pytest', systemCommands.pytest);
+    this.register('npm', systemCommands.npm);
+    this.register('pnpm', systemCommands.pnpm);
+    this.register('yarn', systemCommands.yarn);
+    this.register('make', systemCommands.make);
 
     // App commands
     this.register('launch', appCommands.launch);
