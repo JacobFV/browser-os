@@ -1,23 +1,30 @@
 :root {
-  /* Light theme colors */
-  --glass-surface: rgba(255, 255, 255, 0.65);
-  --glass-surface-hover: rgba(255, 255, 255, 0.8);
-  --glass-surface-active: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-border-subtle: rgba(255, 255, 255, 0.3);
+  /* Light theme — refined glass surfaces with stronger contrast.
+     bg-elevated is opaque-ish so toolbars are readable; glass-* keep
+     translucency for window chrome / dock. */
+  --bg-app: #f5f7fb;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #eef1f6;
+
+  --glass-surface: rgba(252, 253, 255, 0.78);
+  --glass-surface-hover: rgba(255, 255, 255, 0.92);
+  --glass-surface-active: rgba(255, 255, 255, 0.98);
+  --glass-border: rgba(20, 22, 28, 0.08);
+  --glass-border-subtle: rgba(20, 22, 28, 0.04);
 
   /* Text */
   --text-primary: #1d1d1f;
-  --text-secondary: #86868b;
+  --text-secondary: #5f6571;
+  --text-tertiary: #8a8f99;
   --text-light: #ffffff;
 
-  /* Primary color shades */
-  --color-primary: #007aff;
-  --color-primary-shaded: #0051d5;
-  --color-primary-light: #5ac8fa;
-  --color-primary-lighter: #e5f2ff;
-  --color-primary-dark: #0041a3;
-  --color-primary-darker: #002d6e;
+  /* Primary — a calmer Linear/Vercel-ish blue */
+  --color-primary: #3461ff;
+  --color-primary-shaded: #2547d4;
+  --color-primary-light: #5e7eff;
+  --color-primary-lighter: #e8edff;
+  --color-primary-dark: #1d369b;
+  --color-primary-darker: #112070;
 
   /* Secondary color shades */
   --color-secondary: #5856d6;
@@ -69,21 +76,26 @@
   --ease-bounce: cubic-bezier(0.25, 1.4, 0.5, 1);
   --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
 
-  /* Background */
-  --bg-primary: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  /* Background — soft neutral gradient with a single hint of accent. */
+  --bg-primary: radial-gradient(120% 80% at 0% 0%, #f1f5ff 0%, #eaf0fc 35%, #e6ecf8 100%);
 }
 
 [data-theme="dark"] {
-  /* Dark theme colors */
-  --glass-surface: rgba(30, 30, 30, 0.4);
-  --glass-surface-hover: rgba(30, 30, 30, 0.6);
-  --glass-surface-active: rgba(30, 30, 30, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-border-subtle: rgba(255, 255, 255, 0.1);
+  /* Dark theme — deep navy with subtle elevation steps. */
+  --bg-app: #0d1320;
+  --bg-elevated: #161d2c;
+  --bg-sunken: #0a0f1a;
+
+  --glass-surface: rgba(28, 35, 50, 0.65);
+  --glass-surface-hover: rgba(35, 43, 60, 0.78);
+  --glass-surface-active: rgba(42, 50, 70, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-subtle: rgba(255, 255, 255, 0.04);
 
   /* Text */
-  --text-primary: #f5f5f7;
-  --text-secondary: #86868b;
+  --text-primary: #e6e9f2;
+  --text-secondary: #9aa2b5;
+  --text-tertiary: #6b7388;
   --text-light: #ffffff;
 
   /* Primary color shades - adjusted for dark mode */
@@ -130,8 +142,8 @@
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 40px rgba(255, 255, 255, 0.2);
 
-  /* Background */
-  --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  /* Background — deep starfield gradient */
+  --bg-primary: radial-gradient(120% 80% at 0% 0%, #1a2238 0%, #131a2c 40%, #0a0f1a 100%);
 }
 
 /* Window button side */

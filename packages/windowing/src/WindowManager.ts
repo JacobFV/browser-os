@@ -13,6 +13,7 @@ export interface WindowManagerOptions {
 export class WindowManager implements IWindowManager {
   private registry: WindowRegistry;
   private eventBus: EventBus;
+  private staggerCounter: number = 0;
 
   constructor(options?: WindowManagerOptions) {
     this.registry = new WindowRegistry();
@@ -20,16 +21,29 @@ export class WindowManager implements IWindowManager {
   }
 
   /**
+   * Stagger new windows around (60..420, 50..400) in 32-pixel steps so they
+   * don't all land on top of each other.
+   */
+  private nextStagger(): { x: number; y: number } {
+    const i = this.staggerCounter++;
+    const step = 32;
+    const cycle = 8; // wrap after 8 windows
+    const offset = (i % cycle) * step;
+    return { x: 60 + offset, y: 50 + offset };
+  }
+
+  /**
    * Create a new window
    */
   createWindow(options: WindowOptions): string {
     const windowId = `window-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    
+    const stagger = this.nextStagger();
+
     const window: Window = {
       id: windowId,
       title: options.title,
-      x: options.x ?? 100,
-      y: options.y ?? 100,
+      x: options.x ?? stagger.x,
+      y: options.y ?? stagger.y,
       width: options.width ?? 1100,
       height: options.height ?? 720,
       minWidth: options.minWidth ?? 500,
