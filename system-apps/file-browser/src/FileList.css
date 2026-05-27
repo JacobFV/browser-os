@@ -1,37 +1,46 @@
+/* File list — modern macOS Finder + Linear-inspired styling.
+   Replaces the older glass-on-glass look with crisper rows, real-feeling
+   hover states, and a sticky details header that's clearly readable. */
+
 .file-list {
   flex: 1;
   overflow-y: auto;
-  background: var(--bg-primary);
+  background: var(--bg-elevated, #ffffff);
 }
 
 .file-list.list-view {
-  padding: 8px;
+  padding: 4px 0;
 }
 
 .file-list-item {
   display: flex;
   align-items: center;
-  padding: 8px;
+  padding: 7px 14px;
   cursor: pointer;
-  border-radius: var(--radius-sm);
-  gap: 8px;
-  transition: background-color 0.15s var(--ease-smooth);
+  gap: 12px;
+  transition: background-color 0.12s var(--ease-smooth);
   color: var(--text-primary);
+  border-radius: 0;
+  margin: 0;
+  border: none;
 }
 
 .file-list-item:hover {
-  background: var(--glass-surface-hover);
+  background: var(--bg-sunken, rgba(20, 22, 28, 0.04));
 }
 
 .file-list-item.selected {
-  background: var(--color-primary-lighter);
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--text-light, white);
 }
+.file-list-item.selected .file-list-icon { color: var(--text-light, white) }
 
 .file-list-icon {
-  font-size: 20px;
-  width: 24px;
+  font-size: 18px;
+  width: 22px;
   text-align: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .file-list-name {
@@ -39,8 +48,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 13px;
 }
 
+/* ---- Details (table) view ---- */
+.file-list.details-view { padding: 0 }
 .file-list-table {
   width: 100%;
   border-collapse: collapse;
@@ -48,130 +60,108 @@
 }
 
 .file-list-header {
-  padding: 8px 12px;
+  padding: 8px 14px;
   text-align: left;
-  background: var(--glass-surface);
-  backdrop-filter: blur(var(--blur-md)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
-  border-bottom: 2px solid var(--glass-border-subtle);
+  background: var(--bg-sunken, rgba(20, 22, 28, 0.04));
+  border-bottom: 1px solid var(--glass-border);
   font-weight: 600;
-  color: var(--text-primary);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
   position: sticky;
   top: 0;
   z-index: 10;
-  transition: background-color 0.15s var(--ease-smooth);
+  transition: background-color 0.12s var(--ease-smooth);
 }
-
-.file-list-header:hover {
-  background: var(--glass-surface-hover);
-}
-
-.file-list-header.active {
-  background: var(--glass-surface-hover);
-  color: var(--color-primary);
-}
-
-.sort-indicator {
-  margin-left: 4px;
-  font-size: 12px;
-}
+.file-list-header:hover { background: rgba(20, 22, 28, 0.08) }
+.file-list-header.active { color: var(--color-primary) }
+.sort-indicator { margin-left: 4px; font-size: 11px }
 
 .file-list-row {
   cursor: pointer;
-  transition: background-color 0.15s var(--ease-smooth);
+  transition: background-color 0.12s var(--ease-smooth);
 }
-
-.file-list-row:hover {
-  background: var(--glass-surface-hover);
-}
-
-.file-list-row.selected {
-  background: var(--color-primary-lighter);
-}
-
+.file-list-row:hover { background: var(--bg-sunken, rgba(20, 22, 28, 0.05)) }
+.file-list-row.selected { background: var(--color-primary-lighter) }
 .file-list-row.selected .file-list-name {
   color: var(--color-primary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .file-list-cell {
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--glass-border-subtle);
   color: var(--text-primary);
+  font-size: 13px;
+  vertical-align: middle;
 }
-
 .file-list-cell.name {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 200px;
+  gap: 10px;
+  min-width: 220px;
 }
-
 .file-list-cell.size {
-  width: 100px;
+  width: 110px;
   text-align: right;
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
   color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
 }
-
 .file-list-cell.modified {
   width: 180px;
   color: var(--text-secondary);
+  font-size: 12px;
 }
-
 .file-list-cell.type {
-  width: 120px;
+  width: 130px;
   color: var(--text-secondary);
+  font-size: 12px;
 }
 
+/* ---- Tile (icon) view ---- */
 .file-list.tile-view {
   position: relative;
-  padding: 16px;
+  padding: 18px;
   min-height: 100%;
 }
-
 .file-list-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
-  background: var(--glass-surface);
-  backdrop-filter: blur(var(--blur-md)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(120%);
+  justify-content: flex-start;
+  padding: 10px 6px 8px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  background: transparent;
   cursor: move;
-  transition: all 0.2s var(--ease-smooth);
+  transition: all 0.15s var(--ease-smooth);
   user-select: none;
 }
-
 .file-list-tile:hover {
-  background: var(--glass-surface-hover);
-  border-color: var(--glass-border);
+  background: var(--bg-sunken, rgba(20, 22, 28, 0.04));
 }
-
 .file-list-tile.selected {
   background: var(--color-primary-lighter);
   border-color: var(--color-primary);
 }
-
 .file-list-tile.dragging {
-  opacity: 0.8;
+  opacity: 0.65;
   box-shadow: var(--shadow-md);
 }
-
 .file-list-tile-icon {
-  font-size: 32px;
-  margin-bottom: 4px;
+  font-size: 38px;
+  margin-bottom: 6px;
   text-align: center;
   color: var(--text-primary);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
 }
-
 .file-list-tile-name {
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
   word-break: break-word;
   overflow: hidden;
@@ -180,33 +170,54 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   max-width: 100%;
-  line-height: 1.2;
+  line-height: 1.25;
   color: var(--text-primary);
 }
-
-/* Scrollbar styling */
-.file-list::-webkit-scrollbar {
-  width: 8px;
+.file-list-tile.selected .file-list-tile-name {
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
-.file-list::-webkit-scrollbar-track {
-  background: transparent;
+/* ---- Empty state ---- */
+.file-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  gap: 8px;
 }
+.file-list-empty .icon { font-size: 40px; opacity: 0.4 }
 
+/* ---- Scrollbar ---- */
+.file-list::-webkit-scrollbar { width: 12px }
+.file-list::-webkit-scrollbar-track { background: transparent }
 .file-list::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
-  border-radius: 4px;
+  background: rgba(20, 22, 28, 0.12);
+  border-radius: 6px;
+  border: 3px solid var(--bg-elevated, #ffffff);
   transition: background 0.2s var(--ease-smooth);
 }
-
 .file-list::-webkit-scrollbar-thumb:hover {
-  background: var(--glass-border-subtle);
+  background: rgba(20, 22, 28, 0.25);
 }
 
 [data-theme="dark"] .file-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--bg-elevated, #161d2c);
+}
+[data-theme="dark"] .file-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
-[data-theme="dark"] .file-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+/* Dark-theme touch-ups for selected rows so the contrast stays right */
+[data-theme="dark"] .file-list-item:hover,
+[data-theme="dark"] .file-list-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+[data-theme="dark"] .file-list-header {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
 }

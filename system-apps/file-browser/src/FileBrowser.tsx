@@ -411,6 +411,23 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
     );
   }
 
+  // Sidebar shortcuts — clicking jumps the address to that path.
+  const shortcuts: { label: string; icon: string; path: string }[] = [
+    { label: 'Home',      icon: '🏠', path: '/home/user' },
+    { label: 'Desktop',   icon: '🖥', path: '/home/user/Desktop' },
+    { label: 'Documents', icon: '📄', path: '/home/user/Documents' },
+    { label: 'Downloads', icon: '📥', path: '/home/user/Downloads' },
+    { label: 'Pictures',  icon: '🖼', path: '/home/user/Pictures' },
+    { label: 'Music',     icon: '🎵', path: '/home/user/Music' },
+    { label: 'Videos',    icon: '🎬', path: '/home/user/Videos' },
+  ];
+  const tags: { label: string; color: string }[] = [
+    { label: 'Important', color: '#ef4444' },
+    { label: 'Work',      color: '#f59e0b' },
+    { label: 'Personal',  color: '#3461ff' },
+    { label: 'Archive',   color: '#10b981' },
+  ];
+
   return (
     <div className="file-browser">
       <Toolbar
@@ -435,24 +452,53 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ windowId }) => {
           {error}
         </div>
       )}
-      {loading ? (
-        <div className="file-browser-loading-content">Loading...</div>
-      ) : (
-        <FileList
-          entries={entries}
-          selectedPaths={selectedPaths}
-          viewMode={viewMode}
-          sortField={sortField}
-          sortDirection={sortDirection}
-          itemScale={itemScale}
-          itemPositions={itemPositions}
-          onSelect={handleSelect}
-          onDoubleClick={handleDoubleClick}
-          onContextMenu={handleContextMenu}
-          onSort={handleSort}
-          onItemPositionChange={handleItemPositionChange}
-        />
-      )}
+      <div className="file-browser-body">
+        <aside className="file-browser-sidebar">
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">Favorites</div>
+            {shortcuts.map((s) => (
+              <button
+                key={s.path}
+                className={`sidebar-item ${currentPath === s.path ? 'active' : ''}`}
+                onClick={() => navigateTo(s.path)}
+                title={s.path}
+              >
+                <span className="sidebar-icon">{s.icon}</span>
+                <span className="sidebar-label">{s.label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">Tags</div>
+            {tags.map((t) => (
+              <button key={t.label} className="sidebar-item sidebar-tag">
+                <span className="sidebar-tag-dot" style={{ background: t.color }} />
+                <span className="sidebar-label">{t.label}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+        <div className="file-browser-main">
+          {loading ? (
+            <div className="file-browser-loading-content">Loading…</div>
+          ) : (
+            <FileList
+              entries={entries}
+              selectedPaths={selectedPaths}
+              viewMode={viewMode}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              itemScale={itemScale}
+              itemPositions={itemPositions}
+              onSelect={handleSelect}
+              onDoubleClick={handleDoubleClick}
+              onContextMenu={handleContextMenu}
+              onSort={handleSort}
+              onItemPositionChange={handleItemPositionChange}
+            />
+          )}
+        </div>
+      </div>
       {contextMenuEntry && (
         <ContextMenu
           entry={contextMenuEntry}
