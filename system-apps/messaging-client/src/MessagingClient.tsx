@@ -30,6 +30,13 @@ export interface MessagingClientProps {
   os?: unknown;
 }
 
+// This app is the Slack client for browser-os: it lives on the shared
+// 'slack:' virtual-internet namespace so it sees the same #channels as the
+// macOS/Windows Slack apps, and never Teams/iMessage traffic.
+const NETWORK = 'slack';
+const nsId = (id: string) => (id.startsWith(NETWORK + ':') ? id : `${NETWORK}:${id}`);
+const stripId = (id: string) => (id.startsWith(NETWORK + ':') ? id.slice(NETWORK.length + 1) : id);
+
 function getClient(): SynthuxClient | null {
   return (window as any).__synthuxInternet || null;
 }
@@ -59,11 +66,18 @@ export const MessagingClient: React.FC<MessagingClientProps> = () => {
     if (!client || !client.enabled) return;
     const [chList, hist] = await Promise.all([
       client.chatChannels(),
-      client.chatHistory(selected),
+      client.chatHistory(nsId(selected)),
     ]);
-    if (Array.isArray(chList?.channels)) setChannels(chList.channels);
+    if (Array.isArray(chList?.channels)) {
+      // Only show channels on the Slack namespace; strip the prefix for display.
+      const mine = chList.channels
+        .filter((c) => c.channel_id.startsWith(NETWORK + ':'))
+        .map((c) => ({ ...c, channel_id: stripId(c.channel_id),
+                       name: stripId(c.name || c.channel_id) }));
+      setChannels(mine);
+    }
     if (Array.isArray(hist?.messages)) {
-      setMessages(hist.messages);
+      setMessages(hist.messages.map((m) => ({ ...m, channel_id: stripId(m.channel_id) })));
       requestAnimationFrame(() => {
         if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
       });
@@ -80,7 +94,7 @@ export const MessagingClient: React.FC<MessagingClientProps> = () => {
     if (!client || !composer.trim()) return;
     const text = composer.trim();
     setComposer('');
-    await client.postChat(selected, text);
+    await client.postChat(nsId(selected), text);
     await refresh();
   }, [client, composer, selected, refresh]);
 
@@ -119,7 +133,7 @@ export const MessagingClient: React.FC<MessagingClientProps> = () => {
                 }}
               >
                 <span style={{ width: 14, fontWeight: 700, opacity: 0.7 }}>#</span>
-                <span style={{ flex: 1 }}>{ch.name || ch.channel_id}</span>
+                <span style={{ flex: 1 }}>{(ch.name || ch.channel_id).replace(/^#/, '')}</span>
                 <span style={{ fontSize: 11, opacity: 0.7 }}>{ch.message_count}</span>
               </button>
             ))}
@@ -132,7 +146,7 @@ export const MessagingClient: React.FC<MessagingClientProps> = () => {
           <header style={{ display: 'flex', alignItems: 'baseline', gap: 10,
             padding: '12px 18px', borderBottom: '1px solid #ddd' }}>
             <span style={{ fontWeight: 700, opacity: 0.7 }}>#</span>
-            <span style={{ fontSize: 16, fontWeight: 700 }}>{current?.name || selected}</span>
+            <span style={{ fontSize: 16, fontWeight: 700 }}>{(current?.name || selected).replace(/^#/, '')}</span>
             <span style={{ fontSize: 12, color: '#666' }}>{current?.members.join(', ') || ''}</span>
           </header>
           <div className="messages" ref={listRef}
