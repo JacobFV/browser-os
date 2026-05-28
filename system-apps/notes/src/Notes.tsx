@@ -135,6 +135,33 @@ export const Notes: React.FC<{ os: any }> = ({ os }) => {
     setEditingContent('');
   };
 
+  // Persist the in-progress draft without leaving edit mode. Used when
+  // focus moves between the title and the body of the same note so that
+  // tabbing/Enter from title → content doesn't unmount the content field
+  // (which would otherwise drop everything typed into the body).
+  const saveDraft = () => {
+    if (!editingId) return;
+    setNotes(prev =>
+      prev.map(n =>
+        n.id === editingId
+          ? { ...n, title: editingTitle, content: editingContent, updatedAt: Date.now() }
+          : n
+      )
+    );
+  };
+
+  // Blur handler shared by the title and body fields: if focus is moving
+  // to another field inside the same (still-editing) note card, just save
+  // the draft and stay in edit mode; otherwise commit and exit.
+  const handleFieldBlur = (e: React.FocusEvent) => {
+    const next = e.relatedTarget as HTMLElement | null;
+    if (next && next.closest && next.closest('.note-card.editing')) {
+      saveDraft();
+      return;
+    }
+    saveEditing();
+  };
+
   const deleteNote = async (id: string) => {
     try {
       if (os?.fs) {
@@ -255,7 +282,7 @@ export const Notes: React.FC<{ os: any }> = ({ os }) => {
                         value={editingTitle}
                         onChange={(e) => setEditingTitle(e.target.value)}
                         placeholder="Title..."
-                        onBlur={saveEditing}
+                        onBlur={handleFieldBlur}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
@@ -317,7 +344,7 @@ export const Notes: React.FC<{ os: any }> = ({ os }) => {
                       value={editingContent}
                       onChange={(e) => setEditingContent(e.target.value)}
                       placeholder="Start typing..."
-                      onBlur={saveEditing}
+                      onBlur={handleFieldBlur}
                       onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                           cancelEditing();
