@@ -29,23 +29,26 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     return `${proxyUrl}?url=${encodeURIComponent(targetUrl)}`;
   };
 
-  const rewriteGithub = (target: string): string => {
-    // Route github.com URLs through the SynthUX virtual internet so the
-    // iframe can render (real github.com blocks framing).
+  const rewriteViaVI = (target: string): string => {
+    // Route any URL through the SynthUX virtual internet. github.com gets
+    // a structured rewrite; everything else uses /web/<host>/... which
+    // either lands on a registered service or a synthesized landing page.
     const net = (window as any).__synthuxInternet;
     if (!net || !net.enabled || !net.url) return target;
     try {
       const u = new URL(target);
-      if (!u.hostname.endsWith('github.com')) return target;
-      const parts = u.pathname.split('/').filter(Boolean);
-      const owner = parts[0] || 'acme';
-      const repo = parts[1] || 'api';
-      let view = 'overview';
-      if (parts[2] === 'pulls') view = 'pulls';
-      else if (parts[2] === 'pull' && parts[3]) {
-        return `${net.url}/web/github/${owner}/${repo}/pull/${parts[3]}`;
-      } else if (parts[2]) view = parts[2];
-      return `${net.url}/web/github/${owner}/${repo}?view=${encodeURIComponent(view)}`;
+      const host = u.hostname;
+      if (host.endsWith('github.com')) {
+        const parts = u.pathname.split('/').filter(Boolean);
+        const owner = parts[0] || 'acme';
+        const repo = parts[1] || 'api';
+        if (parts[2] === 'pull' && parts[3]) {
+          return `${net.url}/web/github/${owner}/${repo}/pull/${parts[3]}`;
+        }
+        const view = parts[2] === 'pulls' ? 'pulls' : (parts[2] || 'overview');
+        return `${net.url}/web/github/${owner}/${repo}?view=${encodeURIComponent(view)}`;
+      }
+      return `${net.url}/web/${host}${u.pathname}${u.search}`;
     } catch { return target; }
   };
 
@@ -55,7 +58,7 @@ export const Browser: React.FC<BrowserProps> = ({ windowId }) => {
     if (!formattedUrl.match(/^https?:\/\//i)) {
       formattedUrl = 'https://' + formattedUrl;
     }
-    formattedUrl = rewriteGithub(formattedUrl);
+    formattedUrl = rewriteViaVI(formattedUrl);
 
     try {
       new URL(formattedUrl); // Validate URL

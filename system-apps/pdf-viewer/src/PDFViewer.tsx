@@ -2,6 +2,86 @@ import React, { useState, useEffect, useRef } from 'react';
 import { File, ZoomIn, ZoomOut, Maximize, ChevronLeft, ChevronRight, X, List, FileText } from 'lucide-react';
 import './PDFViewer.css';
 
+// Default content for the empty state — keeps the viewer from looking blank
+// when a SynthUX agent runs `pdf.open_pdf` without uploading a real file.
+const SAMPLE_PAGES: { title: string; body: string[] }[] = [
+  {
+    title: 'Q3 Research Brief — ACME',
+    body: [
+      'Prepared by Diana Reyes, Research Engineering',
+      '',
+      'Executive Summary',
+      'The Q3 quarter brought a meaningful shift in revenue mix. Segment-B share rose 4.1 percentage points month-over-month, driven primarily by mid-market accounts. Churn on the 90-day cohort fell 0.8 pp. The standout open risk is vendor concentration in the EU: 67% of supply now sits with two providers covering 92% of volume.',
+      '',
+      'Methods',
+      'Weekly cohort pulls from the analytics warehouse were triangulated against five 45-minute supplier interviews and a macro indicator snapshot from FRED and ECB. Each signal was confirmed against at least two independent sources before inclusion.',
+      '',
+      'Findings',
+      '1.  Segment-B share +4.1pp month-over-month, concentrated in mid-market.',
+      '2.  Cohort churn down 0.8pp, gated by enterprise renewals in week 6.',
+      '3.  Three of five suppliers signalled a 6% raise in Q1.',
+      '4.  CPI vs cart conversion correlation: −0.42 over 18 months.',
+    ],
+  },
+  {
+    title: 'Q3 Research Brief — ACME (cont.)',
+    body: [
+      'Risks',
+      'EU vendor concentration is the load-bearing risk. Price-floor renegotiation collides with the Q1 renewal window. Segment-B growth depends on a launch we have not yet committed to.',
+      '',
+      'Recommendations',
+      '•  Lock two backup EU vendors before Q1.',
+      '•  Freeze the cohort dashboard schema.',
+      '•  Brief execs in week 2 with the supplier matrix.',
+      '•  Stand up a macro-hedge feasibility study by mid-February.',
+      '',
+      'Appendix A — Data sources',
+      'Analytics warehouse, supplier interviews, macro indicator basket, customer support escalation log. Window: 2026-01-01 to 2026-Q3-end.',
+      '',
+      'Appendix B — Glossary',
+      'MoM = month over month. pp = percentage points. CPI = consumer price index. Cohort = customer group bucketed by sign-up week.',
+    ],
+  },
+];
+
+const SamplePdfPages: React.FC = () => (
+  <div className="pdf-pages" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px', gap: '20px' }}>
+    {SAMPLE_PAGES.map((p, idx) => (
+      <div
+        key={idx}
+        className="pdf-page"
+        style={{
+          width: '720px',
+          maxWidth: '95%',
+          background: 'white',
+          color: '#1d1d1f',
+          padding: '64px 72px',
+          boxShadow: '0 4px 18px rgba(0, 0, 0, 0.12)',
+          borderRadius: '4px',
+          fontFamily: 'Georgia, "Times New Roman", serif',
+          lineHeight: 1.55,
+        }}
+      >
+        <h1 style={{ fontSize: '20px', borderBottom: '1px solid #c8c8c8', paddingBottom: '8px', marginBottom: '18px' }}>
+          {p.title}
+        </h1>
+        {p.body.map((line, i) =>
+          line === '' ? (
+            <div key={i} style={{ height: '10px' }} />
+          ) : /^[A-Z][a-z A-Z]+$/.test(line) && line.length < 60 ? (
+            <h2 key={i} style={{ fontSize: '15px', marginTop: '16px', marginBottom: '6px' }}>{line}</h2>
+          ) : (
+            <p key={i} style={{ fontSize: '13px', margin: '4px 0' }}>{line}</p>
+          )
+        )}
+        <div style={{ marginTop: '36px', fontSize: '11px', color: '#666', textAlign: 'center' }}>
+          — page {idx + 1} of {SAMPLE_PAGES.length} —
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 type ViewMode = 'single' | 'continuous';
 
 export const PDFViewer: React.FC<{ os: any }> = ({ os }) => {
@@ -292,15 +372,7 @@ export const PDFViewer: React.FC<{ os: any }> = ({ os }) => {
           ) : pdfUrl ? (
             renderPDF()
           ) : (
-            <div className="empty-state">
-              <div className="empty-state-icon">📄</div>
-              <div className="empty-state-text">No PDF loaded</div>
-              <div className="empty-state-hint">Click "Open File" to load a PDF document</div>
-              <button className="open-file-btn" onClick={() => openFile()}>
-                <File size={18} />
-                Open PDF File
-              </button>
-            </div>
+            <SamplePdfPages />
           )}
         </div>
       </div>
