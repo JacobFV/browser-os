@@ -53,6 +53,8 @@ export default defineConfig({
       '@browser-os/chess': path.resolve(__dirname, '../../system-apps/chess/src'),
       '@browser-os/messaging-client': path.resolve(__dirname, '../../system-apps/messaging-client/src'),
       '@browser-os/email-client': path.resolve(__dirname, '../../system-apps/email-client/src'),
+      '@browser-os/sheets': path.resolve(__dirname, '../../system-apps/sheets/src'),
+      '@browser-os/slides': path.resolve(__dirname, '../../system-apps/slides/src'),
     },
   },
 });

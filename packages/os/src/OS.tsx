@@ -40,6 +40,8 @@ import { ProcessManager } from '@browser-os/process-manager';
 import { Chess } from '@browser-os/chess';
 import { MessagingClient } from '@browser-os/messaging-client';
 import { EmailClient } from '@browser-os/email-client';
+import { Sheets } from '@browser-os/sheets';
+import { Slides } from '@browser-os/slides';
 import { Desktop } from './Desktop';
 import { NotificationManager } from '@browser-os/notifications';
 import { NotificationAPI } from '@browser-os/proc';
@@ -1184,6 +1186,70 @@ export const OS: React.FC<OSProps> = ({ desktop, workspaceCount = 1, dbName = 'b
           appRegistry.add(emailClientEntry);
           await appRegistry.save();
           console.log('[OS] EmailClient app registered/updated in registry');
+        }
+
+        // Register sheets app component
+        console.log('[OS] Registering sheets app component...');
+        if (!Sheets) {
+          throw new Error('Sheets component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('sheets', wrapOptionalComponent(Sheets));
+        console.log('[OS] Sheets app component registered');
+
+        // Register or update sheets app in registry
+        const existingSheets = appRegistry.get('sheets');
+        if (!existingSheets || !existingSheets.manifest.icon) {
+          const sheetsEntry = {
+            id: 'sheets',
+            installedAt: existingSheets?.installedAt || Date.now(),
+            installedBy: existingSheets?.installedBy || 'system',
+            enabled: existingSheets?.enabled ?? true,
+            manifest: {
+              id: 'sheets',
+              name: 'Sheets',
+              version: '0.1.0',
+              description: 'Spreadsheet editor',
+              entrypoint: '/bin/sheets.js',
+              permissions: ['fs.read', 'fs.write'],
+              icon: appIcons['sheets'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(sheetsEntry);
+          await appRegistry.save();
+          console.log('[OS] Sheets app registered/updated in registry');
+        }
+
+        // Register slides app component
+        console.log('[OS] Registering slides app component...');
+        if (!Slides) {
+          throw new Error('Slides component is undefined');
+        }
+        appComponentRegistry.registerAppComponent('slides', wrapOptionalComponent(Slides));
+        console.log('[OS] Slides app component registered');
+
+        // Register or update slides app in registry
+        const existingSlides = appRegistry.get('slides');
+        if (!existingSlides || !existingSlides.manifest.icon) {
+          const slidesEntry = {
+            id: 'slides',
+            installedAt: existingSlides?.installedAt || Date.now(),
+            installedBy: existingSlides?.installedBy || 'system',
+            enabled: existingSlides?.enabled ?? true,
+            manifest: {
+              id: 'slides',
+              name: 'Slides',
+              version: '0.1.0',
+              description: 'Presentation editor',
+              entrypoint: '/bin/slides.js',
+              permissions: ['fs.read', 'fs.write'],
+              icon: appIcons['slides'],
+              showInTaskbar: true,
+            },
+          };
+          appRegistry.add(slidesEntry);
+          await appRegistry.save();
+          console.log('[OS] Slides app registered/updated in registry');
         }
 
         // Initialize workspace manager

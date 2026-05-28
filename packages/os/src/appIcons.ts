@@ -392,4 +392,24 @@ export const appIcons = {
       <path d="M19 19l-2-2M17 19l2-2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
     </svg>
   `),
+
+  sheets: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0F9D58">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="#0F9D58"/>
+      <path d="M14 2v6h6" fill="#0a7c46"/>
+      <rect x="7" y="11" width="10" height="8" fill="#fff"/>
+      <line x1="7" y1="14" x2="17" y2="14" stroke="#0F9D58" stroke-width="1"/>
+      <line x1="7" y1="16.5" x2="17" y2="16.5" stroke="#0F9D58" stroke-width="1"/>
+      <line x1="10.5" y1="11" x2="10.5" y2="19" stroke="#0F9D58" stroke-width="1"/>
+      <line x1="13.5" y1="11" x2="13.5" y2="19" stroke="#0F9D58" stroke-width="1"/>
+    </svg>
+  `),
+
+  slides: createSVGIcon(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FBBC04">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="#FBBC04"/>
+      <path d="M14 2v6h6" fill="#e6a800"/>
+      <rect x="7" y="11" width="10" height="7" rx="1" fill="#fff"/>
+    </svg>
+  `),
 };

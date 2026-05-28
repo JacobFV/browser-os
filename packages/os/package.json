@@ -51,6 +51,8 @@
     "@browser-os/chess": "workspace:*",
     "@browser-os/messaging-client": "workspace:*",
     "@browser-os/email-client": "workspace:*",
+    "@browser-os/sheets": "workspace:*",
+    "@browser-os/slides": "workspace:*",
     "@browser-os/ui": "workspace:*",
     "react": "^18.2.0"
   },

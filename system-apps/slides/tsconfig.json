@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@browser-os/events": ["../../packages/events/src"],
+      "@browser-os/ui": ["../../packages/ui/src"]
+    }
+  },
+  "include": ["src/**/*"]
+}
