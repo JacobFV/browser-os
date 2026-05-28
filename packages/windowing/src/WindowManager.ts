@@ -33,11 +33,50 @@ export class WindowManager implements IWindowManager {
   }
 
   /**
+   * Pick a spawn position that overlaps the already-open windows as little as
+   * possible — real users put two apps side-by-side to see both, rather than
+   * letting windows cascade into a single pile. Scores anchored slots
+   * (halves, then corners, then center) against open normal/maximized windows
+   * and takes the least-occluded one; cascades only when nothing is open.
+   */
+  private pickSlot(width: number, height: number): { x: number; y: number } {
+    const TASKBAR = 56, MARGIN = 12, TOP = 8;
+    const vw = (typeof window !== 'undefined' && window.innerWidth) || 1440;
+    const vh = (typeof window !== 'undefined' && window.innerHeight) || 900;
+    const left = MARGIN;
+    const right = Math.max(MARGIN, vw - MARGIN - width);
+    const top = TOP;
+    const bottom = Math.max(top, vh - TASKBAR - height);
+    const midX = Math.round((left + right) / 2);
+    const midY = Math.round((top + bottom) / 2);
+    const open = this.registry.getAll().filter((w) => w.state !== 'minimized');
+    if (open.length === 0) return this.nextStagger();
+    const cands = [
+      { x: left, y: top }, { x: right, y: top },
+      { x: left, y: bottom }, { x: right, y: bottom },
+      { x: midX, y: top }, { x: midX, y: midY },
+    ];
+    const ov = (ax: number, ay: number, w: { x: number; y: number; width: number; height: number }) => {
+      const ix = Math.max(0, Math.min(ax + width, w.x + w.width) - Math.max(ax, w.x));
+      const iy = Math.max(0, Math.min(ay + height, w.y + w.height) - Math.max(ay, w.y));
+      return ix * iy;
+    };
+    let best = cands[0], bestScore = Infinity;
+    for (const c of cands) {
+      let score = 0;
+      for (const w of open) score += ov(c.x, c.y, w);
+      if (score < bestScore) { bestScore = score; best = c; }
+      if (score === 0) break;
+    }
+    return best;
+  }
+
+  /**
    * Create a new window
    */
   createWindow(options: WindowOptions): string {
     const windowId = `window-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const stagger = this.nextStagger();
+    const stagger = this.pickSlot(options.width ?? 1100, options.height ?? 720);
 
     const window: Window = {
       id: windowId,
