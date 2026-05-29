@@ -87,7 +87,9 @@ type ViewMode = 'single' | 'continuous';
 export const PDFViewer: React.FC<{ os: any }> = ({ os }) => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  // Default to the sample-document page count so the indicator shows "1 / N"
+  // (not "1 / 0") before any real PDF is loaded; loadPDF() overrides it.
+  const [totalPages, setTotalPages] = useState(SAMPLE_PAGES.length);
   const [zoom, setZoom] = useState(100);
   const [viewMode, setViewMode] = useState<ViewMode>('continuous');
   const [isLoading, setIsLoading] = useState(false);
